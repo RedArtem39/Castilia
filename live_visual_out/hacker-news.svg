@@ -1,0 +1,728 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1857.0469" viewBox="0 0 800 1857.0469">
+<rect width="100%" height="100%" fill="white"/>
+<a href="https://news.ycombinator.com/"><image x="8" y="8" width="18" height="18" href="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE4IiB2aWV3Qm94PSI0IDQgMTg4IDE4OCIgd2lkdGg9IjE4IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Im00IDRoMTg4djE4OGgtMTg4eiIgZmlsbD0iI2Y2MCIvPjxwYXRoIGQ9Im03My4yNTIxNzU2IDQ1LjAxIDIyLjc0NzgyNDQgNDcuMzkxMzAwODMgMjIuNzQ3ODI0NC00Ny4zOTEzMDA4M2gxOS41NjU2OTYzMWwtMzQuMzIzNTIwNzEgNjQuNDg2NjE0Njh2NDEuNDkzMzg1MzJoLTE1Ljk4di00MS40OTMzODUzMmwtMzQuMzIzNTIwNzEtNjQuNDg2NjE0Njh6IiBmaWxsPSIjZmZmIi8+PC9zdmc+"/></a>
+<a href="https://news.ycombinator.com/news"><text x="8" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">Hacker</text></a>
+<a href="https://news.ycombinator.com/news"><text x="63.125" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">News</text></a>
+<a href="https://news.ycombinator.com/newest"><text x="103.13281" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">new</text></a>
+<text x="136.92969" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/front"><text x="145.53125" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">past</text></a>
+<text x="180.21875" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/newcomments"><text x="188.82031" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="267.0625" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/ask"><text x="275.66406" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">ask</text></a>
+<text x="305.0078" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/show"><text x="313.60938" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">show</text></a>
+<text x="355.40625" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/jobs"><text x="364.0078" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">jobs</text></a>
+<text x="397.8047" y="40.4" font-family="sans-serif" font-size="16" fill="#222222">|</text>
+<a href="https://news.ycombinator.com/submit"><text x="406.40625" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">submit</text></a>
+<a href="https://news.ycombinator.com/login?goto=news"><text x="457.97656" y="40.4" font-family="sans-serif" font-size="16" fill="#0645ad">login</text></a>
+<text x="8" y="68.79844" font-family="sans-serif" font-size="16" fill="#828282">1.</text>
+<a href="https://openai.com/index/sharing-ai-progress-in-mathematics/"><text x="8" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">Sharing</text></a>
+<a href="https://openai.com/index/sharing-ai-progress-in-mathematics/"><text x="67.59375" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">AI</text></a>
+<a href="https://openai.com/index/sharing-ai-progress-in-mathematics/"><text x="87.15625" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">Progress</text></a>
+<a href="https://openai.com/index/sharing-ai-progress-in-mathematics/"><text x="155.625" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://openai.com/index/sharing-ai-progress-in-mathematics/"><text x="172.52344" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">Mathematics</text></a>
+<text x="267.66406" y="87.19688" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=openai.com"><text x="272.9922" y="87.19688" font-family="sans-serif" font-size="16" fill="#0645ad">openai.com</text></a>
+<text x="355.71094" y="87.19688" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="105.595314" font-family="sans-serif" font-size="16" fill="#828282">131</text>
+<text x="39.140625" y="105.595314" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="105.595314" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=OfficialTurkey"><text x="107.625" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">OfficialTurkey</text></a>
+<a href="https://news.ycombinator.com/item?id=49984923"><text x="208.98438" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">50</text></a>
+<a href="https://news.ycombinator.com/item?id=49984923"><text x="231.22656" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">minutes</text></a>
+<a href="https://news.ycombinator.com/item?id=49984923"><text x="291.6953" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="322.83594" y="105.595314" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49984923&amp;goto=news"><text x="331.4375" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="366.1328" y="105.595314" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49984923"><text x="374.73438" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">75</text></a>
+<a href="https://news.ycombinator.com/item?id=49984923"><text x="396.97656" y="105.595314" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="123.99375" font-family="sans-serif" font-size="16" fill="#828282">2.</text>
+<a href="https://mistral.ai/news/mistral-large-4//"><text x="8" y="142.39218" font-family="sans-serif" font-size="16" fill="#0645ad">Mistral</text></a>
+<a href="https://mistral.ai/news/mistral-large-4//"><text x="59.554688" y="142.39218" font-family="sans-serif" font-size="16" fill="#0645ad">Large</text></a>
+<a href="https://mistral.ai/news/mistral-large-4//"><text x="104.921875" y="142.39218" font-family="sans-serif" font-size="16" fill="#0645ad">4</text></a>
+<text x="118.265625" y="142.39218" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=mistral.ai"><text x="123.59375" y="142.39218" font-family="sans-serif" font-size="16" fill="#0645ad">mistral.ai</text></a>
+<text x="187.60156" y="142.39218" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="160.79062" font-family="sans-serif" font-size="16" fill="#828282">1519</text>
+<text x="48.039063" y="160.79062" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="95.17969" y="160.79062" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=Philpax"><text x="116.52344" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">Philpax</text></a>
+<a href="https://news.ycombinator.com/item?id=49977979"><text x="173.44531" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">9</text></a>
+<a href="https://news.ycombinator.com/item?id=49977979"><text x="186.78906" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977979"><text x="231.25781" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="262.39844" y="160.79062" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977979&amp;goto=news"><text x="271" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="305.6953" y="160.79062" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977979"><text x="314.29688" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">935</text></a>
+<a href="https://news.ycombinator.com/item?id=49977979"><text x="345.4375" y="160.79062" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="179.18906" font-family="sans-serif" font-size="16" fill="#828282">3.</text>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="8" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">Decisions</text></a>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="81.80469" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">API</text></a>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="112.03906" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">is</text></a>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="128.03906" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="144.9375" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">public</text></a>
+<a href="https://developers.openai.com/api/docs/guides/decisions"><text x="191.1875" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">beta</text></a>
+<text x="226.77344" y="197.5875" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=developers.openai.com"><text x="232.10156" y="197.5875" font-family="sans-serif" font-size="16" fill="#0645ad">developers.openai.com</text></a>
+<text x="397.53906" y="197.5875" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="215.98593" font-family="sans-serif" font-size="16" fill="#828282">68</text>
+<text x="30.242188" y="215.98593" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="215.98593" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=chiefstorm"><text x="98.72656" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">chiefstorm</text></a>
+<a href="https://news.ycombinator.com/item?id=49984025"><text x="176.96875" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">2</text></a>
+<a href="https://news.ycombinator.com/item?id=49984025"><text x="190.3125" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49984025"><text x="234.78125" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="265.92188" y="215.98593" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49984025&amp;goto=news"><text x="274.52344" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="309.21875" y="215.98593" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49984025"><text x="317.8203" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">26</text></a>
+<a href="https://news.ycombinator.com/item?id=49984025"><text x="340.0625" y="215.98593" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="234.38437" font-family="sans-serif" font-size="16" fill="#828282">4.</text>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="8" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">EmbeddingGemma</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="150.28906" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">2:</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="168.07813" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">An</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="192.09375" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">open,</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="236.57813" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">lightweight</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="316.625" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">multimodal</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="398.4297" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">embedding</text></a>
+<a href="https://blog.google/innovation-and-ai/technology/developers-tools/embeddinggemma-2/"><text x="482.04688" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">model</text></a>
+<text x="530.0703" y="252.7828" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=blog.google"><text x="535.39844" y="252.7828" font-family="sans-serif" font-size="16" fill="#0645ad">blog.google</text></a>
+<text x="618.1406" y="252.7828" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="271.18124" font-family="sans-serif" font-size="16" fill="#828282">174</text>
+<text x="39.140625" y="271.18124" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="271.18124" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=ilreb"><text x="107.625" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">ilreb</text></a>
+<a href="https://news.ycombinator.com/item?id=49980487"><text x="142.30469" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">7</text></a>
+<a href="https://news.ycombinator.com/item?id=49980487"><text x="155.64844" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49980487"><text x="200.11719" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="231.25781" y="271.18124" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49980487&amp;goto=news"><text x="239.85938" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="274.5547" y="271.18124" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49980487"><text x="283.15625" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">25</text></a>
+<a href="https://news.ycombinator.com/item?id=49980487"><text x="305.39844" y="271.18124" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="289.57968" font-family="sans-serif" font-size="16" fill="#828282">5.</text>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="8" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">Nobel</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="54.25" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">Prize</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="95.14844" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="112.046875" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">Physics</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="171.61719" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">2026:</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="216.10156" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">Francis</text></a>
+<a href="https://www.nobelprize.org/prizes/physics/2026/"><text x="273" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">Halzen</text></a>
+<text x="327.25" y="307.97812" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=nobelprize.org"><text x="332.57813" y="307.97812" font-family="sans-serif" font-size="16" fill="#0645ad">nobelprize.org</text></a>
+<text x="433.97656" y="307.97812" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="326.37656" font-family="sans-serif" font-size="16" fill="#828282">499</text>
+<text x="39.140625" y="326.37656" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="326.37656" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=solarist"><text x="107.625" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">solarist</text></a>
+<a href="https://news.ycombinator.com/item?id=49976265"><text x="162.75" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">13</text></a>
+<a href="https://news.ycombinator.com/item?id=49976265"><text x="184.99219" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49976265"><text x="229.46094" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="260.60156" y="326.37656" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49976265&amp;goto=news"><text x="269.20313" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="303.89844" y="326.37656" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49976265"><text x="312.5" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">166</text></a>
+<a href="https://news.ycombinator.com/item?id=49976265"><text x="343.64063" y="326.37656" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="344.775" font-family="sans-serif" font-size="16" fill="#828282">6.</text>
+<a href="https://github.com/FeSens/openTPU"><text x="8" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">OpenTPU</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="83.58594" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">–</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="96.92969" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">An</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="120.94531" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">open-source</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="214.33594" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">AI</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="233.89844" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">accelerator,</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="321.0547" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">developed</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="399.34375" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">by</text></a>
+<a href="https://github.com/FeSens/openTPU"><text x="420.6875" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">AI</text></a>
+<text x="440.25" y="363.17343" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=github.com/fesens"><text x="445.57813" y="363.17343" font-family="sans-serif" font-size="16" fill="#0645ad">github.com/fesens</text></a>
+<text x="575.4297" y="363.17343" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="381.57187" font-family="sans-serif" font-size="16" fill="#828282">202</text>
+<text x="39.140625" y="381.57187" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="381.57187" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=fsbonetto"><text x="107.625" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">fsbonetto</text></a>
+<a href="https://news.ycombinator.com/item?id=49980715"><text x="177.89844" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">6</text></a>
+<a href="https://news.ycombinator.com/item?id=49980715"><text x="191.24219" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49980715"><text x="235.71094" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="266.85156" y="381.57187" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49980715&amp;goto=news"><text x="275.45313" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="310.14844" y="381.57187" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49980715"><text x="318.75" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">264</text></a>
+<a href="https://news.ycombinator.com/item?id=49980715"><text x="349.89063" y="381.57187" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="399.9703" font-family="sans-serif" font-size="16" fill="#828282">7.</text>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="8" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">Paramount</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="90.71094" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">Skydance</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="165.42188" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">has</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="195.66406" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">completed</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="273.9297" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">its</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="294.375" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">$111B</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="342.71094" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">merger</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="397.83594" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">with</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="430.73438" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">Warner</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="487.03906" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">Bros.</text></a>
+<a href="https://arstechnica.com/tech-policy/2026/10/paramount-completes-111b-warner-merger-creating-skydance-behemoth/"><text x="528.8281" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">Discovery</text></a>
+<text x="603.5078" y="418.36874" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=arstechnica.com"><text x="608.83594" y="418.36874" font-family="sans-serif" font-size="16" fill="#0645ad">arstechnica.com</text></a>
+<text x="725.3281" y="418.36874" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="436.76718" font-family="sans-serif" font-size="16" fill="#828282">128</text>
+<text x="39.140625" y="436.76718" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="436.76718" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=Mgtyalx"><text x="107.625" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">Mgtyalx</text></a>
+<a href="https://news.ycombinator.com/item?id=49983703"><text x="167.19531" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">2</text></a>
+<a href="https://news.ycombinator.com/item?id=49983703"><text x="180.53906" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49983703"><text x="225.00781" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="256.14844" y="436.76718" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49983703&amp;goto=news"><text x="264.75" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="299.4453" y="436.76718" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49983703"><text x="308.04688" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">175</text></a>
+<a href="https://news.ycombinator.com/item?id=49983703"><text x="339.1875" y="436.76718" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="455.16562" font-family="sans-serif" font-size="16" fill="#828282">8.</text>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="8" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">Claude</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="63.148438" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">Code’s</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="117.109375" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">suggested</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="195.39063" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">message</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="264.7578" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">feature:</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="323.46094" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">I</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="332.35156" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">think</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="370.59375" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">the</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="397.28125" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">real</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="428.40625" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">customer</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="498.64844" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">is</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="514.64844" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">the</text></a>
+<a href="https://www.zohaib.cc/blog/smartest-claude-code-feature"><text x="541.33594" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">model</text></a>
+<text x="589.3594" y="473.56406" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=zohaib.cc"><text x="594.6875" y="473.56406" font-family="sans-serif" font-size="16" fill="#0645ad">zohaib.cc</text></a>
+<text x="662.28125" y="473.56406" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="491.9625" font-family="sans-serif" font-size="16" fill="#828282">55</text>
+<text x="30.242188" y="491.9625" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="491.9625" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=zed_labs_dev"><text x="98.72656" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">zed_labs_dev</text></a>
+<a href="https://news.ycombinator.com/item?id=49981905"><text x="201.91406" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">5</text></a>
+<a href="https://news.ycombinator.com/item?id=49981905"><text x="215.25781" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49981905"><text x="259.72656" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="290.8672" y="491.9625" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49981905&amp;goto=news"><text x="299.46875" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="334.16406" y="491.9625" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49981905"><text x="342.76563" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">29</text></a>
+<a href="https://news.ycombinator.com/item?id=49981905"><text x="365.0078" y="491.9625" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="510.36093" font-family="sans-serif" font-size="16" fill="#828282">9.</text>
+<a href="https://www.openssh.org/releasenotes.html#10.6"><text x="8" y="528.7594" font-family="sans-serif" font-size="16" fill="#0645ad">OpenSSH</text></a>
+<a href="https://www.openssh.org/releasenotes.html#10.6"><text x="84.484375" y="528.7594" font-family="sans-serif" font-size="16" fill="#0645ad">10.6</text></a>
+<text x="120.07031" y="528.7594" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=openssh.org"><text x="125.39844" y="528.7594" font-family="sans-serif" font-size="16" fill="#0645ad">openssh.org</text></a>
+<text x="213.46094" y="528.7594" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="547.15784" font-family="sans-serif" font-size="16" fill="#828282">66</text>
+<text x="30.242188" y="547.15784" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="547.15784" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=torcete"><text x="98.72656" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">torcete</text></a>
+<a href="https://news.ycombinator.com/item?id=49983791"><text x="152.08594" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">2</text></a>
+<a href="https://news.ycombinator.com/item?id=49983791"><text x="165.42969" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49983791"><text x="209.89844" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="241.03906" y="547.15784" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49983791&amp;goto=news"><text x="249.64063" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="284.33594" y="547.15784" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49983791"><text x="292.9375" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">12</text></a>
+<a href="https://news.ycombinator.com/item?id=49983791"><text x="315.1797" y="547.15784" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="565.5563" font-family="sans-serif" font-size="16" fill="#828282">10.</text>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="8" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">LLMs</text></a>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="51.570313" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">may</text></a>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="86.24219" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">have</text></a>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="125.38281" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">helped</text></a>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="177.875" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">my</text></a>
+<a href="https://vaughanhilts.me/2026/10/05/llms-immensely-helped-my-rsi.html"><text x="203.64844" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">RSI</text></a>
+<text x="234.76563" y="583.9547" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=vaughanhilts.me"><text x="240.09375" y="583.9547" font-family="sans-serif" font-size="16" fill="#0645ad">vaughanhilts.me</text></a>
+<text x="356.60938" y="583.9547" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="602.35315" font-family="sans-serif" font-size="16" fill="#828282">6</text>
+<text x="21.34375" y="602.35315" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="68.484375" y="602.35315" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=vaughands"><text x="89.828125" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">vaughands</text></a>
+<a href="https://news.ycombinator.com/item?id=49973644"><text x="172.5625" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49973644"><text x="185.90625" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">hour</text></a>
+<a href="https://news.ycombinator.com/item?id=49973644"><text x="222.375" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="253.51563" y="602.35315" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49973644&amp;goto=news"><text x="262.1172" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="296.8125" y="602.35315" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49973644"><text x="305.41406" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49973644"><text x="318.7578" y="602.35315" font-family="sans-serif" font-size="16" fill="#0645ad">comment</text></a>
+<text x="8" y="620.7516" font-family="sans-serif" font-size="16" fill="#828282">11.</text>
+<a href="https://matklad.github.io/2026/10/05/benchmark-milliseconds.html"><text x="8" y="639.15" font-family="sans-serif" font-size="16" fill="#0645ad">Benchmark</text></a>
+<a href="https://matklad.github.io/2026/10/05/benchmark-milliseconds.html"><text x="93.36719" y="639.15" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://matklad.github.io/2026/10/05/benchmark-milliseconds.html"><text x="110.265625" y="639.15" font-family="sans-serif" font-size="16" fill="#0645ad">Milliseconds</text></a>
+<text x="201.85156" y="639.15" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=matklad.github.io"><text x="207.17969" y="639.15" font-family="sans-serif" font-size="16" fill="#0645ad">matklad.github.io</text></a>
+<text x="328.14063" y="639.15" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="657.54846" font-family="sans-serif" font-size="16" fill="#828282">124</text>
+<text x="39.140625" y="657.54846" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="657.54846" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=surprisetalk"><text x="107.625" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">surprisetalk</text></a>
+<a href="https://news.ycombinator.com/item?id=49967427"><text x="193.875" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">9</text></a>
+<a href="https://news.ycombinator.com/item?id=49967427"><text x="207.21875" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49967427"><text x="251.6875" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="282.82813" y="657.54846" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49967427&amp;goto=news"><text x="291.4297" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="326.125" y="657.54846" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49967427"><text x="334.72656" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">34</text></a>
+<a href="https://news.ycombinator.com/item?id=49967427"><text x="356.96875" y="657.54846" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="675.9469" font-family="sans-serif" font-size="16" fill="#828282">12.</text>
+<a href="https://readyset.io/blog/how-readyset-rewrites-your-sql-inside-the-query-transformation-pipeline"><text x="8" y="694.34534" font-family="sans-serif" font-size="16" fill="#0645ad">The</text></a>
+<a href="https://readyset.io/blog/how-readyset-rewrites-your-sql-inside-the-query-transformation-pipeline"><text x="40.015625" y="694.34534" font-family="sans-serif" font-size="16" fill="#0645ad">Query</text></a>
+<a href="https://readyset.io/blog/how-readyset-rewrites-your-sql-inside-the-query-transformation-pipeline"><text x="88.03125" y="694.34534" font-family="sans-serif" font-size="16" fill="#0645ad">Transformation</text></a>
+<a href="https://readyset.io/blog/how-readyset-rewrites-your-sql-inside-the-query-transformation-pipeline"><text x="199.47656" y="694.34534" font-family="sans-serif" font-size="16" fill="#0645ad">Pipeline</text></a>
+<text x="260.85156" y="694.34534" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=readyset.io"><text x="266.1797" y="694.34534" font-family="sans-serif" font-size="16" fill="#0645ad">readyset.io</text></a>
+<text x="344.4453" y="694.34534" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="712.7438" font-family="sans-serif" font-size="16" fill="#828282">3</text>
+<text x="21.34375" y="712.7438" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="68.484375" y="712.7438" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=gvsg-rs"><text x="89.828125" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">gvsg-rs</text></a>
+<a href="https://news.ycombinator.com/item?id=49984834"><text x="146.72656" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">58</text></a>
+<a href="https://news.ycombinator.com/item?id=49984834"><text x="168.96875" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">minutes</text></a>
+<a href="https://news.ycombinator.com/item?id=49984834"><text x="229.4375" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="260.57813" y="712.7438" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49984834&amp;goto=news"><text x="269.1797" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="303.875" y="712.7438" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49984834"><text x="312.47656" y="712.7438" font-family="sans-serif" font-size="16" fill="#0645ad">discuss</text></a>
+<text x="8" y="731.1422" font-family="sans-serif" font-size="16" fill="#828282">13.</text>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="8" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">Ask</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="39.117188" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">HN:</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="71.11719" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">Why</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="107.5625" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">is</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="123.5625" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">Ask</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="154.67969" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">HN</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="182.23438" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">only</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="216.03125" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">showing</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="279.1797" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">me</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="305.85156" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">14</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="328.09375" y="749.54065" font-family="sans-serif" font-size="16" fill="#0645ad">posts?</text></a>
+<text x="8" y="767.9391" font-family="sans-serif" font-size="16" fill="#828282">24</text>
+<text x="30.242188" y="767.9391" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="767.9391" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=Gooblebrai"><text x="98.72656" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">Gooblebrai</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="181.44531" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="194.78906" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">hour</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="231.25781" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="262.39844" y="767.9391" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49984484&amp;goto=news"><text x="271" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="305.6953" y="767.9391" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="314.29688" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">26</text></a>
+<a href="https://news.ycombinator.com/item?id=49984484"><text x="336.53906" y="767.9391" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="786.3375" font-family="sans-serif" font-size="16" fill="#828282">14.</text>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="8" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">Gleam</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="59.570313" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">doesn&apos;t</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="115.109375" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">compile</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="174.6875" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">to</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="192.47656" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">Erlang</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="243.17188" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">source</text></a>
+<a href="https://gleam.run/news/gleam-doesnt-compile-to-erlang-source-anymore/"><text x="295.64063" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">anymore</text></a>
+<text x="362.33594" y="804.73596" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=gleam.run"><text x="367.66406" y="804.73596" font-family="sans-serif" font-size="16" fill="#0645ad">gleam.run</text></a>
+<text x="438.8125" y="804.73596" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="823.1344" font-family="sans-serif" font-size="16" fill="#828282">283</text>
+<text x="39.140625" y="823.1344" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="823.1344" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=ingve"><text x="107.625" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">ingve</text></a>
+<a href="https://news.ycombinator.com/item?id=49975619"><text x="150.32031" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">14</text></a>
+<a href="https://news.ycombinator.com/item?id=49975619"><text x="172.5625" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49975619"><text x="217.03125" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="248.17188" y="823.1344" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49975619&amp;goto=news"><text x="256.77344" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="291.46875" y="823.1344" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49975619"><text x="300.0703" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">120</text></a>
+<a href="https://news.ycombinator.com/item?id=49975619"><text x="331.21094" y="823.1344" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="841.53284" font-family="sans-serif" font-size="16" fill="#828282">15.</text>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="8" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">The</text></a>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="40.015625" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">Early</text></a>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="80.91406" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">History</text></a>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="135.14063" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">of</text></a>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="152.92969" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">Smalltalk</text></a>
+<a href="https://worrydream.com/EarlyHistoryOfSmalltalk/"><text x="222.28125" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">(1993)</text></a>
+<text x="272.97656" y="859.9313" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=worrydream.com"><text x="278.3047" y="859.9313" font-family="sans-serif" font-size="16" fill="#0645ad">worrydream.com</text></a>
+<text x="397.4375" y="859.9313" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="878.3297" font-family="sans-serif" font-size="16" fill="#828282">107</text>
+<text x="39.140625" y="878.3297" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="878.3297" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=_reza"><text x="107.625" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">_reza</text></a>
+<a href="https://news.ycombinator.com/item?id=49979845"><text x="152.09375" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">7</text></a>
+<a href="https://news.ycombinator.com/item?id=49979845"><text x="165.4375" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49979845"><text x="209.90625" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="241.04688" y="878.3297" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49979845&amp;goto=news"><text x="249.64844" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="284.34375" y="878.3297" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49979845"><text x="292.9453" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">59</text></a>
+<a href="https://news.ycombinator.com/item?id=49979845"><text x="315.1875" y="878.3297" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="896.72815" font-family="sans-serif" font-size="16" fill="#828282">16.</text>
+<a href="https://andreklein.net/vibecoding-photoshop-time-and-pressure/"><text x="8" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">Vibecoding</text></a>
+<a href="https://andreklein.net/vibecoding-photoshop-time-and-pressure/"><text x="91.328125" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">Photoshop:</text></a>
+<a href="https://andreklein.net/vibecoding-photoshop-time-and-pressure/"><text x="176.72656" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">Time</text></a>
+<a href="https://andreklein.net/vibecoding-photoshop-time-and-pressure/"><text x="216.13281" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">and</text></a>
+<a href="https://andreklein.net/vibecoding-photoshop-time-and-pressure/"><text x="247.27344" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">pressure</text></a>
+<text x="313.96875" y="915.1266" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=andreklein.net"><text x="319.29688" y="915.1266" font-family="sans-serif" font-size="16" fill="#0645ad">andreklein.net</text></a>
+<text x="419.8125" y="915.1266" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="933.525" font-family="sans-serif" font-size="16" fill="#828282">4</text>
+<text x="21.34375" y="933.525" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="68.484375" y="933.525" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=samtheDamned"><text x="89.828125" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">samtheDamned</text></a>
+<a href="https://news.ycombinator.com/item?id=49983780"><text x="207.21875" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49983780"><text x="220.5625" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">hour</text></a>
+<a href="https://news.ycombinator.com/item?id=49983780"><text x="257.03125" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="288.17188" y="933.525" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49983780&amp;goto=news"><text x="296.77344" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="331.46875" y="933.525" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49983780"><text x="340.0703" y="933.525" font-family="sans-serif" font-size="16" fill="#0645ad">discuss</text></a>
+<text x="8" y="951.92346" font-family="sans-serif" font-size="16" fill="#828282">17.</text>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="8" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">Erdosproblems.com</text></a>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="154.71875" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">Succumbs</text></a>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="233.85938" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">to</text></a>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="251.64844" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">the</text></a>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="278.33594" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">AI</text></a>
+<a href="https://www.erdosproblems.com/forum/thread/blog:9"><text x="297.89844" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">Onslaught</text></a>
+<text x="375.28125" y="970.3219" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=erdosproblems.com"><text x="380.60938" y="970.3219" font-family="sans-serif" font-size="16" fill="#0645ad">erdosproblems.com</text></a>
+<text x="521.1094" y="970.3219" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="988.72034" font-family="sans-serif" font-size="16" fill="#828282">81</text>
+<text x="30.242188" y="988.72034" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="988.72034" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=pfdietz"><text x="98.72656" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">pfdietz</text></a>
+<a href="https://news.ycombinator.com/item?id=49977689"><text x="150.3125" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">10</text></a>
+<a href="https://news.ycombinator.com/item?id=49977689"><text x="172.55469" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977689"><text x="217.02344" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="248.16406" y="988.72034" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977689&amp;goto=news"><text x="256.76563" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="291.46094" y="988.72034" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977689"><text x="300.0625" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">37</text></a>
+<a href="https://news.ycombinator.com/item?id=49977689"><text x="322.3047" y="988.72034" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1007.1188" font-family="sans-serif" font-size="16" fill="#828282">18.</text>
+<a href="https://berthd.app/"><text x="8" y="1025.5172" font-family="sans-serif" font-size="16" fill="#0645ad">Berthd</text></a>
+<text x="59.585938" y="1025.5172" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=berthd.app"><text x="64.91406" y="1025.5172" font-family="sans-serif" font-size="16" fill="#0645ad">berthd.app</text></a>
+<text x="141.42188" y="1025.5172" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1043.9156" font-family="sans-serif" font-size="16" fill="#828282">37</text>
+<text x="30.242188" y="1043.9156" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1043.9156" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=handfuloflight"><text x="98.72656" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">handfuloflight</text></a>
+<a href="https://news.ycombinator.com/item?id=49982735"><text x="198.35938" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">3</text></a>
+<a href="https://news.ycombinator.com/item?id=49982735"><text x="211.70313" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49982735"><text x="256.17188" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="287.3125" y="1043.9156" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49982735&amp;goto=news"><text x="295.91406" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="330.60938" y="1043.9156" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49982735"><text x="339.21094" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">55</text></a>
+<a href="https://news.ycombinator.com/item?id=49982735"><text x="361.45313" y="1043.9156" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1062.3141" font-family="sans-serif" font-size="16" fill="#828282">19.</text>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="8" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">Show</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="52.46875" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">HN:</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="84.46875" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">I</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="93.359375" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">turned</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="143.17188" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">my</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="168.94531" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">iPhone</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="223.21094" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">and</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="254.35156" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">a</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="267.6953" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">$20</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="298.83594" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">smart</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="343.28125" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">plug</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="377.97656" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">into</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="408.21875" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">an</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="430.46094" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">f-stop</text></a>
+<a href="https://peterszentkiralyi.eu/darkplug/"><text x="474.92188" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">timer</text></a>
+<text x="514.9219" y="1080.7125" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=peterszentkiralyi.eu"><text x="520.25" y="1080.7125" font-family="sans-serif" font-size="16" fill="#0645ad">peterszentkiralyi.eu</text></a>
+<text x="658.09375" y="1080.7125" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1099.111" font-family="sans-serif" font-size="16" fill="#828282">62</text>
+<text x="30.242188" y="1099.111" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1099.111" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=pentakkusu"><text x="98.72656" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">pentakkusu</text></a>
+<a href="https://news.ycombinator.com/item?id=49978595"><text x="185.00781" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">9</text></a>
+<a href="https://news.ycombinator.com/item?id=49978595"><text x="198.35156" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49978595"><text x="242.82031" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="273.96094" y="1099.111" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49978595&amp;goto=news"><text x="282.5625" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="317.2578" y="1099.111" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49978595"><text x="325.85938" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">16</text></a>
+<a href="https://news.ycombinator.com/item?id=49978595"><text x="348.10156" y="1099.111" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1117.5094" font-family="sans-serif" font-size="16" fill="#828282">20.</text>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="8" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">When</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="54.242188" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">random</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="112.9375" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">is</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="128.9375" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">not</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="155.625" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">actually</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="214.32031" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">random</text></a>
+<a href="https://ersc.io/blog/when-random-isnt-random-enough"><text x="273.01563" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">enough</text></a>
+<text x="330.85156" y="1135.9078" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=ersc.io"><text x="336.1797" y="1135.9078" font-family="sans-serif" font-size="16" fill="#0645ad">ersc.io</text></a>
+<text x="383.3047" y="1135.9078" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1154.3063" font-family="sans-serif" font-size="16" fill="#828282">5</text>
+<text x="21.34375" y="1154.3063" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="68.484375" y="1154.3063" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=steveklabnik"><text x="89.828125" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">steveklabnik</text></a>
+<a href="https://news.ycombinator.com/item?id=49983404"><text x="182.32031" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49983404"><text x="195.66406" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">hour</text></a>
+<a href="https://news.ycombinator.com/item?id=49983404"><text x="232.13281" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="263.27344" y="1154.3063" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49983404&amp;goto=news"><text x="271.875" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="306.5703" y="1154.3063" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49983404"><text x="315.17188" y="1154.3063" font-family="sans-serif" font-size="16" fill="#0645ad">discuss</text></a>
+<text x="8" y="1172.7047" font-family="sans-serif" font-size="16" fill="#828282">21.</text>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="8" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Toronto-Based</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="116.50781" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">VPN</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="153.85156" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Provider</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="217.875" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Plans</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="262.34375" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">to</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="280.1328" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Quit</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="313.92188" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Canada</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="374.41406" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">over</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="409.98438" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Lawful-Access</text></a>
+<a href="https://citizenlab.ca/toronto-based-vpn-provider-plans-to-quit-canada-over-lawful-access-bill/"><text x="517.5781" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">Bill</text></a>
+<text x="543.3594" y="1191.1031" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=citizenlab.ca"><text x="548.6875" y="1191.1031" font-family="sans-serif" font-size="16" fill="#0645ad">citizenlab.ca</text></a>
+<text x="636.7344" y="1191.1031" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1209.5016" font-family="sans-serif" font-size="16" fill="#828282">69</text>
+<text x="30.242188" y="1209.5016" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1209.5016" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=speckx"><text x="98.72656" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">speckx</text></a>
+<a href="https://news.ycombinator.com/item?id=49982471"><text x="152.96875" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">4</text></a>
+<a href="https://news.ycombinator.com/item?id=49982471"><text x="166.3125" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49982471"><text x="210.78125" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="241.92188" y="1209.5016" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49982471&amp;goto=news"><text x="250.52344" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="285.21875" y="1209.5016" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49982471"><text x="293.8203" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">28</text></a>
+<a href="https://news.ycombinator.com/item?id=49982471"><text x="316.0625" y="1209.5016" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1227.9" font-family="sans-serif" font-size="16" fill="#828282">22.</text>
+<a href="https://arxiv.org/abs/2610.06783"><text x="8" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">Subquadratic</text></a>
+<a href="https://arxiv.org/abs/2610.06783"><text x="106.734375" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">3SUM</text></a>
+<a href="https://arxiv.org/abs/2610.06783"><text x="155.63281" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">and</text></a>
+<a href="https://arxiv.org/abs/2610.06783"><text x="186.77344" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">Subcubic</text></a>
+<a href="https://arxiv.org/abs/2610.06783"><text x="257.03906" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">APSP</text></a>
+<text x="304.17188" y="1246.2985" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=arxiv.org"><text x="309.5" y="1246.2985" font-family="sans-serif" font-size="16" fill="#0645ad">arxiv.org</text></a>
+<text x="369.66406" y="1246.2985" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1264.6969" font-family="sans-serif" font-size="16" fill="#828282">90</text>
+<text x="30.242188" y="1264.6969" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1264.6969" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=mauriziocalo"><text x="98.72656" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">mauriziocalo</text></a>
+<a href="https://news.ycombinator.com/item?id=49977437"><text x="192.98438" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">10</text></a>
+<a href="https://news.ycombinator.com/item?id=49977437"><text x="215.22656" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977437"><text x="259.6953" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="290.83594" y="1264.6969" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977437&amp;goto=news"><text x="299.4375" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="334.1328" y="1264.6969" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977437"><text x="342.73438" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">34</text></a>
+<a href="https://news.ycombinator.com/item?id=49977437"><text x="364.97656" y="1264.6969" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1283.0953" font-family="sans-serif" font-size="16" fill="#828282">23.</text>
+<a href="https://www.ebsco.com/research-starters/power-and-energy/mathematics-geothermal-energy/"><text x="8" y="1301.4938" font-family="sans-serif" font-size="16" fill="#0645ad">Mathematics</text></a>
+<a href="https://www.ebsco.com/research-starters/power-and-energy/mathematics-geothermal-energy/"><text x="103.140625" y="1301.4938" font-family="sans-serif" font-size="16" fill="#0645ad">of</text></a>
+<a href="https://www.ebsco.com/research-starters/power-and-energy/mathematics-geothermal-energy/"><text x="120.92969" y="1301.4938" font-family="sans-serif" font-size="16" fill="#0645ad">Geothermal</text></a>
+<a href="https://www.ebsco.com/research-starters/power-and-energy/mathematics-geothermal-energy/"><text x="208.96875" y="1301.4938" font-family="sans-serif" font-size="16" fill="#0645ad">Energy</text></a>
+<text x="264.10938" y="1301.4938" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=ebsco.com"><text x="269.4375" y="1301.4938" font-family="sans-serif" font-size="16" fill="#0645ad">ebsco.com</text></a>
+<text x="346.8047" y="1301.4938" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1319.8922" font-family="sans-serif" font-size="16" fill="#828282">63</text>
+<text x="30.242188" y="1319.8922" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1319.8922" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=srameshc"><text x="98.72656" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">srameshc</text></a>
+<a href="https://news.ycombinator.com/item?id=49977819"><text x="172.52344" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">10</text></a>
+<a href="https://news.ycombinator.com/item?id=49977819"><text x="194.76563" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977819"><text x="239.23438" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="270.375" y="1319.8922" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977819&amp;goto=news"><text x="278.97656" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="313.67188" y="1319.8922" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977819"><text x="322.27344" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">36</text></a>
+<a href="https://news.ycombinator.com/item?id=49977819"><text x="344.51563" y="1319.8922" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1338.2906" font-family="sans-serif" font-size="16" fill="#828282">24.</text>
+<a href="https://kevinboone.me/adblock.html"><text x="8" y="1356.6891" font-family="sans-serif" font-size="16" fill="#0645ad">System-level</text></a>
+<a href="https://kevinboone.me/adblock.html"><text x="104.02344" y="1356.6891" font-family="sans-serif" font-size="16" fill="#0645ad">ad-blocking</text></a>
+<a href="https://kevinboone.me/adblock.html"><text x="190.29688" y="1356.6891" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://kevinboone.me/adblock.html"><text x="207.19531" y="1356.6891" font-family="sans-serif" font-size="16" fill="#0645ad">Android</text></a>
+<text x="266.78906" y="1356.6891" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=kevinboone.me"><text x="272.1172" y="1356.6891" font-family="sans-serif" font-size="16" fill="#0645ad">kevinboone.me</text></a>
+<text x="380.6328" y="1356.6891" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1375.0875" font-family="sans-serif" font-size="16" fill="#828282">37</text>
+<text x="30.242188" y="1375.0875" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1375.0875" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=birdculture"><text x="98.72656" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">birdculture</text></a>
+<a href="https://news.ycombinator.com/item?id=49983647"><text x="177.875" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">2</text></a>
+<a href="https://news.ycombinator.com/item?id=49983647"><text x="191.21875" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49983647"><text x="235.6875" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="266.82813" y="1375.0875" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49983647&amp;goto=news"><text x="275.4297" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="310.125" y="1375.0875" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49983647"><text x="318.72656" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">29</text></a>
+<a href="https://news.ycombinator.com/item?id=49983647"><text x="340.96875" y="1375.0875" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1393.486" font-family="sans-serif" font-size="16" fill="#828282">25.</text>
+<a href="https://reflection.ai/blog/introducing-beam"><text x="8" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">Beam:</text></a>
+<a href="https://reflection.ai/blog/introducing-beam"><text x="58.6875" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">Reflection&apos;s</text></a>
+<a href="https://reflection.ai/blog/introducing-beam"><text x="145.33594" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">501B</text></a>
+<a href="https://reflection.ai/blog/introducing-beam"><text x="187.14844" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">open-weight</text></a>
+<a href="https://reflection.ai/blog/introducing-beam"><text x="278.76563" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">model</text></a>
+<text x="326.78906" y="1411.8844" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=reflection.ai"><text x="332.1172" y="1411.8844" font-family="sans-serif" font-size="16" fill="#0645ad">reflection.ai</text></a>
+<text x="413.9375" y="1411.8844" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1430.2828" font-family="sans-serif" font-size="16" fill="#828282">539</text>
+<text x="39.140625" y="1430.2828" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="1430.2828" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=Philpax"><text x="107.625" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">Philpax</text></a>
+<a href="https://news.ycombinator.com/item?id=49969183"><text x="164.54688" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49969183"><text x="177.89063" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">day</text></a>
+<a href="https://news.ycombinator.com/item?id=49969183"><text x="208.13281" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="239.27344" y="1430.2828" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49969183&amp;goto=news"><text x="247.875" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="282.5703" y="1430.2828" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49969183"><text x="291.17188" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">167</text></a>
+<a href="https://news.ycombinator.com/item?id=49969183"><text x="322.3125" y="1430.2828" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1448.6813" font-family="sans-serif" font-size="16" fill="#828282">26.</text>
+<a href="https://pola.rs/posts/release-polars-2/"><text x="8" y="1467.0797" font-family="sans-serif" font-size="16" fill="#0645ad">Polars</text></a>
+<a href="https://pola.rs/posts/release-polars-2/"><text x="57.796875" y="1467.0797" font-family="sans-serif" font-size="16" fill="#0645ad">2.0</text></a>
+<text x="84.484375" y="1467.0797" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=pola.rs"><text x="89.8125" y="1467.0797" font-family="sans-serif" font-size="16" fill="#0645ad">pola.rs</text></a>
+<text x="137.83594" y="1467.0797" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1485.4781" font-family="sans-serif" font-size="16" fill="#828282">400</text>
+<text x="39.140625" y="1485.4781" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="1485.4781" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=simicd"><text x="107.625" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">simicd</text></a>
+<a href="https://news.ycombinator.com/item?id=49977177"><text x="157.40625" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">11</text></a>
+<a href="https://news.ycombinator.com/item?id=49977177"><text x="178.46094" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977177"><text x="222.92969" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="254.07031" y="1485.4781" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977177&amp;goto=news"><text x="262.67188" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="297.3672" y="1485.4781" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977177"><text x="305.96875" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">94</text></a>
+<a href="https://news.ycombinator.com/item?id=49977177"><text x="328.21094" y="1485.4781" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1503.8766" font-family="sans-serif" font-size="16" fill="#828282">27.</text>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="8" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">What&apos;s</text></a>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="60.84375" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">Earth&apos;s</text></a>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="114.58594" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">dominant</text></a>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="184.85156" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">species</text></a>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="243.54688" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">by</text></a>
+<a href="https://signoregalilei.com/2026/09/27/whats-earths-dominant-species-by-mass/"><text x="264.89063" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">mass?</text></a>
+<text x="316.46094" y="1522.275" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=signoregalilei.com"><text x="321.78906" y="1522.275" font-family="sans-serif" font-size="16" fill="#0645ad">signoregalilei.com</text></a>
+<text x="449.85156" y="1522.275" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1540.6735" font-family="sans-serif" font-size="16" fill="#828282">121</text>
+<text x="39.140625" y="1540.6735" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="1540.6735" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=surprisetalk"><text x="107.625" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">surprisetalk</text></a>
+<a href="https://news.ycombinator.com/item?id=49977531"><text x="193.875" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">10</text></a>
+<a href="https://news.ycombinator.com/item?id=49977531"><text x="216.11719" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49977531"><text x="260.58594" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="291.72656" y="1540.6735" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49977531&amp;goto=news"><text x="300.32813" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="335.02344" y="1540.6735" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49977531"><text x="343.625" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">72</text></a>
+<a href="https://news.ycombinator.com/item?id=49977531"><text x="365.8672" y="1540.6735" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1559.0719" font-family="sans-serif" font-size="16" fill="#828282">28.</text>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="8" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">Example.com</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="109.36719" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">just</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="138.71094" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">launched</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="208.10156" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">the</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="234.78906" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">biggest</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="290.82813" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">redesign</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="356.64844" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">in</text></a>
+<a href="https://www.debugbear.com/blog/example-dot-com-redesign-history"><text x="373.54688" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">decades</text></a>
+<text x="438.48438" y="1577.4703" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=debugbear.com"><text x="443.8125" y="1577.4703" font-family="sans-serif" font-size="16" fill="#0645ad">debugbear.com</text></a>
+<text x="554.1172" y="1577.4703" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1595.8688" font-family="sans-serif" font-size="16" fill="#828282">338</text>
+<text x="39.140625" y="1595.8688" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="1595.8688" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=jgx0"><text x="107.625" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">jgx0</text></a>
+<a href="https://news.ycombinator.com/item?id=49971921"><text x="141.42188" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">1</text></a>
+<a href="https://news.ycombinator.com/item?id=49971921"><text x="154.76563" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">day</text></a>
+<a href="https://news.ycombinator.com/item?id=49971921"><text x="185.00781" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="216.14844" y="1595.8688" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49971921&amp;goto=news"><text x="224.75" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="259.4453" y="1595.8688" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49971921"><text x="268.04688" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">229</text></a>
+<a href="https://news.ycombinator.com/item?id=49971921"><text x="299.1875" y="1595.8688" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1614.2672" font-family="sans-serif" font-size="16" fill="#828282">29.</text>
+<a href="https://www.parseable.com/"><text x="8" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">Show</text></a>
+<a href="https://www.parseable.com/"><text x="52.46875" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">HN:</text></a>
+<a href="https://www.parseable.com/"><text x="84.46875" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">Parseable,</text></a>
+<a href="https://www.parseable.com/"><text x="165.40625" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">an</text></a>
+<a href="https://www.parseable.com/"><text x="187.64844" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">open</text></a>
+<a href="https://www.parseable.com/"><text x="227.6875" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">observability</text></a>
+<a href="https://www.parseable.com/"><text x="321.0625" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">datalake,</text></a>
+<a href="https://www.parseable.com/"><text x="390.4453" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">handles</text></a>
+<a href="https://www.parseable.com/"><text x="450.9375" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">100M</text></a>
+<a href="https://www.parseable.com/"><text x="495.40625" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">time-series/min</text></a>
+<text x="608.3125" y="1632.6656" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=parseable.com"><text x="613.6406" y="1632.6656" font-family="sans-serif" font-size="16" fill="#0645ad">parseable.com</text></a>
+<text x="718.58594" y="1632.6656" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1651.0641" font-family="sans-serif" font-size="16" fill="#828282">73</text>
+<text x="30.242188" y="1651.0641" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="77.38281" y="1651.0641" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=yashdotrv"><text x="98.72656" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">yashdotrv</text></a>
+<a href="https://news.ycombinator.com/item?id=49978171"><text x="172.53906" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">9</text></a>
+<a href="https://news.ycombinator.com/item?id=49978171"><text x="185.88281" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49978171"><text x="230.35156" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="261.4922" y="1651.0641" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49978171&amp;goto=news"><text x="270.09375" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="304.78906" y="1651.0641" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49978171"><text x="313.39063" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">18</text></a>
+<a href="https://news.ycombinator.com/item?id=49978171"><text x="335.6328" y="1651.0641" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<text x="8" y="1669.4625" font-family="sans-serif" font-size="16" fill="#828282">30.</text>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="8" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">Nature&apos;s</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="71.52344" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">capacity</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="134.66406" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">to</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="152.45313" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">&apos;bounce</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="212.44531" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">back&apos;</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="253.74219" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">when</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="296.4375" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">species</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="355.1328" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">are</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="382.70313" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">lost</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="412.04688" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">is</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="428.04688" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">overestimated:</text></a>
+<a href="https://phys.org/news/2026-10-nature-capacity-species-lost-vastly.html"><text x="537.4297" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">study</text></a>
+<text x="580.1172" y="1687.861" font-family="sans-serif" font-size="16" fill="#828282">(</text>
+<a href="https://news.ycombinator.com/from?site=phys.org"><text x="585.4453" y="1687.861" font-family="sans-serif" font-size="16" fill="#0645ad">phys.org</text></a>
+<text x="646.8125" y="1687.861" font-family="sans-serif" font-size="16" fill="#828282">)</text>
+<text x="8" y="1706.2594" font-family="sans-serif" font-size="16" fill="#828282">304</text>
+<text x="39.140625" y="1706.2594" font-family="sans-serif" font-size="16" fill="#828282">points</text>
+<text x="86.28125" y="1706.2594" font-family="sans-serif" font-size="16" fill="#828282">by</text>
+<a href="https://news.ycombinator.com/user?id=pseudolus"><text x="107.625" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">pseudolus</text></a>
+<a href="https://news.ycombinator.com/item?id=49976823"><text x="185.01563" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">11</text></a>
+<a href="https://news.ycombinator.com/item?id=49976823"><text x="206.07031" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">hours</text></a>
+<a href="https://news.ycombinator.com/item?id=49976823"><text x="250.53906" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">ago</text></a>
+<text x="281.6797" y="1706.2594" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/hide?id=49976823&amp;goto=news"><text x="290.28125" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">hide</text></a>
+<text x="324.97656" y="1706.2594" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/item?id=49976823"><text x="333.57813" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">150</text></a>
+<a href="https://news.ycombinator.com/item?id=49976823"><text x="364.71875" y="1706.2594" font-family="sans-serif" font-size="16" fill="#0645ad">comments</text></a>
+<a href="https://news.ycombinator.com/?p=2"><text x="8" y="1724.6578" font-family="sans-serif" font-size="16" fill="#0645ad">More</text></a>
+<image x="8" y="1728.6563" width="0" height="10" href="data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="/>
+<a href="https://www.ycombinator.com/apply/"><text x="8" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">Consider</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="76.47656" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">applying</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="140.52344" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">for</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="163.64063" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">YC&apos;s</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="201.36719" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">Winter</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="252.03906" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">2027</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="292.07813" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">batch!</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="340.10938" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">Applications</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="430.82813" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">are</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="458.39844" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">open</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="498.4375" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">till</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="517.9922" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">November</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="596.2422" y="1771.4547" font-family="sans-serif" font-size="16" fill="#0645ad">2.</text></a>
+<a href="https://news.ycombinator.com/newsguidelines.html"><text x="8" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Guidelines</text></a>
+<text x="88.046875" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/newsfaq.html"><text x="96.64844" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">FAQ</text></a>
+<text x="133.10156" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/lists"><text x="141.70313" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Lists</text></a>
+<text x="179.04688" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://github.com/HackerNews/API"><text x="187.64844" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">API</text></a>
+<text x="217.88281" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://news.ycombinator.com/security.html"><text x="226.48438" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Security</text></a>
+<text x="288.72656" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://www.ycombinator.com/legal/"><text x="297.32813" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Legal</text></a>
+<text x="340.92188" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="https://www.ycombinator.com/apply/"><text x="349.52344" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Apply</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="393.9922" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">to</text></a>
+<a href="https://www.ycombinator.com/apply/"><text x="411.78125" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">YC</text></a>
+<text x="438.45313" y="1808.2516" font-family="sans-serif" font-size="16" fill="#828282">|</text>
+<a href="mailto:hn@ycombinator.com"><text x="447.0547" y="1808.2516" font-family="sans-serif" font-size="16" fill="#0645ad">Contact</text></a>
+<text x="8" y="1845.0485" font-family="sans-serif" font-size="16" fill="#828282">Search:</text>
+</svg>

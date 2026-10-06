@@ -1,0 +1,534 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="3831.8555" viewBox="0 0 800 3831.8555">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="0" y="0" width="800" height="3831.8555" fill="#ffffff"/>
+<a href="https://rust-lang.org/"><image x="0" y="3" width="80" height="150" href="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjE0NCIgd2lkdGg9IjE0NCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJtNzEuMDUgMjMuNjhjLTI2LjA2IDAtNDcuMjcgMjEuMjItNDcuMjcgNDcuMjdzMjEuMjIgNDcuMjcgNDcuMjcgNDcuMjcgNDcuMjctMjEuMjIgNDcuMjctNDcuMjctMjEuMjItNDcuMjctNDcuMjctNDcuMjd6bS0uMDcgNC4yYTMuMSAzLjExIDAgMCAxIDMuMDIgMy4xMSAzLjExIDMuMTEgMCAwIDEgLTYuMjIgMCAzLjExIDMuMTEgMCAwIDEgMy4yLTMuMTF6bTcuMTIgNS4xMmEzOC4yNyAzOC4yNyAwIDAgMSAyNi4yIDE4LjY2bC0zLjY3IDguMjhjLS42MyAxLjQzLjAyIDMuMTEgMS40NCAzLjc1bDcuMDYgMy4xM2EzOC4yNyAzOC4yNyAwIDAgMSAuMDggNi42NGgtMy45M2MtLjM5IDAtLjU1LjI2LS41NS42NHYxLjhjMCA0LjI0LTIuMzkgNS4xNy00LjQ5IDUuNC0yIC4yMy00LjIxLS44NC00LjQ5LTIuMDYtMS4xOC02LjYzLTMuMTQtOC4wNC02LjI0LTEwLjQ5IDMuODUtMi40NCA3Ljg1LTYuMDUgNy44NS0xMC44NyAwLTUuMjEtMy41Ny04LjQ5LTYtMTAuMS0zLjQyLTIuMjUtNy4yLTIuNy04LjIyLTIuN2gtNDAuNmEzOC4yNyAzOC4yNyAwIDAgMSAyMS40MS0xMi4wOGw0Ljc5IDUuMDJjMS4wOCAxLjEzIDIuODcgMS4xOCA0IC4wOXptLTQ0LjIgMjMuMDJhMy4xMSAzLjExIDAgMCAxIDMuMDIgMy4xMSAzLjExIDMuMTEgMCAwIDEgLTYuMjIgMCAzLjExIDMuMTEgMCAwIDEgMy4yLTMuMTF6bTc0LjE1LjE0YTMuMTEgMy4xMSAwIDAgMSAzLjAyIDMuMTEgMy4xMSAzLjExIDAgMCAxIC02LjIyIDAgMy4xMSAzLjExIDAgMCAxIDMuMi0zLjExem0tNjguMjkuNWg1LjQydjI0LjQ0aC0xMC45NGEzOC4yNyAzOC4yNyAwIDAgMSAtMS4yNC0xNC42MWw2LjctMi45OGMxLjQzLS42NCAyLjA4LTIuMzEgMS40NC0zLjc0em0yMi42Mi4yNmgxMi45MWMuNjcgMCA0LjcxLjc3IDQuNzEgMy44IDAgMi41MS0zLjEgMy40MS01LjY1IDMuNDFoLTExLjk4em0wIDE3LjU2aDkuODljLjkgMCA0LjgzLjI2IDYuMDggNS4yOC4zOSAxLjU0IDEuMjYgNi41NiAxLjg1IDguMTcuNTkgMS44IDIuOTggNS40IDUuNTMgNS40aDE2LjE0YTM4LjI3IDM4LjI3IDAgMCAxIC0zLjU0IDQuMWwtNi41Ny0xLjQxYy0xLjUzLS4zMy0zLjA0LjY1LTMuMzcgMi4xOGwtMS41NiA3LjI4YTM4LjI3IDM4LjI3IDAgMCAxIC0zMS45MS0uMTVsLTEuNTYtNy4yOGMtLjMzLTEuNTMtMS44My0yLjUxLTMuMzYtMi4xOGwtNi40MyAxLjM4YTM4LjI3IDM4LjI3IDAgMCAxIC0zLjMyLTMuOTJoMzEuMjdjLjM1IDAgLjU5LS4wNi41OS0uMzl2LTExLjA2YzAtLjMyLS4yNC0uMzktLjU5LS4zOWgtOS4xNXptLTE0LjQzIDI1LjMzYTMuMTEgMy4xMSAwIDAgMSAzLjAyIDMuMTEgMy4xMSAzLjExIDAgMCAxIC02LjIyIDAgMy4xMSAzLjExIDAgMCAxIDMuMi0zLjExem00Ni4wNS4xNGEzLjExIDMuMTEgMCAwIDEgMy4wMiAzLjExIDMuMTEgMy4xMSAwIDAgMSAtNi4yMiAwIDMuMTEgMy4xMSAwIDAgMSAzLjItMy4xMXoiLz48cGF0aCBkPSJtMTE1LjY4IDcwLjk1YTQ0LjYzIDQ0LjYzIDAgMCAxIC00NC42MyA0NC42MyA0NC42MyA0NC42MyAwIDAgMSAtNDQuNjMtNDQuNjMgNDQuNjMgNDQuNjMgMCAwIDEgNDQuNjMtNDQuNjMgNDQuNjMgNDQuNjMgMCAwIDEgNDQuNjMgNDQuNjN6bS0uODQtNC4zMSA2Ljk2IDQuMzEtNi45NiA0LjMxIDUuOTggNS41OS03LjY2IDIuODcgNC43OCA2LjY1LTguMDkgMS4zMiAzLjQgNy40Ni04LjE5LS4yOSAxLjg4IDcuOTgtNy45OC0xLjg4LjI5IDguMTktNy40Ni0zLjQtMS4zMiA4LjA5LTYuNjUtNC43OC0yLjg3IDcuNjYtNS41OS01Ljk4LTQuMzEgNi45Ni00LjMxLTYuOTYtNS41OSA1Ljk4LTIuODctNy42Ni02LjY1IDQuNzgtMS4zMi04LjA5LTcuNDYgMy40LjI5LTguMTktNy45OCAxLjg4IDEuODgtNy45OC04LjE5LjI5IDMuNC03LjQ2LTguMDktMS4zMiA0Ljc4LTYuNjUtNy42Ni0yLjg3IDUuOTgtNS41OS02Ljk2LTQuMzEgNi45Ni00LjMxLTUuOTgtNS41OSA3LjY2LTIuODctNC43OC02LjY1IDguMDktMS4zMi0zLjQtNy40NiA4LjE5LjI5LTEuODgtNy45OCA3Ljk4IDEuODgtLjI5LTguMTkgNy40NiAzLjQgMS4zMi04LjA5IDYuNjUgNC43OCAyLjg3LTcuNjYgNS41OSA1Ljk4IDQuMzEtNi45NiA0LjMxIDYuOTYgNS41OS01Ljk4IDIuODcgNy42NiA2LjY1LTQuNzggMS4zMiA4LjA5IDcuNDYtMy40LS4yOSA4LjE5IDcuOTgtMS44OC0xLjg4IDcuOTggOC4xOS0uMjktMy40IDcuNDYgOC4wOSAxLjMyLTQuNzggNi42NSA3LjY2IDIuODd6IiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2Utd2lkdGg9IjMiLz48L3N2Zz4="/></a>
+<a href="https://rust-lang.org/tools/install"><text x="266.66666" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Install</text></a>
+<a href="https://rust-lang.org/learn"><text x="300" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Learn</text></a>
+<a href="https://play.rust-lang.org/"><text x="333.33334" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Playground</text></a>
+<a href="https://rust-lang.org/tools"><text x="366.6667" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Tools</text></a>
+<a href="https://rust-lang.org/governance"><text x="400.00003" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Governance</text></a>
+<a href="https://rust-lang.org/funding"><text x="433.33337" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Funding</text></a>
+<a href="https://rust-lang.org/community"><text x="466.66672" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Community</text></a>
+<a href="https://blog.rust-lang.org/"><text x="500.00006" y="22.4" font-family="sans-serif" font-size="16" fill="#2a3439">Blog</text></a>
+<text x="533.3333" y="14.4" font-family="sans-serif" font-size="16" fill="#181818">Language</text>
+<text x="608.9661" y="14.4" font-family="sans-serif" font-size="16" fill="#2a3439">English</text>
+<text x="665.888" y="14.4" font-family="sans-serif" font-size="16" fill="#2a3439">(en-US)</text>
+<text x="726.3411" y="14.4" font-family="sans-serif" font-size="16" fill="#2a3439">Español</text>
+<text x="533.3333" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">(es)</text>
+<text x="565.3333" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">Français</text>
+<text x="631.1302" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">(fr)</text>
+<text x="656.0052" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">Italiano</text>
+<text x="712.04425" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">(it)</text>
+<text x="735.1458" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">日本語</text>
+<text x="775.5911" y="32.79844" font-family="sans-serif" font-size="16" fill="#2a3439">(ja)</text>
+<text x="533.3333" y="51.196877" font-family="sans-serif" font-size="16" fill="#2a3439">Português</text>
+<text x="610.7161" y="51.196877" font-family="sans-serif" font-size="16" fill="#2a3439">(pt-BR)</text>
+<text x="666.7161" y="51.196877" font-family="sans-serif" font-size="16" fill="#2a3439">Русский</text>
+<text x="730.5286" y="51.196877" font-family="sans-serif" font-size="16" fill="#2a3439">(ru)</text>
+<text x="533.3333" y="69.595314" font-family="sans-serif" font-size="16" fill="#2a3439">Türkçe</text>
+<text x="586.67706" y="69.595314" font-family="sans-serif" font-size="16" fill="#2a3439">(tr)</text>
+<text x="611.55206" y="69.595314" font-family="sans-serif" font-size="16" fill="#2a3439">简体中文</text>
+<text x="663.9974" y="69.595314" font-family="sans-serif" font-size="16" fill="#2a3439">(zh-CN)</text>
+<text x="724.4349" y="69.595314" font-family="sans-serif" font-size="16" fill="#2a3439">正體中文</text>
+<text x="533.3333" y="87.99375" font-family="sans-serif" font-size="16" fill="#2a3439">(zh-TW)</text>
+<text x="266.66666" y="28.8" font-family="sans-serif" font-size="32" fill="#181818">Rust</text>
+<text x="266.66666" y="72.39687" font-family="sans-serif" font-size="24" fill="#181818">A</text>
+<text x="289.34244" y="72.39687" font-family="sans-serif" font-size="24" fill="#181818">language</text>
+<text x="266.66666" y="99.99453" font-family="sans-serif" font-size="24" fill="#181818">empowering</text>
+<text x="266.66666" y="127.592186" font-family="sans-serif" font-size="24" fill="#181818">everyone</text>
+<text x="372.0651" y="127.592186" font-family="sans-serif" font-size="24" fill="#181818">to</text>
+<text x="266.66666" y="155.18985" font-family="sans-serif" font-size="24" fill="#181818">build</text>
+<text x="266.66666" y="182.7875" font-family="sans-serif" font-size="24" fill="#181818">reliable</text>
+<text x="350.71353" y="182.7875" font-family="sans-serif" font-size="24" fill="#181818">and</text>
+<text x="266.66666" y="210.38516" font-family="sans-serif" font-size="24" fill="#181818">efficient</text>
+<text x="266.66666" y="237.98282" font-family="sans-serif" font-size="24" fill="#181818">software.</text>
+<a href="https://rust-lang.org/learn/get-started"><text x="400" y="14.4" font-family="sans-serif" font-size="16" fill="#000000">Get</text></a>
+<a href="https://rust-lang.org/learn/get-started"><text x="430.23438" y="14.4" font-family="sans-serif" font-size="16" fill="#000000">Started</text></a>
+<a href="https://blog.rust-lang.org/releases/latest"><text x="400" y="32.79844" font-family="sans-serif" font-size="16" fill="#4299bf">Version</text></a>
+<a href="https://blog.rust-lang.org/releases/latest"><text x="457.8125" y="32.79844" font-family="sans-serif" font-size="16" fill="#4299bf">1.99.0</text></a>
+<rect x="266.66666" y="243.98047" width="266.66666" height="933.96094" fill="#0b7261"/>
+<text x="266.66666" y="295.58047" font-family="sans-serif" font-size="24" fill="#ffffff">Why</text>
+<text x="321.33463" y="295.58047" font-family="sans-serif" font-size="24" fill="#ffffff">Rust?</text>
+<text x="266.66666" y="353.17813" font-family="sans-serif" font-size="24" fill="#ffffff">Performance</text>
+<text x="266.66666" y="381.57578" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="304.0104" y="381.57578" font-family="sans-serif" font-size="16" fill="#ffffff">is</text>
+<text x="320.0104" y="381.57578" font-family="sans-serif" font-size="16" fill="#ffffff">blazingly</text>
+<text x="386.71353" y="381.57578" font-family="sans-serif" font-size="16" fill="#ffffff">fast</text>
+<text x="416.9479" y="381.57578" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="266.66666" y="399.9742" font-family="sans-serif" font-size="16" fill="#ffffff">memory-efficient:</text>
+<text x="393.51822" y="399.9742" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="426.41666" y="399.9742" font-family="sans-serif" font-size="16" fill="#ffffff">no</text>
+<text x="448.65884" y="399.9742" font-family="sans-serif" font-size="16" fill="#ffffff">runtime</text>
+<text x="506.45572" y="399.9742" font-family="sans-serif" font-size="16" fill="#ffffff">or</text>
+<text x="266.66666" y="418.37265" font-family="sans-serif" font-size="16" fill="#ffffff">garbage</text>
+<text x="329.83072" y="418.37265" font-family="sans-serif" font-size="16" fill="#ffffff">collector,</text>
+<text x="397.41666" y="418.37265" font-family="sans-serif" font-size="16" fill="#ffffff">it</text>
+<text x="409.86197" y="418.37265" font-family="sans-serif" font-size="16" fill="#ffffff">can</text>
+<text x="440.10416" y="418.37265" font-family="sans-serif" font-size="16" fill="#ffffff">power</text>
+<text x="266.66666" y="436.7711" font-family="sans-serif" font-size="16" fill="#ffffff">performance-critical</text>
+<text x="411.59634" y="436.7711" font-family="sans-serif" font-size="16" fill="#ffffff">services,</text>
+<text x="479.16666" y="436.7711" font-family="sans-serif" font-size="16" fill="#ffffff">run</text>
+<text x="506.73697" y="436.7711" font-family="sans-serif" font-size="16" fill="#ffffff">on</text>
+<text x="266.66666" y="455.16953" font-family="sans-serif" font-size="16" fill="#ffffff">embedded</text>
+<text x="346.72916" y="455.16953" font-family="sans-serif" font-size="16" fill="#ffffff">devices,</text>
+<text x="409.86978" y="455.16953" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="441.0104" y="455.16953" font-family="sans-serif" font-size="16" fill="#ffffff">easily</text>
+<text x="266.66666" y="473.56796" font-family="sans-serif" font-size="16" fill="#ffffff">integrate</text>
+<text x="333.3776" y="473.56796" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="366.27603" y="473.56796" font-family="sans-serif" font-size="16" fill="#ffffff">other</text>
+<text x="407.1901" y="473.56796" font-family="sans-serif" font-size="16" fill="#ffffff">languages.</text>
+<text x="266.66666" y="619.1664" font-family="sans-serif" font-size="24" fill="#ffffff">Reliability</text>
+<text x="266.66666" y="647.5641" font-family="sans-serif" font-size="16" fill="#ffffff">Rust’s</text>
+<text x="315.27603" y="647.5641" font-family="sans-serif" font-size="16" fill="#ffffff">rich</text>
+<text x="345.5026" y="647.5641" font-family="sans-serif" font-size="16" fill="#ffffff">type</text>
+<text x="380.1901" y="647.5641" font-family="sans-serif" font-size="16" fill="#ffffff">system</text>
+<text x="435.30728" y="647.5641" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="266.66666" y="665.9625" font-family="sans-serif" font-size="16" fill="#ffffff">ownership</text>
+<text x="344.04166" y="665.9625" font-family="sans-serif" font-size="16" fill="#ffffff">model</text>
+<text x="392.0651" y="665.9625" font-family="sans-serif" font-size="16" fill="#ffffff">guarantee</text>
+<text x="266.66666" y="684.36096" font-family="sans-serif" font-size="16" fill="#ffffff">memory-safety</text>
+<text x="376.90884" y="684.36096" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="408.04947" y="684.36096" font-family="sans-serif" font-size="16" fill="#ffffff">thread-safety</text>
+<text x="505.8776" y="684.36096" font-family="sans-serif" font-size="16" fill="#ffffff">—</text>
+<text x="266.66666" y="702.7594" font-family="sans-serif" font-size="16" fill="#ffffff">enabling</text>
+<text x="331.61197" y="702.7594" font-family="sans-serif" font-size="16" fill="#ffffff">you</text>
+<text x="361.85416" y="702.7594" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="379.64322" y="702.7594" font-family="sans-serif" font-size="16" fill="#ffffff">eliminate</text>
+<text x="448.11978" y="702.7594" font-family="sans-serif" font-size="16" fill="#ffffff">many</text>
+<text x="266.66666" y="721.15784" font-family="sans-serif" font-size="16" fill="#ffffff">classes</text>
+<text x="324.46353" y="721.15784" font-family="sans-serif" font-size="16" fill="#ffffff">of</text>
+<text x="342.2526" y="721.15784" font-family="sans-serif" font-size="16" fill="#ffffff">bugs</text>
+<text x="381.39322" y="721.15784" font-family="sans-serif" font-size="16" fill="#ffffff">at</text>
+<text x="399.18228" y="721.15784" font-family="sans-serif" font-size="16" fill="#ffffff">compile-time.</text>
+<text x="266.66666" y="866.7562" font-family="sans-serif" font-size="24" fill="#ffffff">Productivity</text>
+<text x="266.66666" y="895.15393" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="304.0104" y="895.15393" font-family="sans-serif" font-size="16" fill="#ffffff">has</text>
+<text x="334.2526" y="895.15393" font-family="sans-serif" font-size="16" fill="#ffffff">great</text>
+<text x="375.16666" y="895.15393" font-family="sans-serif" font-size="16" fill="#ffffff">documentation,</text>
+<text x="489.01822" y="895.15393" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="266.66666" y="913.55237" font-family="sans-serif" font-size="16" fill="#ffffff">friendly</text>
+<text x="322.6901" y="913.55237" font-family="sans-serif" font-size="16" fill="#ffffff">compiler</text>
+<text x="387.59634" y="913.55237" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="420.49478" y="913.55237" font-family="sans-serif" font-size="16" fill="#ffffff">useful</text>
+<text x="467.6354" y="913.55237" font-family="sans-serif" font-size="16" fill="#ffffff">error</text>
+<text x="266.66666" y="931.9508" font-family="sans-serif" font-size="16" fill="#ffffff">messages,</text>
+<text x="348.47916" y="931.9508" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="379.61978" y="931.9508" font-family="sans-serif" font-size="16" fill="#ffffff">top-notch</text>
+<text x="450.77603" y="931.9508" font-family="sans-serif" font-size="16" fill="#ffffff">tooling</text>
+<text x="502.36978" y="931.9508" font-family="sans-serif" font-size="16" fill="#ffffff">—</text>
+<text x="266.66666" y="950.34924" font-family="sans-serif" font-size="16" fill="#ffffff">an</text>
+<text x="288.90884" y="950.34924" font-family="sans-serif" font-size="16" fill="#ffffff">integrated</text>
+<text x="364.51822" y="950.34924" font-family="sans-serif" font-size="16" fill="#ffffff">package</text>
+<text x="429.45572" y="950.34924" font-family="sans-serif" font-size="16" fill="#ffffff">manager</text>
+<text x="497.04947" y="950.34924" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="266.66666" y="968.7477" font-family="sans-serif" font-size="16" fill="#ffffff">build</text>
+<text x="304.91666" y="968.7477" font-family="sans-serif" font-size="16" fill="#ffffff">tool,</text>
+<text x="339.60416" y="968.7477" font-family="sans-serif" font-size="16" fill="#ffffff">smart</text>
+<text x="384.04947" y="968.7477" font-family="sans-serif" font-size="16" fill="#ffffff">multi-editor</text>
+<text x="467.6276" y="968.7477" font-family="sans-serif" font-size="16" fill="#ffffff">support</text>
+<text x="266.66666" y="987.1461" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="299.5651" y="987.1461" font-family="sans-serif" font-size="16" fill="#ffffff">auto-completion</text>
+<text x="417.85416" y="987.1461" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="448.99478" y="987.1461" font-family="sans-serif" font-size="16" fill="#ffffff">type</text>
+<text x="266.66666" y="1005.54456" font-family="sans-serif" font-size="16" fill="#ffffff">inspections,</text>
+<text x="355.60416" y="1005.54456" font-family="sans-serif" font-size="16" fill="#ffffff">an</text>
+<text x="377.84634" y="1005.54456" font-family="sans-serif" font-size="16" fill="#ffffff">auto-formatter,</text>
+<text x="486.33853" y="1005.54456" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="266.66666" y="1023.943" font-family="sans-serif" font-size="16" fill="#ffffff">more.</text>
+<rect x="266.66666" y="1177.9414" width="266.66666" height="1247.1172" fill="#2e2459"/>
+<text x="266.66666" y="1229.5414" font-family="sans-serif" font-size="24" fill="#ffffff">Build</text>
+<text x="326.7018" y="1229.5414" font-family="sans-serif" font-size="24" fill="#ffffff">it</text>
+<text x="345.36978" y="1229.5414" font-family="sans-serif" font-size="24" fill="#ffffff">in</text>
+<text x="370.71744" y="1229.5414" font-family="sans-serif" font-size="24" fill="#ffffff">Rust</text>
+<text x="266.66666" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">In</text>
+<text x="284.45572" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">2018,</text>
+<text x="328.9401" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="355.6276" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="392.97134" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">community</text>
+<text x="474.76822" y="1249.9391" font-family="sans-serif" font-size="16" fill="#ffffff">decided</text>
+<text x="266.66666" y="1268.3375" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="284.45572" y="1268.3375" font-family="sans-serif" font-size="16" fill="#ffffff">improve</text>
+<text x="345.80728" y="1268.3375" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="372.49478" y="1268.3375" font-family="sans-serif" font-size="16" fill="#ffffff">programming</text>
+<text x="266.66666" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">experience</text>
+<text x="349.3854" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">for</text>
+<text x="372.5026" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="385.84634" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">few</text>
+<text x="415.1901" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">distinct</text>
+<text x="469.43228" y="1286.736" font-family="sans-serif" font-size="16" fill="#ffffff">domains</text>
+<text x="266.66666" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">(see</text>
+<a href="https://blog.rust-lang.org/2018/03/12/roadmap.html"><text x="302.23697" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">the</text></a>
+<a href="https://blog.rust-lang.org/2018/03/12/roadmap.html"><text x="328.92447" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">2018</text></a>
+<a href="https://blog.rust-lang.org/2018/03/12/roadmap.html"><text x="368.96353" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">roadmap</text></a>
+<text x="432.11197" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">).</text>
+<text x="446.33072" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">For</text>
+<text x="474.77603" y="1305.1344" font-family="sans-serif" font-size="16" fill="#ffffff">these,</text>
+<text x="266.66666" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">you</text>
+<text x="296.90884" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">can</text>
+<text x="327.15103" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">find</text>
+<text x="357.39322" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">many</text>
+<text x="400.96353" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">high-quality</text>
+<text x="487.23697" y="1323.5328" font-family="sans-serif" font-size="16" fill="#ffffff">crates</text>
+<text x="266.66666" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="297.80728" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">some</text>
+<text x="341.3776" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">awesome</text>
+<text x="414.29947" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">guides</text>
+<text x="465.89322" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">on</text>
+<text x="488.1354" y="1341.9313" font-family="sans-serif" font-size="16" fill="#ffffff">how</text>
+<text x="266.66666" y="1360.3297" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="284.45572" y="1360.3297" font-family="sans-serif" font-size="16" fill="#ffffff">get</text>
+<text x="311.14322" y="1360.3297" font-family="sans-serif" font-size="16" fill="#ffffff">started.</text>
+<image x="266.66666" y="1394.3281" width="300" height="150" href="data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI2ZmZiI+PHBhdGggZD0ibTQ1OC42NjcgMGgtNDA1LjMzNGMtMjkuNDQuMDM1LTUzLjI5OCAyMy44OTMtNTMuMzMzIDUzLjMzM3Y0MDUuMzMzYy4wMzUgMjkuNDQxIDIzLjg5MyA1My4yOTkgNTMuMzMzIDUzLjMzNGg0MDUuMzMzYzI5LjQ0MS0uMDM1IDUzLjI5OC0yMy44OTMgNTMuMzMzLTUzLjMzM3YtNDA1LjMzNGMtLjAzNC0yOS40NC0yMy44OTItNTMuMjk4LTUzLjMzMi01My4zMzN6bTMyIDQ1OC42NjdjMCAxNy42NzMtMTQuMzI3IDMyLTMyIDMyaC00MDUuMzM0Yy0xNy42NzMgMC0zMi0xNC4zMjctMzItMzJ2LTQwNS4zMzRjMC0xNy42NzMgMTQuMzI3LTMyIDMyLTMyaDQwNS4zMzNjMTcuNjczIDAgMzIgMTQuMzI3IDMyIDMydjQwNS4zMzR6Ii8+PHBhdGggZD0ibTQyLjY2NyA4NS4zMzNoNDI2LjY2N3YyMS4zMzNoLTQyNi42Njd6Ii8+PHBhdGggZD0ibTUzLjMzMyA0Mi42NjdoMjEuMzMzdjIxLjMzM2gtMjEuMzMzeiIvPjxwYXRoIGQ9Im05NiA0Mi42NjdoMjEuMzMzdjIxLjMzM2gtMjEuMzMzeiIvPjxwYXRoIGQ9Im00MzcuMzMzIDQyLjY2N2gyMS4zMzN2MjEuMzMzaC0yMS4zMzN6Ii8+PHBhdGggZD0ibTQ0OCAxMjhoLTMwOS4zMzN2MjEuMzMzaDMwOS4zMzN2Mjk4LjY2N2gtMzg0di0xOTJoLTIxLjMzM3YxOTJjMCAxMS43ODIgOS41NTEgMjEuMzMzIDIxLjMzMyAyMS4zMzNoMzg0YzExLjc4MiAwIDIxLjMzMy05LjU1MSAyMS4zMzMtMjEuMzMzdi0yOTguNjY3YzAtMTEuNzgyLTkuNTUxLTIxLjMzMy0yMS4zMzMtMjEuMzMzeiIvPjxwYXRoIGQ9Im0xMTQuMjA4IDE3My43OTItNDIuNjY3LTQyLjY2Ny0xNS4wODMgMTUuMDgzIDM1LjEyNSAzNS4xMjUtMzUuMTI1IDM1LjEyNSAxNS4wODMgMTUuMDgzIDQyLjY2Ny00Mi42NjdjNC4xNjQtNC4xNjUgNC4xNjQtMTAuOTE3IDAtMTUuMDgyeiIvPjxwYXRoIGQ9Im0xMjggMjAyLjY2N2g2NHYyMS4zMzNoLTY0eiIvPjwvZz48L3N2Zz4="/>
+<text x="400" y="1415.9281" font-family="sans-serif" font-size="24" fill="#ffffff">Command</text>
+<text x="400" y="1443.5258" font-family="sans-serif" font-size="24" fill="#ffffff">Line</text>
+<text x="400" y="1471.9235" font-family="sans-serif" font-size="16" fill="#ffffff">Whip</text>
+<text x="440.89844" y="1471.9235" font-family="sans-serif" font-size="16" fill="#ffffff">up</text>
+<text x="463.14063" y="1471.9235" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="476.48438" y="1471.9235" font-family="sans-serif" font-size="16" fill="#ffffff">CLI</text>
+<text x="505.82813" y="1471.9235" font-family="sans-serif" font-size="16" fill="#ffffff">tool</text>
+<text x="400" y="1490.3219" font-family="sans-serif" font-size="16" fill="#ffffff">quickly</text>
+<text x="453.35156" y="1490.3219" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="486.25" y="1490.3219" font-family="sans-serif" font-size="16" fill="#ffffff">Rust’s</text>
+<text x="400" y="1508.7203" font-family="sans-serif" font-size="16" fill="#ffffff">robust</text>
+<text x="448.91406" y="1508.7203" font-family="sans-serif" font-size="16" fill="#ffffff">ecosystem.</text>
+<text x="400" y="1527.1188" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="437.34375" y="1527.1188" font-family="sans-serif" font-size="16" fill="#ffffff">helps</text>
+<text x="480.03906" y="1527.1188" font-family="sans-serif" font-size="16" fill="#ffffff">you</text>
+<text x="400" y="1545.5172" font-family="sans-serif" font-size="16" fill="#ffffff">maintain</text>
+<text x="464.92188" y="1545.5172" font-family="sans-serif" font-size="16" fill="#ffffff">your</text>
+<text x="500.4922" y="1545.5172" font-family="sans-serif" font-size="16" fill="#ffffff">app</text>
+<text x="400" y="1563.9156" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="432.89844" y="1563.9156" font-family="sans-serif" font-size="16" fill="#ffffff">confidence</text>
+<text x="400" y="1582.3141" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="431.14063" y="1582.3141" font-family="sans-serif" font-size="16" fill="#ffffff">distribute</text>
+<text x="500.5078" y="1582.3141" font-family="sans-serif" font-size="16" fill="#ffffff">it</text>
+<text x="400" y="1600.7125" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="432.89844" y="1600.7125" font-family="sans-serif" font-size="16" fill="#ffffff">ease.</text>
+<a href="https://rust-lang.org/what/cli"><text x="400" y="1646.231" font-family="sans-serif" font-size="12.8" fill="#ffffff">Building</text></a>
+<a href="https://rust-lang.org/what/cli"><text x="449.1" y="1646.231" font-family="sans-serif" font-size="12.8" fill="#ffffff">Tools</text></a>
+<image x="266.66666" y="1649.4297" width="300" height="150" href="data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA0OTYgNDk2IiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDQ5NiA0OTYiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTQ0NS45MDQgMTg0Yy0zLjQxNi0xMC42LTcuNjcyLTIwLjg4LTEyLjY5Ni0zMC43MDRsMzUuNDA4LTM1LjQwOC05MC41MDQtOTAuNTA0LTM1LjQwOCAzNS40MDhjLTkuODI0LTUuMDI0LTIwLjEwNC05LjI4LTMwLjcwNC0xMi42OTZ2LTUwLjA5NmgtMTI4djUwLjA5NmMtMTAuNiAzLjQxNi0yMC44OCA3LjY3Mi0zMC43MDQgMTIuNjk2bC0zNS40MDgtMzUuNDA4LTkwLjUwNCA5MC41MDQgMzUuNDA4IDM1LjQwOGMtNS4wMjQgOS44MjQtOS4yOCAyMC4xMDQtMTIuNjk2IDMwLjcwNGgtNTAuMDk2djEyOGg1MC4wOTZjMy40MTYgMTAuNiA3LjY3MiAyMC44OCAxMi42OTYgMzAuNzA0bC0zNS40MDggMzUuNDA4IDkwLjUwNCA5MC41MDQgMzUuNDA4LTM1LjQwOGM5LjgyNCA1LjAyNCAyMC4xMDQgOS4yOCAzMC43MDQgMTIuNjk2djUwLjA5NmgxMjh2LTUwLjA5NmMxMC42LTMuNDE2IDIwLjg4LTcuNjcyIDMwLjcwNC0xMi42OTZsMzUuNDA4IDM1LjQwOCA5MC41MDQtOTAuNTA0LTM1LjQwOC0zNS40MDhjNS4wMjQtOS44MjQgOS4yOC0yMC4xMDQgMTIuNjk2LTMwLjcwNGg1MC4wOTZ2LTEyOHptLTQyOS45MDQgMTZoNDYuMDA4bDEuNjcyLTUuNzZjMy45Mi0xMy40NjQgOS4yODgtMjYuNDQgMTUuOTUyLTM4LjU2OGwyLjg4OC01LjI2NC0zMi41Mi0zMi41MiA2Ny44OC02Ny44OCAzMi41MiAzMi41MiA1LjI2NC0yLjg4OGMxMi4xMjgtNi42NjQgMjUuMTA0LTEyLjAzMiAzOC41NjgtMTUuOTUybDUuNzY4LTEuNjh2LTQ2LjAwOGg0MGwtLjAxNiAxMDMuNTYgMTEuMjE2LTQuODk2YzQuMDQtMS43NjggOC4zNDQtMi42NjQgMTIuOC0yLjY2NCAxNy42NDggMCAzMiAxNC4zNTIgMzIgMzJzLTE0LjM1MiAzMi0zMiAzMmMtNC40NTYgMC04Ljc2OC0uODk2LTEyLjgwOC0yLjY2NGwtMTEuMjY0LTQuOTI4LjA0IDcxLjU2OC00OC42MzIuMDI0Yy40NC0yLjYyNC42NjQtNS4yOTYuNjY0LTggMC0yNi40NzItMjEuNTI4LTQ4LTQ4LTQ4cy00OCAyMS41MjgtNDggNDhjMCAyLjcwNC4yMjQgNS4zNzYuNjY0IDhoLTgwLjY2NHptMjI0IDI4MGgtNDB2LTQ2LjAwOGwtNS43Ni0xLjY3MmMtMTMuNDY0LTMuOTItMjYuNDQtOS4yODgtMzguNTY4LTE1Ljk1MmwtNS4yNjQtMi44ODgtMzIuNTIgMzIuNTItNjcuODgtNjcuODggMzIuNTItMzIuNTItMi44ODgtNS4yNjRjLTYuNjY0LTEyLjEyOC0xMi4wMzItMjUuMTA0LTE1Ljk1Mi0zOC41NjhsLTEuNjgtNS43NjhoLTQ2LjAwOHYtNDBsMTAzLjU2LjAxNi00Ljg5Ni0xMS4yMTZjLTEuNzY4LTQuMDQtMi42NjQtOC4zNDQtMi42NjQtMTIuOCAwLTE3LjY0OCAxNC4zNTItMzIgMzItMzJzMzIgMTQuMzUyIDMyIDMyYzAgNC40NTYtLjg5NiA4Ljc2OC0yLjY2NCAxMi44MDhsLTQuOTI4IDExLjI2NCA3MS41NjgtLjA0LjAyNCA0OC42MzJjLTIuNjI0LS40NC01LjI5Ni0uNjY0LTgtLjY2NC0yNi40NzIgMC00OCAyMS41MjgtNDggNDhzMjEuNTI4IDQ4IDQ4IDQ4YzIuNzA0IDAgNS4zNzYtLjIyNCA4LS42NjR6bTI0MC0xODRoLTQ2LjAwOGwtMS42NzIgNS43NmMtMy45MiAxMy40NjQtOS4yODggMjYuNDQtMTUuOTUyIDM4LjU2OGwtMi44ODggNS4yNjQgMzIuNTIgMzIuNTItNjcuODggNjcuODgtMzIuNTItMzIuNTItNS4yNjQgMi44ODhjLTEyLjEyOCA2LjY2NC0yNS4xMDQgMTIuMDMyLTM4LjU2OCAxNS45NTJsLTUuNzY4IDEuNjh2NDYuMDA4aC00MGwuMDE2LTEwMy41Ni0xMS4yMTYgNC44OTZjLTQuMDQgMS43NjgtOC4zNDQgMi42NjQtMTIuOCAyLjY2NC0xNy42NDggMC0zMi0xNC4zNTItMzItMzJzMTQuMzUyLTMyIDMyLTMyYzQuNDU2IDAgOC43NjguODk2IDEyLjgwOCAyLjY2NGwxMS4yNjQgNC45MjgtLjA0LTcxLjU2OCA0OC42MzItLjAyNGMtLjQ0IDIuNjI0LS42NjQgNS4yOTYtLjY2NCA4IDAgMjYuNDcyIDIxLjUyOCA0OCA0OCA0OHM0OC0yMS41MjggNDgtNDhjMC0yLjcwNC0uMjI0LTUuMzc2LS42NjQtOGg4MC42NjR6bTAtNTYtMTAzLjU2LS4wMTYgNC44OTYgMTEuMjE2YzEuNzY4IDQuMDQgMi42NjQgOC4zNDQgMi42NjQgMTIuOCAwIDE3LjY0OC0xNC4zNTIgMzItMzIgMzJzLTMyLTE0LjM1Mi0zMi0zMmMwLTQuNDU2Ljg5Ni04Ljc2OCAyLjY2NC0xMi44MDhsNC45MjgtMTEuMjY0LTcxLjU2OC4wNC0uMDI0LTQ4LjYzMmMyLjYyNC40NCA1LjI5Ni42NjQgOCAuNjY0IDI2LjQ3MiAwIDQ4LTIxLjUyOCA0OC00OHMtMjEuNTI4LTQ4LTQ4LTQ4Yy0yLjcwNCAwLTUuMzc2LjIyNC04IC42NjR2LTgwLjY2NGg0MHY0Ni4wMDhsNS43NiAxLjY3MmMxMy40NjQgMy45MiAyNi40NCA5LjI4OCAzOC41NjggMTUuOTUybDUuMjY0IDIuODg4IDMyLjUyLTMyLjUyIDY3Ljg4IDY3Ljg4LTMyLjUyIDMyLjUyIDIuODg4IDUuMjY0YzYuNjY0IDEyLjEyOCAxMi4wMzIgMjUuMTA0IDE1Ljk1MiAzOC41NjhsMS42OCA1Ljc2OGg0Ni4wMDh6IiBmaWxsPSIjZmZmIi8+PC9zdmc+"/>
+<text x="400" y="1671.0297" font-family="sans-serif" font-size="24" fill="#ffffff">WebAssembly</text>
+<text x="400" y="1699.4274" font-family="sans-serif" font-size="16" fill="#ffffff">Use</text>
+<text x="432.89844" y="1699.4274" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="470.2422" y="1699.4274" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="400" y="1717.8258" font-family="sans-serif" font-size="16" fill="#ffffff">supercharge</text>
+<text x="493.39063" y="1717.8258" font-family="sans-serif" font-size="16" fill="#ffffff">your</text>
+<text x="400" y="1736.2242" font-family="sans-serif" font-size="16" fill="#ffffff">JavaScript,</text>
+<text x="483.58594" y="1736.2242" font-family="sans-serif" font-size="16" fill="#ffffff">one</text>
+<text x="400" y="1754.6227" font-family="sans-serif" font-size="16" fill="#ffffff">module</text>
+<text x="456.92188" y="1754.6227" font-family="sans-serif" font-size="16" fill="#ffffff">at</text>
+<text x="474.71094" y="1754.6227" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="488.0547" y="1754.6227" font-family="sans-serif" font-size="16" fill="#ffffff">time.</text>
+<text x="400" y="1773.0211" font-family="sans-serif" font-size="16" fill="#ffffff">Publish</text>
+<text x="456.92188" y="1773.0211" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="474.71094" y="1773.0211" font-family="sans-serif" font-size="16" fill="#ffffff">npm,</text>
+<text x="400" y="1791.4196" font-family="sans-serif" font-size="16" fill="#ffffff">bundle</text>
+<text x="452.4922" y="1791.4196" font-family="sans-serif" font-size="16" fill="#ffffff">with</text>
+<text x="400" y="1809.818" font-family="sans-serif" font-size="16" fill="#ffffff">webpack,</text>
+<text x="472.03906" y="1809.818" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="400" y="1828.2164" font-family="sans-serif" font-size="16" fill="#ffffff">you’re</text>
+<text x="448.02344" y="1828.2164" font-family="sans-serif" font-size="16" fill="#ffffff">off</text>
+<text x="469.96875" y="1828.2164" font-family="sans-serif" font-size="16" fill="#ffffff">to</text>
+<text x="487.7578" y="1828.2164" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="400" y="1846.6149" font-family="sans-serif" font-size="16" fill="#ffffff">races.</text>
+<a href="https://rust-lang.org/what/wasm"><text x="400" y="1892.1333" font-family="sans-serif" font-size="12.8" fill="#ffffff">Writing</text></a>
+<a href="https://rust-lang.org/what/wasm"><text x="443.15" y="1892.1333" font-family="sans-serif" font-size="12.8" fill="#ffffff">Web</text></a>
+<a href="https://rust-lang.org/what/wasm"><text x="472.79373" y="1892.1333" font-family="sans-serif" font-size="12.8" fill="#ffffff">Apps</text></a>
+<image x="266.66666" y="1895.332" width="300" height="150" href="data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA0NzAgNDcwIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDQ3MCA0NzAiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI2ZmZiI+PHBhdGggZD0ibTIwMi41IDQwNS44ODN2LTEyMC4yMDhjMC00LjE0My0zLjM1Ny03LjUtNy41LTcuNWgtNTBjLTQuMTQzIDAtNy41IDMuMzU3LTcuNSA3LjVzMy4zNTcgNy41IDcuNSA3LjVoNDIuNXYxMTIuNzA4Yy0xNC4zMTUgMy4zOTYtMjUgMTYuMjc4LTI1IDMxLjYxNyAwIDE3LjkyMSAxNC41NzkgMzIuNSAzMi41IDMyLjVzMzIuNS0xNC41NzkgMzIuNS0zMi41YzAtMTUuMzM5LTEwLjY4NS0yOC4yMjEtMjUtMzEuNjE3em0tNy41IDQ5LjExN2MtOS42NDkgMC0xNy41LTcuODUxLTE3LjUtMTcuNXM3Ljg1MS0xNy41IDE3LjUtMTcuNSAxNy41IDcuODUxIDE3LjUgMTcuNS03Ljg1MSAxNy41LTE3LjUgMTcuNXoiLz48cGF0aCBkPSJtMjgyLjUgNDA1Ljg4M3YtMTIwLjIwOGMwLTQuMTQzLTMuMzU3LTcuNS03LjUtNy41aC00OS45OTljLTQuMTQzIDAtNy41IDMuMzU3LTcuNSA3LjVzMy4zNTcgNy41IDcuNSA3LjVoNDIuNDk5djExMi43MDhjLTE0LjMxNSAzLjM5Ni0yNSAxNi4yNzgtMjUgMzEuNjE3IDAgMTcuOTIxIDE0LjU3OSAzMi41IDMyLjUgMzIuNXMzMi41LTE0LjU3OSAzMi41LTMyLjVjMC0xNS4zMzktMTAuNjg1LTI4LjIyMS0yNS0zMS42MTd6bS03LjUgNDkuMTE3Yy05LjY0OSAwLTE3LjUtNy44NTEtMTcuNS0xNy41czcuODUxLTE3LjUgMTcuNS0xNy41IDE3LjUgNy44NTEgMTcuNSAxNy41LTcuODUxIDE3LjUtMTcuNSAxNy41eiIvPjxwYXRoIGQ9Im00MTAgMzU1Yy0xNS4zMzkgMC0yOC4yMjEgMTAuNjg1LTMxLjYxNyAyNWgtMTUuODgzdi05NC4zMjVjMC00LjE0My0zLjM1Ny03LjUtNy41LTcuNWgtNTBjLTQuMTQzIDAtNy41IDMuMzU3LTcuNSA3LjVzMy4zNTcgNy41IDcuNSA3LjVoNDIuNXY5NC4zMjVjMCA0LjE0MyAzLjM1NyA3LjUgNy41IDcuNWgyMy4zODNjMy4zOTYgMTQuMzE1IDE2LjI3OCAyNSAzMS42MTcgMjUgMTcuOTIxIDAgMzIuNS0xNC41NzkgMzIuNS0zMi41cy0xNC41NzktMzIuNS0zMi41LTMyLjV6bTAgNTBjLTkuNjQ5IDAtMTcuNS03Ljg1MS0xNy41LTE3LjVzNy44NTEtMTcuNSAxNy41LTE3LjUgMTcuNSA3Ljg1MSAxNy41IDE3LjUtNy44NTEgMTcuNS0xNy41IDE3LjV6Ii8+PHBhdGggZD0ibTQ1Mi4xNDEgMTYxLjU1N2MtMTAuMTA4LTEyLjU1LTIzLjgzNy0yMS44NDgtMzkuMTEzLTI2LjU5Mi0xLjcyLTM1LjUwMy0xNi40NS02OC42MjgtNDEuODQtOTMuODA2LTI2Ljc2Ni0yNi41NDItNjIuMjY2LTQxLjE1OS05OS45NjItNDEuMTU5LTQ5LjUwMSAwLTk1LjMwNiAyNS44MTItMTIxLjA2NiA2Ny43ODctNi4yNjQtMS45NzUtMTIuNzc1LTIuOTcyLTE5LjQzNC0yLjk3Mi0zMC42MzcgMC01Ni45ODMgMjEuNjI2LTYzLjMzNiA1MS4xMDUtMzkuMzQ2IDEwLjIwNy02Ny4zOSA0Ni4wNjgtNjcuMzkgODcuMTgxIDAgNDkuNjY3IDQwLjQwNiA5MC4wNzQgOTAuMDczIDkwLjA3NGgxNy40Mjd2ODYuODI1aC0xNS44ODNjLTMuMzk2LTE0LjMxNS0xNi4yNzgtMjUtMzEuNjE3LTI1LTE3LjkyMSAwLTMyLjUgMTQuNTc5LTMyLjUgMzIuNXMxNC41NzkgMzIuNSAzMi41IDMyLjVjMTUuMzM5IDAgMjguMjIxLTEwLjY4NSAzMS42MTctMjVoMjMuMzgzYzQuMTQzIDAgNy41LTMuMzU3IDcuNS03LjV2LTEwMS44MjVjMC00LjE0My0zLjM1Ny03LjUtNy41LTcuNWgtMjQuOTI3Yy00MS4zOTUgMC03NS4wNzMtMzMuNjc4LTc1LjA3My03NS4wNzQgMC0zNS43MjMgMjUuMzk1LTY2LjY4OCA2MC4zODMtNzMuNjI3IDMuMTU1LS42MjUgNS41NjEtMy4xOTMgNS45NzgtNi4zODMgMy4yMjktMjQuNjcxIDI0LjQ1MS00My4yNzUgNDkuMzY1LTQzLjI3NSA2Ljg1NCAwIDEzLjUwMSAxLjM3MyAxOS43NTYgNC4wOCAzLjU0NiAxLjUzNSA3LjY3NS4xMjUgOS41NDMtMy4yNTQgMjIuMzg0LTQwLjQ5IDY0Ljk5NC02NS42NDIgMTExLjIwMS02NS42NDIgNjkuMzg0IDAgMTI2LjM0IDU2LjQzOCAxMjYuOTY2IDEyNS44MTIuMDMxIDMuNDY2IDIuNDMzIDYuNDU4IDUuODA5IDcuMjM5IDMwLjAyOCA2Ljk0OSA1MSAzMy4zNTEgNTEgNjQuMjAzIDAgMzYuMzQ5LTI5LjU3MSA2NS45MjEtNjUuOTIgNjUuOTIxaC00LjA4MWMtNC4xNDMgMC03LjUgMy4zNTctNy41IDcuNXMzLjM1NyA3LjUgNy41IDcuNWg0LjA4YzQ0LjYxOSAwIDgwLjkyLTM2LjMwMSA4MC45Mi04MC45MjEgMC0xOC4zOTUtNi4zNDMtMzYuNC0xNy44NTktNTAuNjk3em0tMzkyLjE0MSAyNDMuNDQzYy05LjY0OSAwLTE3LjUtNy44NTEtMTcuNS0xNy41czcuODUxLTE3LjUgMTcuNS0xNy41IDE3LjUgNy44NTEgMTcuNSAxNy41LTcuODUxIDE3LjUtMTcuNSAxNy41eiIvPjxwYXRoIGQ9Im0zNjUuNjkyIDE0OC42MDVoLjA2OWM0LjE0Mi0uMDM4IDcuNDY5LTMuNDI2IDcuNDMyLTcuNTY4LS4xMTItMTIuMzU0LTIuNDQ0LTI0LjQ0My02LjkzMS0zNS45MzEtMS41MDgtMy44NTgtNS44NTYtNS43NjUtOS43MTUtNC4yNThzLTUuNzY1IDUuODU2LTQuMjU4IDkuNzE1YzMuODIyIDkuNzg0IDUuODA4IDIwLjA4MyA1LjkwMyAzMC42MS4wMzkgNC4xMiAzLjM4OSA3LjQzMiA3LjUgNy40MzJ6Ii8+PHBhdGggZD0ibTMzOC4yNzggODYuNzU2YzEuNDgzIDEuNzk2IDMuNjI2IDIuNzI0IDUuNzg2IDIuNzI0IDEuNjgzIDAgMy4zNzUtLjU2MyA0Ljc3Mi0xLjcxOCAzLjE5My0yLjYzOCAzLjY0NC03LjM2NSAxLjAwNi0xMC41NTktMTkuNTMtMjMuNjQzLTQ4LjE4NS0zNy4yMDMtNzguNjE1LTM3LjIwMy00LjE0MyAwLTcuNSAzLjM1Ny03LjUgNy41czMuMzU3IDcuNSA3LjUgNy41YzI1Ljk0IDAgNTAuMzc5IDExLjU3NCA2Ny4wNTEgMzEuNzU2eiIvPjwvZz48L3N2Zz4="/>
+<text x="400" y="1916.932" font-family="sans-serif" font-size="24" fill="#ffffff">Networking</text>
+<text x="400" y="1945.3297" font-family="sans-serif" font-size="16" fill="#ffffff">Predictable</text>
+<text x="400" y="1963.7281" font-family="sans-serif" font-size="16" fill="#ffffff">performance.</text>
+<text x="498.71094" y="1963.7281" font-family="sans-serif" font-size="16" fill="#ffffff">Tiny</text>
+<text x="400" y="1982.1266" font-family="sans-serif" font-size="16" fill="#ffffff">resource</text>
+<text x="466.6953" y="1982.1266" font-family="sans-serif" font-size="16" fill="#ffffff">footprint.</text>
+<text x="400" y="2000.525" font-family="sans-serif" font-size="16" fill="#ffffff">Rock-solid</text>
+<text x="400" y="2018.9235" font-family="sans-serif" font-size="16" fill="#ffffff">reliability.</text>
+<text x="469.9453" y="2018.9235" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="507.28906" y="2018.9235" font-family="sans-serif" font-size="16" fill="#ffffff">is</text>
+<text x="400" y="2037.3219" font-family="sans-serif" font-size="16" fill="#ffffff">great</text>
+<text x="440.91406" y="2037.3219" font-family="sans-serif" font-size="16" fill="#ffffff">for</text>
+<text x="464.03125" y="2037.3219" font-family="sans-serif" font-size="16" fill="#ffffff">network</text>
+<text x="400" y="2055.7202" font-family="sans-serif" font-size="16" fill="#ffffff">services.</text>
+<a href="https://rust-lang.org/what/networking"><text x="400" y="2101.2388" font-family="sans-serif" font-size="12.8" fill="#ffffff">Working</text></a>
+<a href="https://rust-lang.org/what/networking"><text x="450.26874" y="2101.2388" font-family="sans-serif" font-size="12.8" fill="#ffffff">On</text></a>
+<a href="https://rust-lang.org/what/networking"><text x="470.9" y="2101.2388" font-family="sans-serif" font-size="12.8" fill="#ffffff">Servers</text></a>
+<image x="266.66666" y="2104.4375" width="300" height="150" href="data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGcgZmlsbD0iI2ZmZiI+PHBhdGggZD0ibTQ5NC45MzMgMTcuMDY3aC0xNy4wNjd2LTguNTM0YzAtNC43MTMtMy44Mi04LjUzMy04LjUzMy04LjUzM2gtMzQuMTMzYy00LjcxMyAwLTguNTMzIDMuODItOC41MzMgOC41MzN2OC41MzNoLTE3LjA2N3YtOC41MzNjMC00LjcxMy0zLjgyLTguNTMzLTguNTMzLTguNTMzaC0xMzYuNTM0Yy00LjcxMyAwLTguNTMzIDMuODItOC41MzMgOC41MzN2OC41MzNoLTE3LjA2N3YtOC41MzNjMC00LjcxMy0zLjgyLTguNTMzLTguNTMzLTguNTMzaC0zNC4xMzNjLTQuNzEzIDAtOC41MzMgMy44Mi04LjUzMyA4LjUzM3Y4LjUzM2gtMTcuMDY3di04LjUzM2MwLTQuNzEzLTMuODItOC41MzMtOC41MzMtOC41MzNoLTM0LjEzNGMtNC43MTMgMC04LjUzMyAzLjgyLTguNTMzIDguNTMzdjguNTMzaC0xMDIuNGMtOS40MjIuMDEtMTcuMDU4IDcuNjQ2LTE3LjA2NyAxNy4wNjd2NDYwLjhjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N2g0NzcuODY3YzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTQ2MC44Yy0uMDEtOS40MjEtNy42NDYtMTcuMDU3LTE3LjA2OC0xNy4wNjZ6bS01MS4yIDBoMTcuMDcxbC4wMDMgOC40OTktLjAwNy4wMzQuMDA3LjAzNC4wMDYgMTcuMDMzaC0xNy4wNzl2LTI1LjZ6bS0xNzAuNjY2IDBoMTE5LjQ2N2wuMDAzIDguNTIxLS4wMDMuMDEyLjAwMy4wMTMuMDEgMzQuMTIxaC0xMTkuNDh6bS02OC4yNjcgMGgxNy4wNzFsLjAwMyA4LjQ5OS0uMDA3LjAzNC4wMDcuMDM0LjAwNiAxNy4wMzNoLTE3LjA4em0tNjguMjY3IDBoMTcuMDY3bC4wMDMgOC41MjEtLjAwMy4wMTIuMDAzLjAxMy4wMSAzNC4xMjFoLTE3LjA3OXYtNDIuNjY3em0zNTguNCAyOTguNjY2aC0yNS42Yy00LjcxMyAwLTguNTMzIDMuODItOC41MzMgOC41MzN2NDIuNjY3aC0xNTMuNnYtMTE5LjQ2NmgxNTMuNnY0Mi42NjdjMCA0LjcxMyAzLjgyIDguNTMzIDguNTMzIDguNTMzaDI1LjZ6bTAtMzQuMTMzaC0xNy4wNjd2LTM0LjEzM2MtLjAwOS05LjQyMi03LjY0NS0xNy4wNTctMTcuMDY3LTE3LjA2N2gtMTUzLjU5OWMtOS40MjIuMDA5LTE3LjA1NyA3LjY0NS0xNy4wNjcgMTcuMDY3djExOS40NjdjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N2gxNTMuNmM5LjQyMi0uMDA5IDE3LjA1Ny03LjY0NSAxNy4wNjctMTcuMDY3di0zNC4xMzRoMTcuMDY3djE2Mi4xMzNoLTQ3Ny44Njd2LTQ2MC44aDEwMi40djI1LjZjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N3YxNy4wNjdjMCA0LjcxMyAzLjgyIDguNTMzIDguNTMzIDguNTMzczguNTMzLTMuODIxIDguNTMzLTguNTMzdi0xNy4wNjdjOS40MjItLjAwOSAxNy4wNTctNy42NDUgMTcuMDY3LTE3LjA2N3YtMjUuNmgxNy4wNjd2OC41MzNjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N2gxNy4wNjdjOS40MjItLjAwOSAxNy4wNTctNy42NDUgMTcuMDY3LTE3LjA2N3YtOC41MzNoMTcuMDY1djI1LjZjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N2gxMTkuNDY3YzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTI1LjZoMTcuMDY3djguNTMzYy4wMDkgOS40MjIgNy42NDUgMTcuMDU3IDE3LjA2NyAxNy4wNjdoMTcuMDY1YzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTguNTMzaDE3LjA2N3YyNDcuNDY3eiIvPjxwYXRoIGQ9Im05My44NjcgNjguMjY3YzMuNDUtLjAxNCA2LjU1Ni0yLjA5NiA3Ljg3OS01LjI4MiAxLjMyMy0zLjE4Ny42MDYtNi44NTYtMS44Mi05LjMxLTIuNDQxLTIuNDYyLTYuMTI5LTMuMjAxLTkuMzMxLTEuODcycy01LjI4MSA0LjQ2NC01LjI2MSA3LjkzMWMtLjAyMiAyLjI3Ljg3IDQuNDUzIDIuNDc1IDYuMDU4IDEuNjA0IDEuNjA1IDMuNzg4IDIuNDk3IDYuMDU4IDIuNDc1eiIvPjxwYXRoIGQ9Im00Mi42NjcgNjguMjY3YzMuNDUtLjAxNCA2LjU1Ni0yLjA5NiA3Ljg3OS01LjI4MiAxLjMyMy0zLjE4Ny42MDYtNi44NTYtMS44Mi05LjMxLTIuNDQxLTIuNDYyLTYuMTI5LTMuMjAxLTkuMzMxLTEuODcycy01LjI4MSA0LjQ2NC01LjI2MSA3LjkzMWMtLjAyMiAyLjI3Ljg3IDQuNDUzIDIuNDc1IDYuMDU4IDEuNjA0IDEuNjA1IDMuNzg4IDIuNDk3IDYuMDU4IDIuNDc1eiIvPjxwYXRoIGQ9Im01MS4yIDMwNy4yaDE3LjA2N2M5LjQyMi0uMDA5IDE3LjA1Ny03LjY0NSAxNy4wNjctMTcuMDY3di0xNTMuNmMtLjAwOS05LjQyMi03LjY0NS0xNy4wNTctMTcuMDY3LTE3LjA2N2gtMTcuMDY3Yy05LjQyMi4wMDktMTcuMDU3IDcuNjQ1LTE3LjA2NyAxNy4wNjd2MTUzLjZjLjAxIDkuNDIyIDcuNjQ1IDE3LjA1OCAxNy4wNjcgMTcuMDY3em0wLTE3MC42NjdoMTcuMDY3bC4wMTIgMTUzLjZoLTE3LjA3OXoiLz48cGF0aCBkPSJtMTE5LjQ2NyAzMDcuMmgxNy4wNjdjOS40MjItLjAwOSAxNy4wNTctNy42NDUgMTcuMDY3LTE3LjA2N3YtMTUzLjZjLS4wMDktOS40MjItNy42NDUtMTcuMDU3LTE3LjA2Ny0xNy4wNjdoLTE3LjA2N2MtOS40MjIuMDA5LTE3LjA1NyA3LjY0NS0xNy4wNjcgMTcuMDY3djE1My42Yy4wMDkgOS40MjIgNy42NDUgMTcuMDU4IDE3LjA2NyAxNy4wNjd6bTAtMTcwLjY2N2gxNy4wNjdsLjAxMiAxNTMuNmgtMTcuMDc5eiIvPjxwYXRoIGQ9Im04NS4zMzMgMzQ5Ljg2N2MwLTE0LjEzOC0xMS40NjEtMjUuNi0yNS42LTI1LjZzLTI1LjYgMTEuNDYyLTI1LjYgMjUuNiAxMS40NjEgMjUuNiAyNS42IDI1LjZjMTQuMTMyLS4wMTYgMjUuNTg1LTExLjQ2OCAyNS42LTI1LjZ6bS0yNS42IDguNTMzYy00LjcxMyAwLTguNTMzLTMuODItOC41MzMtOC41MzNzMy44Mi04LjUzMyA4LjUzMy04LjUzMyA4LjUzMyAzLjgyIDguNTMzIDguNTMzYy0uMDA1IDQuNzEtMy44MjIgOC41MjctOC41MzMgOC41MzN6Ii8+PHBhdGggZD0ibTExOS40NjcgNDAxLjA2N2gtMzQuMTM0Yy05LjQyMi4wMDktMTcuMDU3IDcuNjQ1LTE3LjA2NyAxNy4wNjd2MzQuMTMzYy4wMDkgOS40MjIgNy42NDUgMTcuMDU3IDE3LjA2NyAxNy4wNjdoMzQuMTMzYzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTM0LjEzM2MtLjAwOS05LjQyMi03LjY0NS0xNy4wNTgtMTcuMDY2LTE3LjA2N3ptLTM0LjEzNCA1MS4ydi0zNC4xMzNoMzQuMTMzbC4wMTIgMzQuMTMzeiIvPjxwYXRoIGQ9Im0xNTMuNiAzNDEuMzMzYy0uMDA5LTkuNDIyLTcuNjQ1LTE3LjA1Ny0xNy4wNjctMTcuMDY3aC0xNy4wNjdjLTkuNDIyLjAwOS0xNy4wNTcgNy42NDUtMTcuMDY3IDE3LjA2N3YxNy4wNjdjLjAwOSA5LjQyMiA3LjY0NSAxNy4wNTcgMTcuMDY3IDE3LjA2N2gxNy4wNjdjOS40MjItLjAwOSAxNy4wNTctNy42NDUgMTcuMDY3LTE3LjA2N3ptLTM0LjEzMyAxNy4wNjd2LTE3LjA2N2gxNy4wNjdsLjAxMiAxNy4wNjd6Ii8+PHBhdGggZD0ibTMwOS43MjcgOTYuMzI3Yy05LjM1OS00LjQzNy0yMC40NzEtMi43NzgtMjguMTI3IDQuMTk4LTkuNjQ2LTguODc4LTI0LjQ4Ny04Ljg3OC0zNC4xMzMgMC05LjY0Ni04Ljg3OC0yNC40ODctOC44NzgtMzQuMTMzIDAtNy42NTctNi45NTEtMTguNzUzLTguNTkzLTI4LjA5NS00LjE1OC05LjM0MiA0LjQzNi0xNS4wODMgMTQuMDcyLTE0LjUzNiAyNC4zOTlzNy4yNzMgMTkuMzAzIDE3LjAzMSAyMi43Mjh2NTIuNzczYy4wMDkgOS40MjIgNy42NDUgMTcuMDU3IDE3LjA2NyAxNy4wNjdoODUuMzMzYzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTUyLjc3MmM5Ljc4LTMuNDExIDE2LjUyOC0xMi4zOTQgMTcuMDgyLTIyLjczNnMtNS4xOTctMTkuOTk2LTE0LjU1Ni0yNC40MzJ6bS0xMTMuNDYgMzEuNjczYy00LjcxMyAwLTguNTMzLTMuODItOC41MzMtOC41MzMuMDA2LTQuNzEgMy44MjMtOC41MjcgOC41MzMtOC41MzMgNC43MTMgMCA4LjUzMyAzLjgyIDguNTMzIDguNTMzcy0zLjgyMSA4LjUzMy04LjUzMyA4LjUzM3ptMjUuNiA2OC4yNjdoLTE3LjA2N3YtNTIuNzcyYzMuMTUxLTEuMTE5IDYuMDUtMi44NDcgOC41MzMtNS4wODYgMi40ODMgMi4yMzkgNS4zODMgMy45NjYgOC41MzMgNS4wODV2NTIuNzczem04LjUzMy02OC4yNjdjLTQuNzEzIDAtOC41MzMtMy44Mi04LjUzMy04LjUzMy4wMDYtNC43MSAzLjgyMy04LjUyNyA4LjUzMy04LjUzMyA0LjcxMyAwIDguNTMzIDMuODIgOC41MzMgOC41MzNzLTMuODIgOC41MzMtOC41MzMgOC41MzN6bTI1LjYgNjguMjY3aC0xNy4wNjd2LTUyLjc3MmMzLjE1MS0xLjExOSA2LjA1LTIuODQ3IDguNTMzLTUuMDg2IDIuNDgzIDIuMjM5IDUuMzgzIDMuOTY2IDguNTMzIDUuMDg1djUyLjc3M3ptOC41MzMtNjguMjY3Yy00LjcxMyAwLTguNTMzLTMuODItOC41MzMtOC41MzMuMDA2LTQuNzEgMy44MjMtOC41MjcgOC41MzMtOC41MzMgNC43MTMgMCA4LjUzMyAzLjgyIDguNTMzIDguNTMzcy0zLjgyIDguNTMzLTguNTMzIDguNTMzem0yNS42IDY4LjI2N2gtMTcuMDY3di01Mi43NzJjMy4xNTEtMS4xMTkgNi4wNS0yLjg0NyA4LjUzMy01LjA4NiAyLjQ4MyAyLjIzOSA1LjM4MyAzLjk2NiA4LjUzMyA1LjA4NXY1Mi43NzN6bTguNTM0LTY4LjI2N2MtNC43MTMgMC04LjUzMy0zLjgyLTguNTMzLTguNTMzLjAwNi00LjcxIDMuODIzLTguNTI3IDguNTMzLTguNTMzIDQuNzEzIDAgOC41MzMgMy44MiA4LjUzMyA4LjUzM3MtMy44MiA4LjUzMy04LjUzMyA4LjUzM3oiLz48cGF0aCBkPSJtNDYwLjggMTYzLjcwNnYtMjcuMTcyYzAtNC43MTMtMy44MjEtOC41MzMtOC41MzMtOC41MzNoLTEwMi40Yy00LjcxMyAwLTguNTMzIDMuODItOC41MzMgOC41MzN2MjcuMTcyYy0xMC4xOTkgMy41OTItMTcuMDMzIDEzLjIxNC0xNy4wNjcgMjQuMDI4LS4wNDQgMTAuMTE3IDUuODk5IDE5LjMwMyAxNS4xNDYgMjMuNDA4czIwLjA0NiAyLjM1MyAyNy41MjEtNC40NjZjOS42NDYgOC44NzggMjQuNDg3IDguODc4IDM0LjEzMyAwIDkuNjQ2IDguODc4IDI0LjQ4NyA4Ljg3OCAzNC4xMzMgMCA3LjY1NyA2Ljk1MSAxOC43NTMgOC41OTMgMjguMDk1IDQuMTU3czE1LjA4My0xNC4wNzIgMTQuNTM2LTI0LjM5OS03LjI3My0xOS4zMDQtMTcuMDMxLTIyLjcyOHptLTExMC45MzMgMzIuNTYxYy00LjcxMyAwLTguNTMzLTMuODItOC41MzMtOC41MzMuMDA2LTQuNzEgMy44MjMtOC41MjcgOC41MzMtOC41MzMgNC43MTMgMCA4LjUzMyAzLjgyIDguNTMzIDguNTMzcy0zLjgyIDguNTMzLTguNTMzIDguNTMzem0zNC4xMzMgMGMtNC43MTMgMC04LjUzMy0zLjgyLTguNTMzLTguNTMzczMuODItOC41MzMgOC41MzMtOC41MzMgOC41MzMgMy44MiA4LjUzMyA4LjUzM2MtLjAwNiA0LjcxLTMuODIzIDguNTI3LTguNTMzIDguNTMzem0zNC4xMzMgMGMtNC43MTMgMC04LjUzMy0zLjgyLTguNTMzLTguNTMzczMuODItOC41MzMgOC41MzMtOC41MzMgOC41MzMgMy44MiA4LjUzMyA4LjUzM2MtLjAwNSA0LjcxLTMuODIyIDguNTI3LTguNTMzIDguNTMzem0tMTcuMDY2LTI3LjQ3NWMtOS42NDYtOC44NzgtMjQuNDg3LTguODc4LTM0LjEzMyAwLTIuNDgzLTIuMjM5LTUuMzgzLTMuOTY3LTguNTMzLTUuMDg2di0xOC42MzloODUuMzMzdjE4LjYzOWMtMy4xNTEgMS4xMTktNi4wNSAyLjg0Ny04LjUzMyA1LjA4Ni05LjY0Ny04Ljg3OC0yNC40ODgtOC44NzgtMzQuMTM0IDB6bTUxLjIgMjcuNDc1Yy00LjcxMyAwLTguNTMzLTMuODItOC41MzMtOC41MzNzMy44MjEtOC41MzMgOC41MzMtOC41MzNjNC43MTMgMCA4LjUzMyAzLjgyIDguNTMzIDguNTMzLS4wMDYgNC43MS0zLjgyMyA4LjUyNy04LjUzMyA4LjUzM3oiLz48cGF0aCBkPSJtMzI0Ljk0NiAyNzYuMzA4Yy4xODcuNTQ1LjQ0NyAxLjA2Mi43NzEgMS41MzguMzQxLjQyNS42ODMuODUgMS4wMjUgMS4yNzkgMy4zNjUgMy4zIDguNzUyIDMuMyAxMi4xMTcgMCAuMzY2LS40MDUuNzA3LS44MzMgMS4wMjEtMS4yNzkuMzI0LS40NzYuNTgzLS45OTMuNzcxLTEuNTM4LjI0NS0uNDg1LjQxOC0xLjAwMy41MTMtMS41MzcuMDk4LS41NjMuMTU1LTEuMTMzLjE3MS0xLjcwNCAwLTQuNzEzLTMuODIxLTguNTMzLTguNTMzLTguNTMzLTQuNzEzIDAtOC41MzMgMy44MjEtOC41MzMgOC41MzMuMDE0LjU3Mi4wNzEgMS4xNDEuMTcxIDEuNzA0LjA4OS41MzUuMjYgMS4wNTMuNTA2IDEuNTM3eiIvPjxwYXRoIGQ9Im0zMzcuNTc5IDMzNC4yNWMtLjQ3Ni0uMzI0LS45OTMtLjU4My0xLjUzOC0uNzcxLS40ODQtLjI0Ni0xLjAwMi0uNDE3LTEuNTM3LS41MDgtMS42NjMtLjM0OC0zLjM5My0uMTcxLTQuOTUuNTA4LTEuMDMzLjQzNC0xLjk4NCAxLjA0MS0yLjgxMyAxLjc5Ni0zLjMgMy4zNjUtMy4zIDguNzUyIDAgMTIuMTE3LjgzLjc1MiAxLjc4MSAxLjM1OCAyLjgxMyAxLjc5MiAxLjAyNy40MzggMi4xMy42NyAzLjI0Ni42ODMuNTcxLS4wMTYgMS4xNDEtLjA3MyAxLjcwNC0uMTcxLjUzNS0uMDk1IDEuMDUzLS4yNjcgMS41MzctLjUxMi41NDQtLjE4OCAxLjA2Mi0uNDQ3IDEuNTM4LS43NzEuNDI1LS4zMzcuODUtLjY3OSAxLjI3OS0xLjAyMSAzLjMtMy4zNjUgMy4zLTguNzUyIDAtMTIuMTE3LS40MjktLjM0Mi0uODU0LS42ODMtMS4yNzktMS4wMjV6Ii8+PHBhdGggZD0ibTQzMS45NTQgMjY1LjIxM2MtMS4wMzMuNDM0LTEuOTg0IDEuMDQxLTIuODEzIDEuNzk1LTEuNTU5IDEuNjM1LTIuNDQzIDMuNzk5LTIuNDc1IDYuMDU5LjAxMy41NzIuMDcxIDEuMTQxLjE3MSAxLjcwNC4wOTEuNTM1LjI2MyAxLjA1My41MDggMS41MzcuMTg3LjU0NS40NDcgMS4wNjIuNzcxIDEuNTM4LjM0MS40MjUuNjgzLjg1IDEuMDI1IDEuMjc5LjgzLjc1MiAxLjc4MSAxLjM1OCAyLjgxMyAxLjc5MiAxLjAyNy40MzggMi4xMy42NyAzLjI0Ni42ODMgMi4yNTktLjAzNCA0LjQyMi0uOTE4IDYuMDU5LTIuNDc1LjM2Ni0uNDA2LjcwNy0uODMzIDEuMDIxLTEuMjc5LjMyNC0uNDc2LjU4My0uOTkzLjc3MS0xLjUzOC4yNDUtLjQ4NS40MTgtMS4wMDMuNTEzLTEuNTM3LjA5OC0uNTYzLjE1NS0xLjEzMy4xNy0xLjcwNS0uMDMzLTIuMjU5LS45MTctNC40MjItMi40NzUtNi4wNTktMi40NzMtMi4zODYtNi4xMjEtMy4wOS05LjMwNS0xLjc5NHoiLz48cGF0aCBkPSJtNDM5Ljk3OSAzMzQuMjVjLS40NzYtLjMyNC0uOTkzLS41ODMtMS41MzgtLjc3MS0uNTA4LS4yNTgtMS4wNTYtLjQzLTEuNjIxLS41MDgtMi43ODEtLjUwNi01LjYzNi4zNS03LjY3OSAyLjMwNC0yLjQ2MSAyLjQ0MS0zLjIwMSA2LjEyOS0xLjg3MiA5LjMzMXM0LjQ2NCA1LjI4MSA3LjkzIDUuMjYxYy41NDQtLjAxNiAxLjA4Ni0uMDczIDEuNjIxLS4xNzEuNTY0LS4wODIgMS4xMTItLjI1NSAxLjYyMS0uNTEyLjU0NC0uMTg4IDEuMDYyLS40NDcgMS41MzgtLjc3MS40MjUtLjMzNy44NS0uNjc5IDEuMjc5LTEuMDIxIDMuMy0zLjM2NSAzLjMtOC43NTIgMC0xMi4xMTctLjQyOS0uMzQyLS44NTQtLjY4My0xLjI3OS0xLjAyNXoiLz48cGF0aCBkPSJtMzg0IDI4MS42Yy00LjcxMyAwLTguNTMzIDMuODItOC41MzMgOC41MzN2MzQuMTMzYzAgNC43MTMgMy44MiA4LjUzMyA4LjUzMyA4LjUzM3M4LjUzMy0zLjgyIDguNTMzLTguNTMzdi0zNC4xMzNjMC00LjcxMi0zLjgyLTguNTMzLTguNTMzLTguNTMzeiIvPjxwYXRoIGQ9Im0zNDkuODY3IDI5OC42NjdoLTE3LjA2N2MtNC43MTMgMC04LjUzMyAzLjgyLTguNTMzIDguNTMzczMuODIxIDguNTMzIDguNTMzIDguNTMzaDE3LjA2N2M0LjcxMyAwIDguNTMzLTMuODIgOC41MzMtOC41MzNzLTMuODItOC41MzMtOC41MzMtOC41MzN6Ii8+PHBhdGggZD0ibTQzNS4yIDI5OC42NjdoLTE3LjA2N2MtNC43MTMgMC04LjUzMyAzLjgyLTguNTMzIDguNTMzczMuODIgOC41MzMgOC41MzMgOC41MzNoMTcuMDY3YzQuNzEzIDAgOC41MzMtMy44MiA4LjUzMy04LjUzM3MtMy44Mi04LjUzMy04LjUzMy04LjUzM3oiLz48cGF0aCBkPSJtMTg3LjczMyAzODRoNjguMjY3YzkuNDIyLS4wMDkgMTcuMDU3LTcuNjQ1IDE3LjA2Ny0xNy4wNjd2LTExOS40NjZjLS4wMDktOS40MjItNy42NDUtMTcuMDU3LTE3LjA2Ny0xNy4wNjdoLTY4LjI2N2MtOS40MjIuMDA5LTE3LjA1NyA3LjY0NS0xNy4wNjcgMTcuMDY3djExOS40NjdjLjAxIDkuNDIxIDcuNjQ2IDE3LjA1NyAxNy4wNjcgMTcuMDY2em0wLTEzNi41MzNoNjguMjY3bC4wMTIgMTE5LjQ2N2gtNjguMjc5eiIvPjxwYXRoIGQ9Im0yMjYuNjQ2IDI2NS45ODNjLS40NzYtLjMyNC0uOTkzLS41ODMtMS41MzgtLjc3MS0uNDg0LS4yNDYtMS4wMDItLjQxNy0xLjUzNy0uNTA4LTIuODEtLjU3NC01LjcyMS4yOS03Ljc2MyAyLjMwNC0xLjU1OSAxLjYzNS0yLjQ0MyAzLjc5OS0yLjQ3NSA2LjA1OC4wMTMuNTcyLjA3MSAxLjE0MS4xNzEgMS43MDQuMDkxLjUzNS4yNjMgMS4wNTMuNTA4IDEuNTM3LjE4OC41NDUuNDQ3IDEuMDYyLjc3MSAxLjUzOC4zNDEuNDI1LjY4My44NSAxLjAyNSAxLjI3OSAxLjYzNiAxLjU1OCAzLjggMi40NDEgNi4wNTkgMi40NzUuNTcxLS4wMTYgMS4xNDEtLjA3MyAxLjcwNC0uMTcxLjUzNS0uMDk1IDEuMDUzLS4yNjggMS41MzctLjUxMi41NDQtLjE4OCAxLjA2Mi0uNDQ3IDEuNTM4LS43NzEuNDI1LS4zMzcuODUtLjY3OSAxLjI3OS0xLjAyMS4zNDEtLjQyOS42ODMtLjg1NCAxLjAyMS0xLjI3OS4zMjQtLjQ3Ni41ODMtLjk5My43NzEtMS41MzguMjQ1LS40ODUuNDE4LTEuMDAzLjUxMy0xLjUzNy4wOTgtLjU2My4xNTUtMS4xMzMuMTcxLTEuNzA0LS4wMzMtMi4yNTktLjkxNy00LjQyMi0yLjQ3NS02LjA1OS0uNDA2LS4zNjYtLjgzNC0uNzA4LTEuMjgtMS4wMjR6Ii8+PHBhdGggZD0ibTIyNy45MjUgMzAxLjE0MWMtLjQyOS0uMzQxLS44NTQtLjY4My0xLjI3OS0xLjAyNS0uNDc2LS4zMjQtLjk5My0uNTgzLTEuNTM4LS43NzEtLjQ4NC0uMjQ2LTEuMDAyLS40MTctMS41MzctLjUwOC0xLjY2My0uMzQ4LTMuMzkzLS4xNzEtNC45NS41MDgtMi4xMzkuNzg0LTMuODI0IDIuNDY5LTQuNjA4IDQuNjA4LS40MzcgMS4wMjctLjY2OCAyLjEzLS42OCAzLjI0Ny4wMTMuNTcyLjA3MSAxLjE0MS4xNzEgMS43MDQuMDkxLjUzNS4yNjMgMS4wNTMuNTA4IDEuNTM3LjE4OC41NDQuNDQ3IDEuMDYyLjc3MSAxLjUzOC4zNDEuNDI1LjY4My44NSAxLjAyNSAxLjI3OS44My43NTIgMS43ODEgMS4zNTggMi44MTMgMS43OTIgMS4wMjcuNDM4IDIuMTMuNjcgMy4yNDYuNjgzLjU3MS0uMDE2IDEuMTQxLS4wNzMgMS43MDQtLjE3MS41MzUtLjA5NSAxLjA1My0uMjY4IDEuNTM3LS41MTMuNTQ0LS4xODcgMS4wNjItLjQ0NyAxLjUzOC0uNzcxLjQyNS0uMzM4Ljg1LS42NzkgMS4yNzktMS4wMjEuMzQxLS40MjkuNjgzLS44NTQgMS4wMjEtMS4yNzkuMzI0LS40NzYuNTgzLS45OTMuNzcxLTEuNTM4LjI0NS0uNDg1LjQxOC0xLjAwMy41MTMtMS41MzcuMDk4LS41NjMuMTU1LTEuMTMzLjE3MS0xLjcwNC0uMDEzLTEuMTE2LS4yNDUtMi4yMTktLjY4My0zLjI0Ni0uNDM1LTEuMDMxLTEuMDQxLTEuOTgyLTEuNzkzLTIuODEyeiIvPjxwYXRoIGQ9Im0yMjYuNjQ2IDMzNC4yNWMtLjQ3Ni0uMzI0LS45OTMtLjU4My0xLjUzOC0uNzcxLS40ODQtLjI0Ni0xLjAwMi0uNDE3LTEuNTM3LS41MDgtMS42NjMtLjM0OC0zLjM5My0uMTcxLTQuOTUuNTA4LTEuMDMzLjQzNC0xLjk4NCAxLjA0MS0yLjgxMyAxLjc5Ni0zLjMgMy4zNjUtMy4zIDguNzUyIDAgMTIuMTE3LjgzLjc1MiAxLjc4MSAxLjM1OCAyLjgxMyAxLjc5MiAxLjAyNy40MzggMi4xMy42NyAzLjI0Ni42ODMuNTcxLS4wMTYgMS4xNDEtLjA3MyAxLjcwNC0uMTcxLjUzNS0uMDk1IDEuMDUzLS4yNjcgMS41MzctLjUxMi41NDQtLjE4OCAxLjA2Mi0uNDQ3IDEuNTM4LS43NzEuNDI1LS4zMzcuODUtLjY3OSAxLjI3OS0xLjAyMSAzLjMtMy4zNjUgMy4zLTguNzUyIDAtMTIuMTE3LS40MjktLjM0Mi0uODU0LS42ODMtMS4yNzktMS4wMjV6Ii8+PHBhdGggZD0ibTE1My42IDQxOC4xMzN2MzQuMTMzYy4wMDkgOS40MjIgNy42NDUgMTcuMDU3IDE3LjA2NyAxNy4wNjdoMjkwLjEzM2M5LjQyMi0uMDA5IDE3LjA1Ny03LjY0NSAxNy4wNjctMTcuMDY3di0zNC4xMzNjLS4wMDktOS40MjItNy42NDUtMTcuMDU3LTE3LjA2Ny0xNy4wNjdoLTI5MC4xMzNjLTkuNDIyLjAxLTE3LjA1OCA3LjY0Ni0xNy4wNjcgMTcuMDY3em0zMDcuMjEzIDM0LjEzNGgtMTcuMDc5di04LjUzM2MwLTQuNzEzLTMuODItOC41MzMtOC41MzMtOC41MzNzLTguNTMzIDMuODItOC41MzMgOC41MzN2OC41MzNoLTE3LjA2OHYtOC41MzNjMC00LjcxMy0zLjgyLTguNTMzLTguNTMzLTguNTMzcy04LjUzMyAzLjgyLTguNTMzIDguNTMzdjguNTMzaC0xNy4wNjd2LTguNTMzYzAtNC43MTMtMy44Mi04LjUzMy04LjUzMy04LjUzM3MtOC41MzMgMy44Mi04LjUzMyA4LjUzM3Y4LjUzM2gtMTcuMDY3di04LjUzM2MwLTQuNzEzLTMuODIxLTguNTMzLTguNTMzLTguNTMzLTQuNzEzIDAtOC41MzMgMy44Mi04LjUzMyA4LjUzM3Y4LjUzM2gtMTcuMDY4di04LjUzM2MwLTQuNzEzLTMuODItOC41MzMtOC41MzMtOC41MzNzLTguNTMzIDMuODItOC41MzMgOC41MzN2OC41MzNoLTE3LjA2N3YtOC41MzNjMC00LjcxMy0zLjgyMS04LjUzMy04LjUzMy04LjUzM3MtOC41MzMgMy44Mi04LjUzMyA4LjUzM3Y4LjUzM2gtMTcuMDY3di04LjUzM2MwLTQuNzEzLTMuODItOC41MzMtOC41MzMtOC41MzNzLTguNTMzIDMuODItOC41MzMgOC41MzN2OC41MzNoLTE3LjA2OHYtOC41MzNjMC00LjcxMy0zLjgyLTguNTMzLTguNTMzLTguNTMzcy04LjUzMyAzLjgyLTguNTMzIDguNTMzdjguNTMzaC0xNy4wNjd2LTM0LjEzM2gyOTAuMTMzeiIvPjxwYXRoIGQ9Im00NS45MDggNDYxLjQ3OWMtMi4wNzktLjg1LTQuNDA5LS44NS02LjQ4NyAwLTEuMDU0LjM5My0yLjAxMyAxLjAwNS0yLjgxMyAxLjc5Ni0yLjQ2MSAyLjQ0MS0zLjIwMSA2LjEyOS0xLjg3MiA5LjMzMXM0LjQ2NCA1LjI4MSA3LjkzMSA1LjI2MWMyLjI1OS0uMDM0IDQuNDIyLS45MTggNi4wNTktMi40NzUuNzUyLS44MzEgMS4zNTgtMS43ODMgMS43OTItMi44MTcuNDM3LTEuMDI2LjY2OS0yLjEyNy42ODMtMy4yNDItLjAzMy0yLjI1OS0uOTE3LTQuNDIyLTIuNDc1LTYuMDU5LS44MTctLjc3MS0xLjc3My0xLjM4MS0yLjgxOC0xLjc5NXoiLz48L2c+PC9zdmc+"/>
+<text x="400" y="2126.0376" font-family="sans-serif" font-size="24" fill="#ffffff">Embedded</text>
+<text x="400" y="2154.435" font-family="sans-serif" font-size="16" fill="#ffffff">Targeting</text>
+<text x="400" y="2172.8335" font-family="sans-serif" font-size="16" fill="#ffffff">low-resource</text>
+<text x="400" y="2191.232" font-family="sans-serif" font-size="16" fill="#ffffff">devices?</text>
+<text x="467.59375" y="2191.232" font-family="sans-serif" font-size="16" fill="#ffffff">Need</text>
+<text x="400" y="2209.6304" font-family="sans-serif" font-size="16" fill="#ffffff">low-level</text>
+<text x="466.6875" y="2209.6304" font-family="sans-serif" font-size="16" fill="#ffffff">control</text>
+<text x="400" y="2228.0288" font-family="sans-serif" font-size="16" fill="#ffffff">without</text>
+<text x="455.14063" y="2228.0288" font-family="sans-serif" font-size="16" fill="#ffffff">giving</text>
+<text x="501.39063" y="2228.0288" font-family="sans-serif" font-size="16" fill="#ffffff">up</text>
+<text x="400" y="2246.4272" font-family="sans-serif" font-size="16" fill="#ffffff">high-level</text>
+<text x="400" y="2264.8257" font-family="sans-serif" font-size="16" fill="#ffffff">conveniences?</text>
+<text x="400" y="2283.224" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="437.34375" y="2283.224" font-family="sans-serif" font-size="16" fill="#ffffff">has</text>
+<text x="467.58594" y="2283.224" font-family="sans-serif" font-size="16" fill="#ffffff">you</text>
+<text x="400" y="2301.6226" font-family="sans-serif" font-size="16" fill="#ffffff">covered.</text>
+<a href="https://rust-lang.org/what/embedded"><text x="400" y="2347.141" font-family="sans-serif" font-size="12.8" fill="#ffffff">Starting</text></a>
+<a href="https://rust-lang.org/what/embedded"><text x="447.66873" y="2347.141" font-family="sans-serif" font-size="12.8" fill="#ffffff">With</text></a>
+<a href="https://rust-lang.org/what/embedded"><text x="400" y="2361.8599" font-family="sans-serif" font-size="12.8" fill="#ffffff">Embedded</text></a>
+<text x="266.66666" y="2476.6587" font-family="sans-serif" font-size="24" fill="#000000">Rust</text>
+<text x="322.68228" y="2476.6587" font-family="sans-serif" font-size="24" fill="#000000">in</text>
+<text x="348.02994" y="2476.6587" font-family="sans-serif" font-size="24" fill="#000000">production</text>
+<text x="266.66666" y="2497.0562" font-family="sans-serif" font-size="16" fill="#000000">Hundreds</text>
+<text x="340.48697" y="2497.0562" font-family="sans-serif" font-size="16" fill="#000000">of</text>
+<text x="358.27603" y="2497.0562" font-family="sans-serif" font-size="16" fill="#000000">companies</text>
+<text x="440.09634" y="2497.0562" font-family="sans-serif" font-size="16" fill="#000000">around</text>
+<text x="494.36197" y="2497.0562" font-family="sans-serif" font-size="16" fill="#000000">the</text>
+<text x="266.66666" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">world</text>
+<text x="309.34634" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">are</text>
+<text x="336.91666" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">using</text>
+<text x="379.61197" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="416.95572" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">in</text>
+<text x="433.85416" y="2515.4546" font-family="sans-serif" font-size="16" fill="#000000">production</text>
+<text x="266.66666" y="2533.853" font-family="sans-serif" font-size="16" fill="#000000">today</text>
+<text x="310.2526" y="2533.853" font-family="sans-serif" font-size="16" fill="#000000">for</text>
+<text x="333.36978" y="2533.853" font-family="sans-serif" font-size="16" fill="#000000">fast,</text>
+<text x="368.04947" y="2533.853" font-family="sans-serif" font-size="16" fill="#000000">low-resource,</text>
+<text x="266.66666" y="2552.2515" font-family="sans-serif" font-size="16" fill="#000000">cross-platform</text>
+<text x="372.46353" y="2552.2515" font-family="sans-serif" font-size="16" fill="#000000">solutions.</text>
+<text x="444.5026" y="2552.2515" font-family="sans-serif" font-size="16" fill="#000000">From</text>
+<text x="266.66666" y="2570.65" font-family="sans-serif" font-size="16" fill="#000000">startups</text>
+<text x="328.02603" y="2570.65" font-family="sans-serif" font-size="16" fill="#000000">to</text>
+<text x="345.8151" y="2570.65" font-family="sans-serif" font-size="16" fill="#000000">large</text>
+<text x="385.83853" y="2570.65" font-family="sans-serif" font-size="16" fill="#000000">corporations,</text>
+<text x="482.77603" y="2570.65" font-family="sans-serif" font-size="16" fill="#000000">from</text>
+<text x="266.66666" y="2589.0483" font-family="sans-serif" font-size="16" fill="#000000">embedded</text>
+<text x="346.72916" y="2589.0483" font-family="sans-serif" font-size="16" fill="#000000">devices</text>
+<text x="405.42447" y="2589.0483" font-family="sans-serif" font-size="16" fill="#000000">to</text>
+<text x="423.21353" y="2589.0483" font-family="sans-serif" font-size="16" fill="#000000">scalable</text>
+<text x="486.36197" y="2589.0483" font-family="sans-serif" font-size="16" fill="#000000">web</text>
+<text x="266.66666" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">services,</text>
+<text x="334.23697" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="371.58072" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">is</text>
+<text x="387.58072" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">a</text>
+<text x="400.92447" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">great</text>
+<text x="441.83853" y="2607.4468" font-family="sans-serif" font-size="16" fill="#000000">fit.</text>
+<rect x="266.66666" y="2701.4453" width="266.66666" height="610.60156" fill="#a72145"/>
+<text x="266.66666" y="2753.0454" font-family="sans-serif" font-size="24" fill="#ffffff">Get</text>
+<text x="312.01822" y="2753.0454" font-family="sans-serif" font-size="24" fill="#ffffff">involved</text>
+<text x="266.66666" y="2780.643" font-family="sans-serif" font-size="24" fill="#ffffff">Read</text>
+<text x="266.66666" y="2808.2407" font-family="sans-serif" font-size="24" fill="#ffffff">Rust</text>
+<text x="333.3333" y="2773.4429" font-family="sans-serif" font-size="16" fill="#ffffff">We</text>
+<text x="361.48956" y="2773.4429" font-family="sans-serif" font-size="16" fill="#ffffff">love</text>
+<text x="333.3333" y="2791.8413" font-family="sans-serif" font-size="16" fill="#ffffff">documentation!</text>
+<text x="333.3333" y="2810.2397" font-family="sans-serif" font-size="16" fill="#ffffff">Take</text>
+<text x="371.5755" y="2810.2397" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="333.3333" y="2828.6382" font-family="sans-serif" font-size="16" fill="#ffffff">look</text>
+<text x="367.1302" y="2828.6382" font-family="sans-serif" font-size="16" fill="#ffffff">at</text>
+<text x="333.3333" y="2847.0366" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="333.3333" y="2865.435" font-family="sans-serif" font-size="16" fill="#ffffff">books</text>
+<text x="333.3333" y="2883.8335" font-family="sans-serif" font-size="16" fill="#ffffff">available</text>
+<text x="333.3333" y="2902.232" font-family="sans-serif" font-size="16" fill="#ffffff">online,</text>
+<text x="333.3333" y="2920.6304" font-family="sans-serif" font-size="16" fill="#ffffff">as</text>
+<text x="354.67706" y="2920.6304" font-family="sans-serif" font-size="16" fill="#ffffff">well</text>
+<text x="333.3333" y="2939.0288" font-family="sans-serif" font-size="16" fill="#ffffff">as</text>
+<text x="354.67706" y="2939.0288" font-family="sans-serif" font-size="16" fill="#ffffff">key</text>
+<text x="333.3333" y="2957.4272" font-family="sans-serif" font-size="16" fill="#ffffff">blog</text>
+<text x="333.3333" y="2975.8257" font-family="sans-serif" font-size="16" fill="#ffffff">posts</text>
+<text x="333.3333" y="2994.224" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="364.47394" y="2994.224" font-family="sans-serif" font-size="16" fill="#ffffff">user</text>
+<text x="333.3333" y="3012.6226" font-family="sans-serif" font-size="16" fill="#ffffff">guides.</text>
+<a href="https://rust-lang.org/learn"><text x="266.66666" y="3058.141" font-family="sans-serif" font-size="12.8" fill="#ffffff">Read</text></a>
+<a href="https://rust-lang.org/learn"><text x="300.8229" y="3058.141" font-family="sans-serif" font-size="12.8" fill="#ffffff">the</text></a>
+<a href="https://rust-lang.org/learn"><text x="322.1729" y="3058.141" font-family="sans-serif" font-size="12.8" fill="#ffffff">book</text></a>
+<text x="400" y="2780.643" font-family="sans-serif" font-size="24" fill="#ffffff">Watch</text>
+<text x="400" y="2808.2407" font-family="sans-serif" font-size="24" fill="#ffffff">Rust</text>
+<text x="466.66666" y="2773.4429" font-family="sans-serif" font-size="16" fill="#ffffff">The</text>
+<text x="498.68228" y="2773.4429" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="466.66666" y="2791.8413" font-family="sans-serif" font-size="16" fill="#ffffff">community</text>
+<text x="466.66666" y="2810.2397" font-family="sans-serif" font-size="16" fill="#ffffff">has</text>
+<text x="496.90884" y="2810.2397" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="466.66666" y="2828.6382" font-family="sans-serif" font-size="16" fill="#ffffff">dedicated</text>
+<text x="466.66666" y="2847.0366" font-family="sans-serif" font-size="16" fill="#ffffff">YouTube</text>
+<text x="466.66666" y="2865.435" font-family="sans-serif" font-size="16" fill="#ffffff">channel</text>
+<text x="466.66666" y="2883.8335" font-family="sans-serif" font-size="16" fill="#ffffff">collecting</text>
+<text x="466.66666" y="2902.232" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="480.0104" y="2902.232" font-family="sans-serif" font-size="16" fill="#ffffff">huge</text>
+<text x="466.66666" y="2920.6304" font-family="sans-serif" font-size="16" fill="#ffffff">range</text>
+<text x="512.0338" y="2920.6304" font-family="sans-serif" font-size="16" fill="#ffffff">of</text>
+<text x="466.66666" y="2939.0288" font-family="sans-serif" font-size="16" fill="#ffffff">presentations</text>
+<text x="466.66666" y="2957.4272" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="466.66666" y="2975.8257" font-family="sans-serif" font-size="16" fill="#ffffff">tutorials.</text>
+<a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA"><text x="400" y="3021.3442" font-family="sans-serif" font-size="12.8" fill="#ffffff">Watch</text></a>
+<a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA"><text x="439.35623" y="3021.3442" font-family="sans-serif" font-size="12.8" fill="#ffffff">the</text></a>
+<a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA"><text x="460.70624" y="3021.3442" font-family="sans-serif" font-size="12.8" fill="#ffffff">Videos</text></a>
+<text x="266.66666" y="3082.94" font-family="sans-serif" font-size="24" fill="#ffffff">Contribute</text>
+<text x="384.0651" y="3082.94" font-family="sans-serif" font-size="24" fill="#ffffff">code</text>
+<text x="266.66666" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="304.0104" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">is</text>
+<text x="320.0104" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">truly</text>
+<text x="354.68228" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="368.02603" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">community</text>
+<text x="449.8229" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">effort,</text>
+<text x="494.8854" y="3111.3374" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="266.66666" y="3129.7358" font-family="sans-serif" font-size="16" fill="#ffffff">we</text>
+<text x="291.5651" y="3129.7358" font-family="sans-serif" font-size="16" fill="#ffffff">welcome</text>
+<text x="359.14322" y="3129.7358" font-family="sans-serif" font-size="16" fill="#ffffff">contribution</text>
+<text x="446.30728" y="3129.7358" font-family="sans-serif" font-size="16" fill="#ffffff">from</text>
+<text x="266.66666" y="3148.1343" font-family="sans-serif" font-size="16" fill="#ffffff">hobbyists</text>
+<text x="338.70572" y="3148.1343" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="369.84634" y="3148.1343" font-family="sans-serif" font-size="16" fill="#ffffff">production</text>
+<text x="449.0104" y="3148.1343" font-family="sans-serif" font-size="16" fill="#ffffff">users,</text>
+<text x="497.02603" y="3148.1343" font-family="sans-serif" font-size="16" fill="#ffffff">from</text>
+<text x="266.66666" y="3166.5327" font-family="sans-serif" font-size="16" fill="#ffffff">newcomers</text>
+<text x="352.91666" y="3166.5327" font-family="sans-serif" font-size="16" fill="#ffffff">and</text>
+<text x="384.05728" y="3166.5327" font-family="sans-serif" font-size="16" fill="#ffffff">seasoned</text>
+<text x="266.66666" y="3184.9312" font-family="sans-serif" font-size="16" fill="#ffffff">professionals.</text>
+<text x="369.83072" y="3184.9312" font-family="sans-serif" font-size="16" fill="#ffffff">Come</text>
+<text x="416.95572" y="3184.9312" font-family="sans-serif" font-size="16" fill="#ffffff">help</text>
+<text x="451.65103" y="3184.9312" font-family="sans-serif" font-size="16" fill="#ffffff">us</text>
+<text x="472.99478" y="3184.9312" font-family="sans-serif" font-size="16" fill="#ffffff">make</text>
+<text x="266.66666" y="3203.3296" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="293.35416" y="3203.3296" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="330.6979" y="3203.3296" font-family="sans-serif" font-size="16" fill="#ffffff">experience</text>
+<text x="413.41666" y="3203.3296" font-family="sans-serif" font-size="16" fill="#ffffff">even</text>
+<text x="452.55728" y="3203.3296" font-family="sans-serif" font-size="16" fill="#ffffff">better!</text>
+<a href="https://rustc-dev-guide.rust-lang.org/getting-started.html"><text x="266.66666" y="3248.8481" font-family="sans-serif" font-size="12.8" fill="#ffffff">Read</text></a>
+<a href="https://rustc-dev-guide.rust-lang.org/getting-started.html"><text x="300.8229" y="3248.8481" font-family="sans-serif" font-size="12.8" fill="#ffffff">Contribution</text></a>
+<a href="https://rustc-dev-guide.rust-lang.org/getting-started.html"><text x="373.39792" y="3248.8481" font-family="sans-serif" font-size="12.8" fill="#ffffff">Guide</text></a>
+<text x="266.66666" y="3363.647" font-family="sans-serif" font-size="24" fill="#000000">Thanks</text>
+<text x="266.66666" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="304.0104" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">would</text>
+<text x="350.2604" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">not</text>
+<text x="376.9479" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">exist</text>
+<text x="414.29166" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">without</text>
+<text x="469.43228" y="3384.0444" font-family="sans-serif" font-size="16" fill="#000000">the</text>
+<text x="266.66666" y="3402.4429" font-family="sans-serif" font-size="16" fill="#000000">generous</text>
+<text x="337.83072" y="3402.4429" font-family="sans-serif" font-size="16" fill="#000000">contributions</text>
+<text x="432.99478" y="3402.4429" font-family="sans-serif" font-size="16" fill="#000000">of</text>
+<text x="450.78384" y="3402.4429" font-family="sans-serif" font-size="16" fill="#000000">time,</text>
+<text x="489.90103" y="3402.4429" font-family="sans-serif" font-size="16" fill="#000000">work,</text>
+<text x="266.66666" y="3420.8413" font-family="sans-serif" font-size="16" fill="#000000">and</text>
+<text x="297.80728" y="3420.8413" font-family="sans-serif" font-size="16" fill="#000000">resources</text>
+<text x="372.5026" y="3420.8413" font-family="sans-serif" font-size="16" fill="#000000">from</text>
+<text x="408.9479" y="3420.8413" font-family="sans-serif" font-size="16" fill="#000000">individuals</text>
+<text x="488.10416" y="3420.8413" font-family="sans-serif" font-size="16" fill="#000000">and</text>
+<text x="266.66666" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">companies.</text>
+<text x="352.93228" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">We</text>
+<text x="381.08853" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">are</text>
+<text x="408.65884" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">very</text>
+<text x="443.33072" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">grateful</text>
+<text x="501.14322" y="3439.2397" font-family="sans-serif" font-size="16" fill="#000000">for</text>
+<text x="266.66666" y="3457.6382" font-family="sans-serif" font-size="16" fill="#000000">the</text>
+<text x="293.35416" y="3457.6382" font-family="sans-serif" font-size="16" fill="#000000">support!</text>
+<text x="266.66666" y="3513.2368" font-family="sans-serif" font-size="24" fill="#000000">Individuals</text>
+<text x="333.3333" y="3506.0366" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="370.67706" y="3506.0366" font-family="sans-serif" font-size="16" fill="#000000">is</text>
+<text x="386.67706" y="3506.0366" font-family="sans-serif" font-size="16" fill="#000000">a</text>
+<text x="333.3333" y="3524.435" font-family="sans-serif" font-size="16" fill="#000000">community</text>
+<text x="333.3333" y="3542.8335" font-family="sans-serif" font-size="16" fill="#000000">project</text>
+<text x="333.3333" y="3561.232" font-family="sans-serif" font-size="16" fill="#000000">and</text>
+<text x="364.47394" y="3561.232" font-family="sans-serif" font-size="16" fill="#000000">is</text>
+<text x="333.3333" y="3579.6304" font-family="sans-serif" font-size="16" fill="#000000">very</text>
+<text x="333.3333" y="3598.0288" font-family="sans-serif" font-size="16" fill="#000000">thankful</text>
+<text x="333.3333" y="3616.4272" font-family="sans-serif" font-size="16" fill="#000000">for</text>
+<text x="356.4505" y="3616.4272" font-family="sans-serif" font-size="16" fill="#000000">the</text>
+<text x="333.3333" y="3634.8257" font-family="sans-serif" font-size="16" fill="#000000">many</text>
+<text x="333.3333" y="3653.224" font-family="sans-serif" font-size="16" fill="#000000">community</text>
+<text x="333.3333" y="3671.6226" font-family="sans-serif" font-size="16" fill="#000000">contributions</text>
+<text x="333.3333" y="3690.021" font-family="sans-serif" font-size="16" fill="#000000">it</text>
+<text x="333.3333" y="3708.4194" font-family="sans-serif" font-size="16" fill="#000000">receives.</text>
+<a href="https://thanks.rust-lang.org/"><text x="266.66666" y="3753.938" font-family="sans-serif" font-size="12.8" fill="#2a3439">See</text></a>
+<a href="https://thanks.rust-lang.org/"><text x="292.9979" y="3753.938" font-family="sans-serif" font-size="12.8" fill="#2a3439">individual</text></a>
+<a href="https://thanks.rust-lang.org/"><text x="266.66666" y="3768.6567" font-family="sans-serif" font-size="12.8" fill="#2a3439">contributors</text></a>
+<text x="400" y="3513.2368" font-family="sans-serif" font-size="24" fill="#000000">Corporate</text>
+<text x="400" y="3540.8345" font-family="sans-serif" font-size="24" fill="#000000">sponsors</text>
+<text x="466.66666" y="3506.0366" font-family="sans-serif" font-size="16" fill="#000000">The</text>
+<text x="498.68228" y="3506.0366" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="466.66666" y="3524.435" font-family="sans-serif" font-size="16" fill="#000000">project</text>
+<text x="466.66666" y="3542.8335" font-family="sans-serif" font-size="16" fill="#000000">receives</text>
+<text x="466.66666" y="3561.232" font-family="sans-serif" font-size="16" fill="#000000">support</text>
+<text x="466.66666" y="3579.6304" font-family="sans-serif" font-size="16" fill="#000000">from</text>
+<text x="466.66666" y="3598.0288" font-family="sans-serif" font-size="16" fill="#000000">companies</text>
+<text x="466.66666" y="3616.4272" font-family="sans-serif" font-size="16" fill="#000000">through</text>
+<text x="466.66666" y="3634.8257" font-family="sans-serif" font-size="16" fill="#000000">the</text>
+<text x="493.35416" y="3634.8257" font-family="sans-serif" font-size="16" fill="#000000">Rust</text>
+<text x="466.66666" y="3653.224" font-family="sans-serif" font-size="16" fill="#000000">Foundation.</text>
+<a href="https://foundation.rust-lang.org/members"><text x="400" y="3698.7427" font-family="sans-serif" font-size="12.8" fill="#2a3439">See</text></a>
+<a href="https://foundation.rust-lang.org/members"><text x="426.33124" y="3698.7427" font-family="sans-serif" font-size="12.8" fill="#2a3439">Foundation</text></a>
+<a href="https://foundation.rust-lang.org/members"><text x="400" y="3713.4614" font-family="sans-serif" font-size="12.8" fill="#2a3439">members</text></a>
+<rect x="533.3333" y="0" width="266.66666" height="351.2578" fill="#2a3439"/>
+<a href="https://rust-lang.org/learn"><text x="533.3333" y="44.4" font-family="sans-serif" font-size="16" fill="#ffc832">Documentation</text></a>
+<a href="http://forge.rust-lang.org/"><text x="533.3333" y="62.79844" font-family="sans-serif" font-size="16" fill="#ffc832">Rust</text></a>
+<a href="http://forge.rust-lang.org/"><text x="570.67706" y="62.79844" font-family="sans-serif" font-size="16" fill="#ffc832">Forge</text></a>
+<a href="http://forge.rust-lang.org/"><text x="533.3333" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">(Contributor</text></a>
+<a href="http://forge.rust-lang.org/"><text x="533.3333" y="99.595314" font-family="sans-serif" font-size="16" fill="#ffc832">Documentation)</text></a>
+<a href="https://users.rust-lang.org/"><text x="533.3333" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">Ask</text></a>
+<a href="https://users.rust-lang.org/"><text x="564.4505" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">a</text></a>
+<a href="https://users.rust-lang.org/"><text x="577.79425" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">Question</text></a>
+<a href="https://users.rust-lang.org/"><text x="646.2786" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">on</text></a>
+<a href="https://users.rust-lang.org/"><text x="533.3333" y="136.39218" font-family="sans-serif" font-size="16" fill="#ffc832">the</text></a>
+<a href="https://users.rust-lang.org/"><text x="560.0208" y="136.39218" font-family="sans-serif" font-size="16" fill="#ffc832">Users</text></a>
+<a href="https://users.rust-lang.org/"><text x="606.2474" y="136.39218" font-family="sans-serif" font-size="16" fill="#ffc832">Forum</text></a>
+<text x="666.6666" y="44.4" font-family="sans-serif" font-size="16" fill="#2a3439">Language</text>
+<text x="742.29944" y="44.4" font-family="sans-serif" font-size="16" fill="#2a3439">English</text>
+<text x="666.6666" y="62.79844" font-family="sans-serif" font-size="16" fill="#2a3439">(en-US)</text>
+<text x="727.11975" y="62.79844" font-family="sans-serif" font-size="16" fill="#2a3439">Español</text>
+<text x="666.6666" y="81.19688" font-family="sans-serif" font-size="16" fill="#2a3439">(es)</text>
+<text x="698.6666" y="81.19688" font-family="sans-serif" font-size="16" fill="#2a3439">Français</text>
+<text x="764.4635" y="81.19688" font-family="sans-serif" font-size="16" fill="#2a3439">(fr)</text>
+<text x="666.6666" y="99.595314" font-family="sans-serif" font-size="16" fill="#2a3439">Italiano</text>
+<text x="722.7057" y="99.595314" font-family="sans-serif" font-size="16" fill="#2a3439">(it)</text>
+<text x="745.80725" y="99.595314" font-family="sans-serif" font-size="16" fill="#2a3439">日本語</text>
+<text x="666.6666" y="117.99375" font-family="sans-serif" font-size="16" fill="#2a3439">(ja)</text>
+<text x="694.2213" y="117.99375" font-family="sans-serif" font-size="16" fill="#2a3439">Português</text>
+<text x="666.6666" y="136.39218" font-family="sans-serif" font-size="16" fill="#2a3439">(pt-BR)</text>
+<text x="722.6666" y="136.39218" font-family="sans-serif" font-size="16" fill="#2a3439">Русский</text>
+<text x="666.6666" y="154.79062" font-family="sans-serif" font-size="16" fill="#2a3439">(ru)</text>
+<text x="695.99475" y="154.79062" font-family="sans-serif" font-size="16" fill="#2a3439">Türkçe</text>
+<text x="749.3385" y="154.79062" font-family="sans-serif" font-size="16" fill="#2a3439">(tr)</text>
+<text x="666.6666" y="173.18906" font-family="sans-serif" font-size="16" fill="#2a3439">简体中文</text>
+<text x="719.11194" y="173.18906" font-family="sans-serif" font-size="16" fill="#2a3439">(zh-CN)</text>
+<text x="666.6666" y="191.5875" font-family="sans-serif" font-size="16" fill="#2a3439">正體中文</text>
+<text x="719.11194" y="191.5875" font-family="sans-serif" font-size="16" fill="#2a3439">(zh-TW)</text>
+<text x="533.3333" y="212.86594" font-family="sans-serif" font-size="19.2" fill="#ffffff">Get</text>
+<text x="569.61456" y="212.86594" font-family="sans-serif" font-size="19.2" fill="#ffffff">help!</text>
+<a href="https://rust-lang.org/policies/code-of-conduct"><text x="800" y="44.4" font-family="sans-serif" font-size="16" fill="#ffc832">Code</text></a>
+<a href="https://rust-lang.org/policies/code-of-conduct"><text x="842.6953" y="44.4" font-family="sans-serif" font-size="16" fill="#ffc832">of</text></a>
+<a href="https://rust-lang.org/policies/code-of-conduct"><text x="860.4844" y="44.4" font-family="sans-serif" font-size="16" fill="#ffc832">Conduct</text></a>
+<a href="https://rust-lang.org/policies/licenses"><text x="800" y="62.79844" font-family="sans-serif" font-size="16" fill="#ffc832">Licenses</text></a>
+<a href="https://foundation.rust-lang.org/policies/logo-policy-and-media-guide/"><text x="800" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">Logo</text></a>
+<a href="https://foundation.rust-lang.org/policies/logo-policy-and-media-guide/"><text x="840.03906" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">Policy</text></a>
+<a href="https://foundation.rust-lang.org/policies/logo-policy-and-media-guide/"><text x="887.16406" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">and</text></a>
+<a href="https://foundation.rust-lang.org/policies/logo-policy-and-media-guide/"><text x="918.3047" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">Media</text></a>
+<a href="https://foundation.rust-lang.org/policies/logo-policy-and-media-guide/"><text x="966.3281" y="81.19688" font-family="sans-serif" font-size="16" fill="#ffc832">Guide</text></a>
+<a href="https://rust-lang.org/policies/security"><text x="800" y="99.595314" font-family="sans-serif" font-size="16" fill="#ffc832">Security</text></a>
+<a href="https://rust-lang.org/policies/security"><text x="862.2422" y="99.595314" font-family="sans-serif" font-size="16" fill="#ffc832">Disclosures</text></a>
+<a href="https://foundation.rust-lang.org/policies/privacy-policy/"><text x="800" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">Privacy</text></a>
+<a href="https://foundation.rust-lang.org/policies/privacy-policy/"><text x="856.89844" y="117.99375" font-family="sans-serif" font-size="16" fill="#ffc832">Notice</text></a>
+<a href="https://rust-lang.org/policies"><text x="800" y="136.39218" font-family="sans-serif" font-size="16" fill="#ffc832">All</text></a>
+<a href="https://rust-lang.org/policies"><text x="822.22656" y="136.39218" font-family="sans-serif" font-size="16" fill="#ffc832">Policies</text></a>
+<text x="800" y="165.67062" font-family="sans-serif" font-size="19.2" fill="#ffffff">Terms</text>
+<text x="857.6" y="165.67062" font-family="sans-serif" font-size="19.2" fill="#ffffff">and</text>
+<text x="894.9687" y="165.67062" font-family="sans-serif" font-size="19.2" fill="#ffffff">policies</text>
+<a href="https://social.rust-lang.org/@rust"><image x="1066.6666" y="30" width="40" height="150" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBpbWFnZS1yZW5kZXJpbmc9Im9wdGltaXplUXVhbGl0eSIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIHZpZXdCb3g9IjAgMCA0ODAgNTExLjQ3NSI+PHBhdGggZmlsbD0iI2ZmZiIgZmlsbC1ydWxlPSJub256ZXJvIiBkPSJNNDc4LjA2NSAxMTMuMjM3Yy03LjM5My01NC45NTQtNTUuMjktOTguMjY2LTExMi4wNzItMTA2LjY1NkMzNTYuNDEzIDUuMTYyIDMyMC4xMjEgMCAyMzYuMDQzIDBoLS42MjZjLTg0LjA5OSAwLTEwMi4xNDEgNS4xNjItMTExLjcyIDYuNTgxQzY4LjQ5OCAxNC43MzggMTguMDg5IDUzLjY1MyA1Ljg1OSAxMDkuMjZjLTUuODgyIDI3LjM4NC02LjUxIDU3Ljc0Ny01LjQxNiA4NS41OTRDMiAyMzQuNzk0IDIuMzAyIDI3NC42NjIgNS45MyAzMTQuNDM4YTU2Mi42NDcgNTYyLjY0NyAwIDAwMTMuMDkgNzguNDM3YzExLjYyNSA0Ny42NTMgNTguNjg2IDg3LjMxMSAxMDQuNzkzIDEwMy40OTRhMjgxLjA3IDI4MS4wNyAwIDAwMTUzLjMxNSA4LjA5IDIyMy44NzkgMjIzLjg3OSAwIDAwMTYuNTc4LTQuNTMzYzEyLjM2OC0zLjkyOSAyNi44NTUtOC4zMjMgMzcuNTA3LTE2LjA0M2ExLjE5OCAxLjE5OCAwIDAwLjQ4Ni0uOTI4di0zOC41NDRhMS4xMiAxLjEyIDAgMDAtLjQzNy0uODc5IDEuMTM0IDEuMTM0IDAgMDAtLjk1Ny0uMjE1IDQyNC43NjQgNDI0Ljc2NCAwIDAxLTk5LjQ5IDExLjYyNmMtNTcuNjY1IDAtNzMuMTcyLTI3LjM2MS03Ny42MTEtMzguNzVhMTIwLjAwOCAxMjAuMDA4IDAgMDEtNi43NDUtMzAuNTQ5IDEuMDQ4IDEuMDQ4IDAgMDEuMDk0LS41MWMuMDctLjE2MS4xNzgtLjMwNC4zMTctLjQxNWExLjA5NCAxLjA5NCAwIDAxLjk4Mi0uMjEzIDQxNy4wMDQgNDE3LjAwNCAwIDAwOTcuODY1IDExLjYyNGM3LjkyNyAwIDE1LjgzNCAwIDIzLjc2MS0uMjEzIDMzLjE1Ni0uOTI4IDY4LjEwNS0yLjYyNSAxMDAuNzIyLTguOTk3LjgxNi0uMTYgMS42My0uMzAxIDIuMzI3LS41MDggNTEuNDU1LTkuODgzIDEwMC40MjMtNDAuODk0IDEwNS4zOTctMTE5LjQyMS4xODQtMy4wOTIuNjUyLTMyLjM4Mi42NTItMzUuNTg4LjAyMS0xMC45MDQgMy41MDktNzcuMzQ0LS41MTEtMTE4LjE2NnptLTgyLjc5NiA2MS43NDRWMzExLjUxaC01NC4xMDRWMTc5LjAwM2MwLTI3Ljg5Ny0xMS42MjctNDIuMTI2LTM1LjI3My00Mi4xMjYtMjUuOTk4IDAtMzkuMDE4IDE2LjgzNC0zOS4wMTggNTAuMDczdjcyLjUzNGgtNTMuNzc2VjE4Ni45NWMwLTMzLjIzOS0xMy4wNDUtNTAuMDczLTM5LjA0LTUwLjA3My0yMy41MDcgMC0zNS4yNDkgMTQuMjI5LTM1LjI0OSA0Mi4xMjZWMzExLjUxSDg0LjczVjE3NC45ODFjMC0yNy44OTYgNy4xMjEtNTAuMDU5IDIxLjM2Ni02Ni40ODggMTQuNjkzLTE2LjM4OCAzMy45NjktMjQuODA1IDU3Ljg5My0yNC44MDUgMjcuNjkyIDAgNDguNjE4IDEwLjY0OCA2Mi41NjkgMzEuOTE5bDEzLjQ2NCAyMi41OTcgMTMuNDg1LTIyLjU5N2MxMy45NS0yMS4yNzEgMzQuODc2LTMxLjkxOSA2Mi41Mi0zMS45MTkgMjMuOTAzIDAgNDMuMTc3IDguNDE3IDU3LjkxOSAyNC44MDUgMTQuMjMxIDE2LjQxMyAyMS4zMzcgMzguNTc2IDIxLjMyMyA2Ni40ODh6Ii8+PC9zdmc+"/></a>
+<a href="https://bsky.app/profile/rust-lang.org"><image x="1106.6666" y="30" width="40" height="150" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgd2lkdGg9IjYwMCIKICAgaGVpZ2h0PSI2MDAiCiAgIHZlcnNpb249IjEuMSIKICAgaWQ9InN2ZzEiCiAgIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnMKICAgICBpZD0iZGVmczEiIC8+CiAgPHBhdGgKICAgICBkPSJtIDEzNS43MjE3LDc5LjAzNDc3MSBjIDY2LjQ5Niw0OS45MjA5OTkgMTM4LjAyLDE1MS4xMzk5OTkgMTY0LjI4LDIwNS40NTk5OTkgMjYuMjYyLC01NC4zMTYgOTcuNzgyLC0xNTUuNTQgMTY0LjI4LC0yMDUuNDU5OTk5IDQ3Ljk4LC0zNi4wMjEgMTI1LjcyLC02My44OTIgMTI1LjcyLDI0Ljc5NDk5OSAwLDE3LjcxMiAtMTAuMTU1LDE0OC43OSAtMTYuMTExLDE3MC4wNyAtMjAuNzAzLDczLjk4NCAtOTYuMTQ0LDkyLjg1NCAtMTYzLjI1LDgxLjQzMyAxMTcuMywxOS45NjQgMTQ3LjE0LDg2LjA5MiA4Mi42OTcsMTUyLjIyIC0xMjIuMzksMTI1LjU5IC0xNzUuOTEsLTMxLjUxMSAtMTg5LjYzLC03MS43NjYgLTIuNTE0LC03LjM3OTcgLTMuNjkwNCwtMTAuODMyIC0zLjcwNzcsLTcuODk2NCAtMC4wMTc0LC0yLjkzNTcgLTEuMTkzNywwLjUxNjY5IC0zLjcwNzcsNy44OTY0IC0xMy43MTQsNDAuMjU1IC02Ny4yMzMsMTk3LjM2IC0xODkuNjMsNzEuNzY2IC02NC40NDQsLTY2LjEyOCAtMzQuNjA1LC0xMzIuMjYgODIuNjk3LC0xNTIuMjIgLTY3LjEwOCwxMS40MjEgLTE0Mi41NSwtNy40NDkxIC0xNjMuMjUsLTgxLjQzMyAtNS45NTYyLC0yMS4yODIgLTE2LjExMSwtMTUyLjM2IC0xNi4xMTEsLTE3MC4wNyAwLC04OC42ODY5OTkgNzcuNzQyLC02MC44MTU5OTkgMTI1LjcyLC0yNC43OTQ5OTkgeiIKICAgICBmaWxsPSIjMTE4NWZlIgogICAgIGlkPSJwYXRoMSIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmIiAvPgo8L3N2Zz4K"/></a>
+<a href="https://www.youtube.com/channel/UCaYhcUwRBNscFNUKTjgPFiA"><image x="1146.6666" y="30" width="40" height="150" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMzUiIGhlaWdodD0iMTY2IiB2aWV3Qm94PSIwIDAgMTc2IDEyNCI+PHBhdGggZD0iTTcwIDg4LjE2OFYzNS44MzJMMTE2IDYyem0xMDIuMzItNjguODA1Yy0yLjAyMy03LjYyLTcuOTg0LTEzLjYyNS0xNS41Ni0xNS42NkMxNDMuMDM0IDAgODggMCA4OCAwUzMyLjk2NCAwIDE5LjIzNyAzLjcwM2MtNy41NzQgMi4wMzUtMTMuNTM1IDguMDQtMTUuNTYyIDE1LjY2Qy0uMDAxIDMzLjE3NS0uMDAxIDYyLS4wMDEgNjJzMCAyOC44MjQgMy42NzYgNDIuNjM3YzIuMDI3IDcuNjIgNy45ODggMTMuNjI1IDE1LjU2MiAxNS42NjRDMzIuOTY0IDEyNCA4OCAxMjQgODggMTI0czU1LjAzNSAwIDY4Ljc2Mi0zLjdjNy41NzQtMi4wNCAxMy41MzUtOC4wNDMgMTUuNTYtMTUuNjY0QzE3NiA5MC44MjUgMTc2IDYyIDE3NiA2MnMwLTI4LjgyNC0zLjY4LTQyLjYzNyIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="/></a>
+<a href="https://github.com/rust-lang"><image x="1186.6666" y="30" width="40" height="150" href="data:image/svg+xml;base64,PHN2ZyBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHdpZHRoPSI1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0ibTI1NiAwYy0xNDEuMzkgMC0yNTYgMTE0LjYxLTI1NiAyNTYgMCAxMTMuMSA3My4zNDUgMjA5LjA1IDE3NS4wNyAyNDIuOTEgMTIuODEgMi4zNSAxNy40OC01LjU2IDE3LjQ4LTEyLjM1IDAtNi4wNi0uMjItMjIuMTctLjM1LTQzLjUzLTcxLjIxIDE1LjQ2LTg2LjIzLTM0LjMyLTg2LjIzLTM0LjMyLTExLjY0NS0yOS41OC0yOC40MjktMzcuNDUtMjguNDI5LTM3LjQ1LTIzLjI0NC0xNS44OCAxLjc2LTE1LjU2IDEuNzYtMTUuNTYgMjUuNjk5IDEuOCAzOS4yMDkgMjYuMzggMzkuMjA5IDI2LjM4IDIyLjg0IDM5LjEyIDU5LjkyIDI3LjgyIDc0LjUxIDIxLjI3IDIuMzItMTYuNTQgOC45My0yNy44MiAxNi4yNS0zNC4yMi01Ni44NC02LjQ1LTExNi42MTEtMjguNDMtMTE2LjYxMS0xMjYuNTIgMC0yNy45NCA5Ljk4MS01MC44IDI2LjM1MS02OC43LTIuNjQtNi40Ny0xMS40Mi0zMi41IDIuNS02Ny43NCAwIDAgMjEuNS02Ljg4OSA3MC40MSAyNi4yNCAyMC40MS01LjY5IDQyLjMyLTguNTIgNjQuMDktOC42MSAyMS43My4xIDQzLjY0IDIuOTIgNjQuMDkgOC42MSA0OC44Ny0zMy4xMjkgNzAuMzItMjYuMjQgNzAuMzItMjYuMjQgMTMuOTcgMzUuMjQgNS4xOSA2MS4yNyAyLjU1IDY3Ljc0IDE2LjQxIDE3LjkgMjYuMzIgNDAuNzYgMjYuMzIgNjguNyAwIDk4LjM1LTU5Ljg2IDExOS45OS0xMTYuODkgMTI2LjMyIDkuMTkgNy45MSAxNy4zOCAyMy41MyAxNy4zOCA0Ny40MSAwIDM0LjIyLS4zMSA2MS44My0uMzEgNzAuMjIgMCA2Ljg1IDQuNiAxNC44MiAxNy42IDEyLjMyIDEwMS42NS0zMy45MiAxNzQuOTMtMTI5LjggMTc0LjkzLTI0Mi44OCAwLTE0MS4zOS0xMTQuNjMtMjU2LTI1Ni4wMi0yNTYiIGZpbGw9IiNmZmYiLz48L3N2Zz4="/></a>
+<text x="1066.6666" y="197.28" font-family="sans-serif" font-size="19.2" fill="#ffffff">Social</text>
+<text x="533.3333" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">Maintained</text>
+<text x="616.05206" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">by</text>
+<text x="637.3958" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">the</text>
+<text x="664.0833" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">Rust</text>
+<text x="701.42706" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">Team.</text>
+<text x="749.4427" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">See</text>
+<text x="782.35675" y="262.06406" font-family="sans-serif" font-size="16" fill="#ffffff">a</text>
+<text x="533.3333" y="280.4625" font-family="sans-serif" font-size="16" fill="#ffffff">bug?</text>
+<a href="https://github.com/rust-lang/www.rust-lang.org/issues/new/choose"><text x="573.3724" y="280.4625" font-family="sans-serif" font-size="16" fill="#ffc832">File</text></a>
+<a href="https://github.com/rust-lang/www.rust-lang.org/issues/new/choose"><text x="603.59894" y="280.4625" font-family="sans-serif" font-size="16" fill="#ffc832">an</text></a>
+<a href="https://github.com/rust-lang/www.rust-lang.org/issues/new/choose"><text x="625.8411" y="280.4625" font-family="sans-serif" font-size="16" fill="#ffc832">issue!</text></a>
+<text x="533.3333" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">Web</text>
+<text x="570.388" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">site</text>
+<text x="599.73175" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">built</text>
+<text x="633.5286" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">every</text>
+<text x="677.09894" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">day</text>
+<text x="707.3411" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">at</text>
+<text x="725.1302" y="298.86093" font-family="sans-serif" font-size="16" fill="#ffffff">22:00</text>
+<text x="533.3333" y="317.25937" font-family="sans-serif" font-size="16" fill="#ffffff">UTC</text>
+</svg>

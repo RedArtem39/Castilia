@@ -1,0 +1,24 @@
+[package]
+name = "castilia"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+ureq = { version = "3.4", optional = true, features = ["charset"] }
+url = { version = "2.5", optional = true }
+base64 = { version = "0.23", optional = true }
+
+[dev-dependencies]
+fontdb = "0.24"
+fontdue = "0.9"
+
+[features]
+host-net = ["dep:ureq", "dep:url", "dep:base64"]
+
+[[example]]
+name = "browse"
+required-features = ["host-net"]
+
+[[example]]
+name = "bench"
+required-features = ["host-net"]
