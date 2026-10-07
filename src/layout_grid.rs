@@ -168,7 +168,8 @@ fn size_tracks(defs: &[Track], items: &[Contribution], avail: Option<f32>, gap: 
             let mut guard = 0;
             while free > 0.01 && guard < 50 {
                 guard += 1;
-                let growable: Vec<usize> = (0..n).filter(|&i| !collapsed.get(i).copied().unwrap_or(false) && st[i].flex == 0.0 && size[i] < st[i].limit - 0.001 && !matches!(st[i].limit_kind, SizeKind::Fixed(_)) || (!collapsed.get(i).copied().unwrap_or(false) && matches!(st[i].limit_kind, SizeKind::Fixed(_)) && size[i] < st[i].limit - 0.001 && !matches!(st[i].base_kind, SizeKind::Fixed(_)))).collect();
+                // §12.6 maximize tracks: every non-flexible track grows towards its growth limit
+                let growable: Vec<usize> = (0..n).filter(|&i| !collapsed.get(i).copied().unwrap_or(false) && st[i].flex == 0.0 && size[i] < st[i].limit - 0.001).collect();
                 if growable.is_empty() {
                     break;
                 }
@@ -732,34 +733,38 @@ impl<'a> Ctx<'a> {
         }
         let tracks_h = y;
         // content alignment inside the container
-        let mut x_off = 0.0;
-        let free_w = cw - tracks_w;
-        if free_w > 0.0 {
-            match s.justify_content {
-                Align::Center => x_off = free_w / 2.0,
-                Align::End | Align::FlexEnd => x_off = free_w,
-                _ => {}
+        // (offset of the first track, extra space between tracks); `center`/`end` are unsafe by
+        // default, so overflowing tracks spill out on both sides / the start side like in browsers
+        let distribute = |a: Align, free: f32, n: usize| -> (f32, f32) {
+            let n = n.max(1) as f32;
+            match a {
+                Align::Center => (free / 2.0, 0.0),
+                Align::End | Align::FlexEnd => (free, 0.0),
+                Align::SpaceBetween if free > 0.0 && n > 1.0 => (0.0, free / (n - 1.0)),
+                Align::SpaceAround if free > 0.0 => (free / n / 2.0, free / n),
+                Align::SpaceEvenly if free > 0.0 => (free / (n + 1.0), free / (n + 1.0)),
+                _ => (0.0, 0.0),
             }
+        };
+        let (x_off, col_extra) = distribute(s.justify_content, cw - tracks_w, col_sizes.len());
+        let (y_off, row_extra) = match ch_known {
+            Some(h) => distribute(s.align_content, h - tracks_h, row_sizes.len()),
+            None => (0.0, 0.0),
+        };
+        for (i, p) in col_pos.iter_mut().enumerate() {
+            *p += col_extra * i as f32;
         }
-        let mut y_off = 0.0;
-        if let Some(h) = ch_known {
-            let free_h = h - tracks_h;
-            if free_h > 0.0 {
-                match s.align_content {
-                    Align::Center => y_off = free_h / 2.0,
-                    Align::End | Align::FlexEnd => y_off = free_h,
-                    _ => {}
-                }
-            }
+        for (i, p) in row_pos.iter_mut().enumerate() {
+            *p += row_extra * i as f32;
         }
         let mut first_baseline = None;
         for cell in cells {
             let st = cell.s;
             let (m, _, _, auto) = self.edges(st, cw);
             let _ = auto;
-            let area_w = span_w(cell.col, cell.cspan);
+            let area_w = span_w(cell.col, cell.cspan) + col_extra * cell.cspan.saturating_sub(1) as f32;
             let end_r = (cell.row + cell.rspan).min(row_sizes.len());
-            let area_h: f32 = row_sizes[cell.row..end_r].iter().sum::<f32>() + row_gap * (end_r - cell.row).saturating_sub(1) as f32;
+            let area_h: f32 = row_sizes[cell.row..end_r].iter().sum::<f32>() + (row_gap + row_extra) * (end_r - cell.row).saturating_sub(1) as f32;
             let ax = col_pos[cell.col] + x_off;
             let ay = row_pos[cell.row] + y_off;
             let align = if st.align_self == Align::Auto { s.align_items } else { st.align_self };

@@ -145,6 +145,31 @@ mod tests {
     }
 
     #[test]
+    fn grid_track_sizing_matches_browsers() {
+        let x_of = |html: &str, word: &str| texts(&render(html, "", 1000.0, &Mono)).into_iter().find(|t| t.0 == word).map(|t| t.1).unwrap();
+        // minmax(0, 300px) grows to its limit; justify-content: center then places it
+        let html = "<style>body{margin:0}.g{display:grid;grid-template-columns:minmax(0,300px) minmax(0,100px);justify-content:center}</style><div class=g><div>AA</div><div>BB</div></div>";
+        assert_eq!(x_of(html, "AA"), 300.0);
+        assert_eq!(x_of(html, "BB"), 600.0);
+        // overflowing tracks with justify-content: center spill out on both sides (unsafe alignment)
+        let html = "<style>body{margin:0}.g{display:grid;grid-template-columns:200px 1000px 200px;justify-content:center}</style><div class=g><div>L</div><div>MID</div><div>R</div></div>";
+        assert_eq!(x_of(html, "MID"), 0.0);
+        // a shrink-to-fit grid of minmax(0,1fr) tracks is as wide as the content needs
+        let html = "<style>body{margin:0}.f{display:flex;flex-direction:column;align-items:center}.g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));column-gap:10px}.s{grid-column:span 4}</style><div class=f><div class=g><div class=s>ABCDEFGHIJ</div></div></div>";
+        // 10 chars * 8px = 80px wide, centred in 1000px
+        assert_eq!(x_of(html, "ABCDEFGHIJ"), 460.0);
+    }
+
+    #[test]
+    fn text_wrap_balance_evens_lines() {
+        let html = "<style>body{margin:0}h1{width:400px;font-size:16px;text-wrap:balance}</style><h1>aaaa bbbb cccc dddd eeee ffff gggg hhhh iiii jjjj kkkk</h1>";
+        let t = texts(&render(html, "", 1000.0, &Mono));
+        let lines: alloc::vec::Vec<_> = t.iter().map(|t| t.0.chars().count()).collect();
+        assert_eq!(lines.len(), 2, "{t:?}");
+        assert!(lines[0].abs_diff(lines[1]) <= 5, "{t:?}");
+    }
+
+    #[test]
     fn embedded_css_reaches_the_display_list() {
         let list = render("<style>.note { color: #123456 }</style><p class='note'>Привет</p>", "", 320.0, &Mono);
         assert!(list.commands.iter().any(|c| matches!(c, Command::Text { text, color: 0xff123456, .. } if text == "Привет")));
