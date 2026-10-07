@@ -1,3 +1,7 @@
+#[path = "common/memlimit.rs"]
+mod memlimit;
+#[global_allocator]
+static ALLOC: memlimit::Limited = memlimit::Limited;
 #[path = "common/font.rs"]
 mod font;
 #[path = "common/net.rs"]
@@ -9,7 +13,22 @@ mod svg;
 use castilia::network::{fetch_images, load_page, load_reader_page};
 use std::{env, fs};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
+    memlimit::init();
+    let h = std::thread::Builder::new().stack_size(256 << 20).spawn(|| real_main().map_err(|e| e.to_string())).unwrap();
+    if let Err(e) = h.join().unwrap() {
+        eprintln!("error: {e}");
+        std::process::exit(1);
+    }
+}
+
+fn real_main() -> Result<(), Box<dyn std::error::Error>> {
+    let width: f32 = env::var("CASTILIA_WIDTH").ok().and_then(|w| w.parse().ok()).unwrap_or(1280.0);
+    let mut config = castilia::EngineConfig::default();
+    if let Some(m) = env::var("CASTILIA_JS_MODE").ok().and_then(|m| castilia::ExecMode::parse(&m)) {
+        config.exec_mode = m;
+    }
+    config.max_native_depth = 1000;
     let args: Vec<_> = env::args().collect();
     let reader = args.len() == 4 && args[1] == "--reader";
     if !(args.len() == 3 || reader) {
@@ -23,13 +42,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut fetcher = net::HostFetcher::new();
     let fonts = font::SystemFont::new()?;
     let page = if reader {
-        load_reader_page(&mut fetcher, &args[url_index], 800.0, &fonts)?
+        load_reader_page(&mut fetcher, &args[url_index], width, &fonts)?
     } else {
-        load_page(&mut fetcher, &args[url_index], 800.0, &fonts)?
+        castilia::network::load_page_with(&mut fetcher, &args[url_index], width, &fonts, castilia::network::LoadOptions { config, code_memory: None })?
     };
     let images = fetch_images(&mut fetcher, &page.display, 16);
     let resources: Vec<svg::Resource> = images.resources.iter().map(|r| svg::Resource { url: &r.url, mime: r.mime, bytes: &r.bytes }).collect();
-    fs::write(&args[output_index], svg::to_svg(&page.display, &fonts, &resources, 768.0))?;
+    fs::write(&args[output_index], svg::to_svg(&page.display, &fonts, &resources, 800.0))?;
     println!("URL: {}", page.url);
     println!(
         "HTML: {} bytes, CSS: {} bytes ({} of {} linked sheets loaded)",

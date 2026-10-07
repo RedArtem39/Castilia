@@ -10,7 +10,7 @@ use alloc::{boxed::Box, string::String, vec::Vec};
 
 const MAX_HTML_BYTES: usize = 8 * 1024 * 1024;
 const MAX_CSS_BYTES: usize = 2 * 1024 * 1024;
-const MAX_STYLESHEETS: usize = 16;
+const MAX_STYLESHEETS: usize = 64;
 const MAX_JS_BYTES: usize = 2 * 1024 * 1024;
 const MAX_FETCH_BYTES: usize = 4 * 1024 * 1024;
 const MAX_IMAGE_PROBE_BYTES: usize = 512 * 1024;
@@ -320,14 +320,19 @@ fn load_page_mode<F: Fetcher>(
                     .any(|token| token.eq_ignore_ascii_case("stylesheet"))
             })
         {
-            linked_stylesheets += 1;
-            if linked_stylesheets > MAX_STYLESHEETS {
-                warnings.push(String::from("stylesheet limit reached"));
-                continue;
-            }
             let Some(href) = node.attribute("href") else {
                 continue;
             };
+            if node.attribute("disabled").is_some() {
+                continue;
+            }
+            linked_stylesheets += 1;
+            if linked_stylesheets > MAX_STYLESHEETS {
+                if linked_stylesheets == MAX_STYLESHEETS + 1 {
+                    warnings.push(String::from("stylesheet limit reached"));
+                }
+                continue;
+            }
             let Ok(css_url) = fetcher.resolve(&base, href) else {
                 warnings.push(alloc::format!("invalid stylesheet URL: {href}"));
                 continue;
