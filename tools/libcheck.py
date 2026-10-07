@@ -28,7 +28,7 @@ def main():
             cmd = [exe, '--mode', mode] + [os.path.join(libdir, l) for l in libs] + [t]
             start = time.time()
             try:
-                p = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
+                p = subprocess.run(cmd, creationflags=getattr(subprocess, 'BELOW_NORMAL_PRIORITY_CLASS', 0), capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=120)
                 out, err = p.stdout, p.stderr
             except subprocess.TimeoutExpired:
                 out, err = '', 'TIMEOUT'

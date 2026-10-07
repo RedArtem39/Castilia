@@ -1,5 +1,10 @@
 //! Run scripts against an HTML document and print console output.
 //! Usage: jsrun [--html file.html] script.js ... [-e 'expression']
+#[path = "common/memlimit.rs"]
+mod memlimit;
+#[global_allocator]
+static ALLOC: memlimit::Limited = memlimit::Limited;
+
 use castilia::js::{Host, HostResponse};
 use castilia::page::{Page, PageOptions};
 use std::fs;
@@ -18,6 +23,7 @@ impl Host for FileHost {
 }
 
 fn main() {
+    memlimit::init();
     // run on a large stack so deep native re-entry is bounded by the engine's limits, not the OS
     let h = std::thread::Builder::new().stack_size(256 << 20).spawn(real_main).unwrap();
     h.join().unwrap();

@@ -3,6 +3,11 @@
 //! `sitecheck [LIST] [--jobs N] [--timeout S] [--mode interp|jit]` loads every URL of LIST (default
 //! `tools/sites.txt`) in its own child process (a crash or hang never takes the run down), then prints a
 //! summary. `sitecheck --one URL` loads a single page and prints one `RESULT` line.
+#[path = "common/memlimit.rs"]
+mod memlimit;
+#[global_allocator]
+static ALLOC: memlimit::Limited = memlimit::Limited;
+
 #[path = "common/font.rs"]
 mod font;
 #[path = "common/net.rs"]
@@ -73,9 +78,15 @@ struct Outcome {
 fn run_child(exe: &str, url: &str, timeout: Duration, mode: &Option<String>) -> Outcome {
     let start = Instant::now();
     let mut cmd = Command::new(exe);
-    cmd.arg("--one").arg(url).stdout(Stdio::piped()).stderr(Stdio::piped());
+    cmd.arg("--one").arg(url).env("CASTILIA_MEM_MB", "1024").stdout(Stdio::piped()).stderr(Stdio::piped());
     if let Some(m) = mode {
         cmd.env("CASTILIA_JS_MODE", m);
+    }
+    #[cfg(windows)]
+    {
+        // keep the desktop responsive while pages load
+        use std::os::windows::process::CommandExt;
+        cmd.creation_flags(0x0000_4000); // BELOW_NORMAL_PRIORITY_CLASS
     }
     let mut child = match cmd.spawn() {
         Ok(c) => c,
@@ -131,13 +142,14 @@ fn field(line: &str, key: &str) -> Option<i64> {
 }
 
 fn main() {
+    memlimit::init();
     let args: Vec<String> = env::args().collect();
     if args.len() >= 3 && args[1] == "--one" {
         one(&args[2]);
         return;
     }
     let mut list = String::from("tools/sites.txt");
-    let mut jobs = 6usize;
+    let mut jobs = 3usize;
     let mut timeout = 90u64;
     let mut mode = None;
     let mut i = 1;
