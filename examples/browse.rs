@@ -29,6 +29,7 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
         config.exec_mode = m;
     }
     config.max_native_depth = 1000;
+    config.trace_errors = env::var("CASTILIA_TRACE").is_ok();
     let args: Vec<_> = env::args().collect();
     let reader = args.len() == 4 && args[1] == "--reader";
     if !(args.len() == 3 || reader) {
@@ -84,6 +85,14 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     }
     for warning in &images.warnings {
         println!("Warning: {warning}");
+    }
+    if env::var("CASTILIA_CONSOLE").is_ok() {
+        if let Some(p) = &page.page {
+            for l in p.console() {
+                let l: String = l.chars().take(400).collect();
+                println!("console {l}");
+            }
+        }
     }
     println!("SVG: {}", args[output_index]);
     Ok(())

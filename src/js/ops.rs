@@ -121,6 +121,11 @@ impl Interp {
                     return Some(Prop { slot: Slot::Data(Value::Num(a.len() as f64)), flags: WRITABLE });
                 }
             }
+            Class::Typed(v) => {
+                if let Some(i) = key.as_index() {
+                    return v.get(i).map(|n| Prop { slot: Slot::Data(Value::Num(n)), flags: WRITABLE | ENUMERABLE | CONFIGURABLE });
+                }
+            }
             Class::Str(s) => {
                 if let Some(i) = key.as_index() {
                     return u16_at(s, i).map(|u| Prop { slot: Slot::Data(Value::string(from_u16(&[u]))), flags: ENUMERABLE });
@@ -228,6 +233,11 @@ impl Interp {
                     out.push(Key::S(Rc::from(i.to_string())));
                 }
                 out.push(Key::str("length"));
+            }
+            Class::Typed(v) => {
+                for i in 0..v.len {
+                    out.push(Key::S(Rc::from(i.to_string())));
+                }
             }
             _ => {}
         }
@@ -424,11 +434,20 @@ impl Interp {
 
     pub fn get_member(&mut self, base: &Value, k: &Value) -> Res {
         if let (Value::Obj(o), Value::Num(n)) = (base, k) {
-            if let Class::Array(a) = &o.borrow().class {
-                let i = *n as usize;
-                if i as f64 == *n && i < a.len() {
-                    return Ok(a[i].clone());
+            match &o.borrow().class {
+                Class::Array(a) => {
+                    let i = *n as usize;
+                    if i as f64 == *n && i < a.len() {
+                        return Ok(a[i].clone());
+                    }
                 }
+                Class::Typed(v) => {
+                    let i = *n as usize;
+                    if i as f64 == *n {
+                        return Ok(v.get(i).map_or(Value::Undefined, Value::Num));
+                    }
+                }
+                _ => {}
             }
         }
         if let (Value::Str(s), Value::Num(n)) = (base, k) {
@@ -442,6 +461,15 @@ impl Interp {
     }
 
     pub fn set_member(&mut self, base: &Value, k: &Value, v: Value) -> Res<()> {
+        if let (Value::Obj(o), Value::Num(n), Value::Num(x)) = (base, k, &v) {
+            if let Class::Typed(view) = &o.borrow().class {
+                let i = *n as usize;
+                if i as f64 == *n {
+                    view.set(i, *x);
+                    return Ok(());
+                }
+            }
+        }
         if let (Value::Obj(o), Value::Num(n)) = (base, k) {
             let mut ob = o.borrow_mut();
             if let Class::Array(a) = &mut ob.class {
@@ -482,6 +510,17 @@ impl Interp {
     }
 
     pub fn set_obj(&mut self, o: &Obj, key: Key, v: Value, receiver: &Value) -> Res<bool> {
+        // typed array elements: numeric keys never create properties
+        if let Some(i) = key.as_index() {
+            let is_typed = matches!(o.borrow().class, Class::Typed(_));
+            if is_typed {
+                let n = self.to_number(&v)?;
+                if let Class::Typed(view) = &o.borrow().class {
+                    view.set(i, n);
+                }
+                return Ok(true);
+            }
+        }
         // fast path: own writable data property on the receiver
         {
             let recv_is_o = matches!(receiver, Value::Obj(r) if r.ptr_eq(o));

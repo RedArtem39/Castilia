@@ -15,6 +15,7 @@ use alloc::{
 use core::cell::RefCell;
 
 pub mod array;
+pub mod binary;
 pub mod collections;
 pub mod date;
 pub mod json;

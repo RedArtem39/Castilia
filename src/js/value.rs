@@ -378,6 +378,11 @@ pub enum Class {
     Arguments,
     /// Holder for a module's top-level environment (used by namespace getters).
     ModuleEnv(Env),
+    /// Raw bytes of an `ArrayBuffer`.
+    ArrayBuffer(super::builtins::binary::Bytes),
+    /// Typed array view.
+    Typed(Box<super::builtins::binary::View>),
+    DataView(Box<super::builtins::binary::View>),
 }
 
 impl Value {

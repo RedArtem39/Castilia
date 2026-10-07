@@ -510,4 +510,259 @@
   expose('webkitRequestAnimationFrame', G.requestAnimationFrame);
   expose('webkitCancelAnimationFrame', G.cancelAnimationFrame);
   expose('MediaQueryListEvent', class MediaQueryListEvent extends Event {});
+
+  // ---- Typed array algorithms that build new arrays ----------------------------
+  const TAP = Object.getPrototypeOf(Uint8Array.prototype);
+  const taNew = (ta, n) => new ta.constructor(n);
+  const def = (o, k, v) => Object.defineProperty(o, k, { value: v, writable: true, configurable: true, enumerable: false });
+  def(TAP, 'map', function (f, t) { const r = taNew(this, this.length); for (let i = 0; i < this.length; i++) r[i] = f.call(t, this[i], i, this); return r; });
+  def(TAP, 'filter', function (f, t) { const out = []; for (let i = 0; i < this.length; i++) if (f.call(t, this[i], i, this)) out.push(this[i]); return new this.constructor(out); });
+  def(TAP, 'reverse', function () { for (let i = 0, j = this.length - 1; i < j; i++, j--) { const x = this[i]; this[i] = this[j]; this[j] = x; } return this; });
+  def(TAP, 'sort', function (cmp) { const a = Array.from(this).sort(cmp || ((x, y) => (x < y ? -1 : x > y ? 1 : 0))); for (let i = 0; i < a.length; i++) this[i] = a[i]; return this; });
+  def(TAP, 'copyWithin', function (t, s, e) { const a = Array.prototype.copyWithin.call(Array.from(this), t, s, e); for (let i = 0; i < a.length; i++) this[i] = a[i]; return this; });
+  def(TAP, 'toReversed', function () { return this.slice().reverse(); });
+  def(TAP, 'toSorted', function (c) { return this.slice().sort(c); });
+  def(TAP, 'with', function (i, v) { const r = this.slice(); r[i < 0 ? this.length + i : i] = v; return r; });
+
+  // ---- Encoding (bytes) ----------------------------------------------------------
+  const bytesOf = (buf) => {
+    if (buf === undefined || buf === null) return new Uint8Array(0);
+    if (buf instanceof ArrayBuffer) return new Uint8Array(buf);
+    if (ArrayBuffer.isView(buf)) return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    return new Uint8Array(buf);
+  };
+  const utf8Decode = (b, fatal) => {
+    let i = 0;
+    if (b.length >= 3 && b[0] === 0xef && b[1] === 0xbb && b[2] === 0xbf) i = 3;
+    const parts = [];
+    let codes = [];
+    for (; i < b.length;) {
+      const c = b[i];
+      let cp = -1, n = 0;
+      if (c < 0x80) { cp = c; n = 1; }
+      else if (c >= 0xc2 && c < 0xe0 && i + 1 < b.length && (b[i + 1] & 0xc0) === 0x80) { cp = ((c & 31) << 6) | (b[i + 1] & 63); n = 2; }
+      else if (c >= 0xe0 && c < 0xf0 && i + 2 < b.length && (b[i + 1] & 0xc0) === 0x80 && (b[i + 2] & 0xc0) === 0x80) { cp = ((c & 15) << 12) | ((b[i + 1] & 63) << 6) | (b[i + 2] & 63); n = 3; if (cp < 0x800 || (cp >= 0xd800 && cp < 0xe000)) cp = -1; }
+      else if (c >= 0xf0 && c < 0xf5 && i + 3 < b.length && (b[i + 1] & 0xc0) === 0x80 && (b[i + 2] & 0xc0) === 0x80 && (b[i + 3] & 0xc0) === 0x80) { cp = ((c & 7) << 18) | ((b[i + 1] & 63) << 12) | ((b[i + 2] & 63) << 6) | (b[i + 3] & 63); n = 4; if (cp < 0x10000 || cp > 0x10ffff) cp = -1; }
+      if (cp < 0) { if (fatal) throw new TypeError('The encoded data was not valid for encoding utf-8'); cp = 0xfffd; n = 1; }
+      if (cp > 0xffff) { cp -= 0x10000; codes.push(0xd800 + (cp >> 10), 0xdc00 + (cp & 1023)); } else codes.push(cp);
+      i += n;
+      if (codes.length > 8000) { parts.push(String.fromCharCode.apply(null, codes)); codes = []; }
+    }
+    parts.push(String.fromCharCode.apply(null, codes));
+    return parts.join('');
+  };
+  def(TextDecoder.prototype, 'decode', function (buf) {
+    const b = bytesOf(buf);
+    const enc = this.encoding;
+    if (enc === 'utf-8' || enc === 'utf8' || enc === 'unicode-1-1-utf-8') return utf8Decode(b, this.fatal);
+    if (enc === 'utf-16le' || enc === 'utf-16') { let s = ''; for (let i = 0; i + 1 < b.length; i += 2) s += String.fromCharCode(b[i] | (b[i + 1] << 8)); return s; }
+    let s = ''; for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return s;
+  });
+  def(TextEncoder.prototype, 'encode', function (str = '') {
+    str = String(str);
+    const out = new Uint8Array(str.length * 3);
+    let n = 0;
+    for (let i = 0; i < str.length; i++) {
+      let c = str.charCodeAt(i);
+      if (c >= 0xd800 && c < 0xdc00 && i + 1 < str.length) { const d = str.charCodeAt(i + 1); if (d >= 0xdc00 && d < 0xe000) { c = 0x10000 + ((c - 0xd800) << 10) + (d - 0xdc00); i++; } else c = 0xfffd; }
+      else if (c >= 0xd800 && c < 0xe000) c = 0xfffd;
+      if (c < 0x80) out[n++] = c;
+      else if (c < 0x800) { out[n++] = 0xc0 | (c >> 6); out[n++] = 0x80 | (c & 63); }
+      else if (c < 0x10000) { out[n++] = 0xe0 | (c >> 12); out[n++] = 0x80 | ((c >> 6) & 63); out[n++] = 0x80 | (c & 63); }
+      else { out[n++] = 0xf0 | (c >> 18); out[n++] = 0x80 | ((c >> 12) & 63); out[n++] = 0x80 | ((c >> 6) & 63); out[n++] = 0x80 | (c & 63); }
+    }
+    return out.slice(0, n);
+  });
+  def(TextEncoder.prototype, 'encodeInto', function (s, dest) {
+    const e = this.encode(s); const n = Math.min(e.length, dest.length); dest.set(e.subarray(0, n)); return { read: s.length, written: n };
+  });
+  def(Blob.prototype, 'arrayBuffer', function () { return Promise.resolve(new TextEncoder().encode(this._text()).buffer); });
+  def(Blob.prototype, 'bytes', function () { return Promise.resolve(new TextEncoder().encode(this._text())); });
+  def(Blob.prototype, 'stream', function () { const t = this._text(); return new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode(t)); c.close(); } }); });
+
+  // ---- Streams ---------------------------------------------------------------------
+  class ReadableStreamDefaultController {
+    constructor(s) { this._s = s; }
+    get desiredSize() { return this._s._hwm - this._s._queue.length; }
+    enqueue(chunk) { const s = this._s; if (s._state !== 'readable' || s._closeRequested) throw new TypeError('Cannot enqueue into a closed stream'); if (s._readers.length) s._readers.shift().resolve({ value: chunk, done: false }); else s._queue.push(chunk); }
+    close() { const s = this._s; if (s._closeRequested) return; s._closeRequested = true; if (!s._queue.length) s._finish(); }
+    error(e) { this._s._fail(e); }
+  }
+  class ReadableStreamDefaultReader {
+    constructor(stream) { if (stream._reader) throw new TypeError('ReadableStream is locked'); this._s = stream; stream._reader = this; this.closed = new Promise((r, j) => { this._close = r; this._err = j; }); this.closed.catch(() => {}); if (stream._state === 'closed') this._close(); }
+    read() {
+      const s = this._s;
+      if (!s) return Promise.reject(new TypeError('Reader released'));
+      if (s._queue.length) { const v = s._queue.shift(); if (!s._queue.length && s._closeRequested) s._finish(); else s._pull(); return Promise.resolve({ value: v, done: false }); }
+      if (s._state === 'closed') return Promise.resolve({ value: undefined, done: true });
+      if (s._state === 'errored') return Promise.reject(s._error);
+      const p = new Promise((resolve, reject) => s._readers.push({ resolve, reject }));
+      s._pull();
+      return p;
+    }
+    releaseLock() { if (this._s) { this._s._reader = null; this._s = null; } }
+    cancel(r) { return this._s ? this._s.cancel(r) : Promise.resolve(); }
+  }
+  class ReadableStream {
+    constructor(src = {}, strategy = {}) {
+      this._src = src; this._queue = []; this._readers = []; this._state = 'readable'; this._reader = null; this._closeRequested = false; this._pulling = false;
+      this._hwm = strategy.highWaterMark === undefined ? 1 : strategy.highWaterMark;
+      this._ctrl = new ReadableStreamDefaultController(this);
+      let started;
+      try { started = src.start ? src.start(this._ctrl) : undefined; } catch (e) { this._fail(e); return; }
+      Promise.resolve(started).then(() => { this._started = true; this._pull(); }, (e) => this._fail(e));
+    }
+    _pull() {
+      if (!this._started || this._pulling || this._state !== 'readable' || this._closeRequested || !this._src.pull) return;
+      if (this._queue.length >= this._hwm && !this._readers.length) return;
+      this._pulling = true;
+      let r; try { r = this._src.pull(this._ctrl); } catch (e) { this._fail(e); return; }
+      Promise.resolve(r).then(() => { this._pulling = false; if (this._readers.length) this._pull(); }, (e) => this._fail(e));
+    }
+    _finish() { this._state = 'closed'; for (const r of this._readers.splice(0)) r.resolve({ value: undefined, done: true }); if (this._reader) this._reader._close(); }
+    _fail(e) { if (this._state !== 'readable') return; this._state = 'errored'; this._error = e; this._queue = []; for (const r of this._readers.splice(0)) r.reject(e); if (this._reader) this._reader._err(e); }
+    get locked() { return !!this._reader; }
+    getReader() { return new ReadableStreamDefaultReader(this); }
+    cancel(reason) { this._queue = []; this._state = 'closed'; for (const r of this._readers.splice(0)) r.resolve({ value: undefined, done: true }); return Promise.resolve(this._src.cancel ? this._src.cancel(reason) : undefined); }
+    async pipeTo(dest, opts = {}) {
+      const r = this.getReader(); const w = dest.getWriter();
+      try { for (;;) { const { value, done } = await r.read(); if (done) break; await w.write(value); } if (!opts.preventClose) await w.close(); }
+      catch (e) { if (!opts.preventAbort) await w.abort(e); throw e; }
+      finally { r.releaseLock(); w.releaseLock(); }
+    }
+    pipeThrough(t, opts) { this.pipeTo(t.writable, opts).catch(() => {}); return t.readable; }
+    tee() {
+      const r = this.getReader(); const ctrls = [];
+      const pull = () => r.read().then(({ value, done }) => { for (const c of ctrls) { if (done) c.close(); else c.enqueue(value); } });
+      const a = new ReadableStream({ start(c) { ctrls.push(c); }, pull });
+      const b = new ReadableStream({ start(c) { ctrls.push(c); }, pull });
+      return [a, b];
+    }
+    values(opts = {}) {
+      const r = this.getReader();
+      return { next: () => r.read(), return: (v) => { if (!opts.preventCancel) r.cancel(v); r.releaseLock(); return Promise.resolve({ value: v, done: true }); }, [Symbol.asyncIterator]() { return this; } };
+    }
+    [Symbol.asyncIterator](o) { return this.values(o); }
+    static from(it) {
+      if (it instanceof ReadableStream) return it;
+      const i = it[Symbol.asyncIterator] ? it[Symbol.asyncIterator]() : it[Symbol.iterator]();
+      return new ReadableStream({ async pull(c) { const { value, done } = await i.next(); if (done) c.close(); else c.enqueue(value); } }, { highWaterMark: 0 });
+    }
+  }
+  class WritableStreamDefaultWriter {
+    constructor(s) { if (s._writer) throw new TypeError('WritableStream is locked'); this._s = s; s._writer = this; this.closed = s._closedP; this.ready = Promise.resolve(); }
+    get desiredSize() { return 1; }
+    write(chunk) { const s = this._s; return s._enqueue(() => (s._sink.write ? s._sink.write(chunk, s._ctrl) : undefined)); }
+    close() { const s = this._s; return s._enqueue(() => (s._sink.close ? s._sink.close() : undefined)).then(() => { s._state = 'closed'; s._resolveClosed(); }); }
+    abort(r) { const s = this._s; s._state = 'errored'; return Promise.resolve(s._sink.abort ? s._sink.abort(r) : undefined); }
+    releaseLock() { if (this._s) { this._s._writer = null; this._s = null; } }
+  }
+  class WritableStream {
+    constructor(sink = {}) {
+      this._sink = sink; this._writer = null; this._state = 'writable';
+      this._ctrl = { error: (e) => { this._state = 'errored'; this._error = e; }, signal: new AbortController().signal };
+      this._closedP = new Promise((r) => { this._resolveClosed = r; });
+      this._chain = Promise.resolve(sink.start ? sink.start(this._ctrl) : undefined);
+    }
+    _enqueue(fn) { const p = this._chain.then(() => { if (this._state === 'errored') throw this._error; return fn(); }); this._chain = p.catch(() => {}); return p; }
+    get locked() { return !!this._writer; }
+    getWriter() { return new WritableStreamDefaultWriter(this); }
+    close() { return this.getWriter().close(); }
+    abort(r) { return this.getWriter().abort(r); }
+  }
+  class TransformStream {
+    constructor(t = {}) {
+      let rc;
+      this.readable = new ReadableStream({ start(c) { rc = c; } });
+      const ctrl = { enqueue: (c) => rc.enqueue(c), error: (e) => rc.error(e), terminate: () => rc.close(), get desiredSize() { return 1; } };
+      const started = t.start ? t.start(ctrl) : undefined;
+      this.writable = new WritableStream({
+        start: () => started,
+        write: (chunk) => (t.transform ? t.transform(chunk, ctrl) : ctrl.enqueue(chunk)),
+        close: () => Promise.resolve(t.flush ? t.flush(ctrl) : undefined).then(() => rc.close()),
+        abort: (e) => rc.error(e),
+      });
+    }
+  }
+  class TextEncoderStream extends TransformStream { constructor() { const e = new TextEncoder(); super({ transform(c, ctl) { ctl.enqueue(e.encode(c)); } }); } }
+  class TextDecoderStream extends TransformStream { constructor(l) { const d = new TextDecoder(l); super({ transform(c, ctl) { ctl.enqueue(d.decode(c)); } }); } }
+  for (const [n, c] of Object.entries({ ReadableStream, ReadableStreamDefaultReader, ReadableStreamDefaultController, WritableStream, WritableStreamDefaultWriter, TransformStream, TextEncoderStream, TextDecoderStream })) expose(n, c);
+  expose('ByteLengthQueuingStrategy', class ByteLengthQueuingStrategy { constructor(o) { this.highWaterMark = o.highWaterMark; } size(c) { return c.byteLength; } });
+  expose('CountQueuingStrategy', class CountQueuingStrategy { constructor(o) { this.highWaterMark = o.highWaterMark; } size() { return 1; } });
+  // Response/Request bodies as streams
+  for (const C of [G.Response, G.Request]) {
+    if (!C) continue;
+    Object.defineProperty(C.prototype, 'body', { configurable: true, get() { const t = this._bodyText(); if (t === null) return null; const bytes = new TextEncoder().encode(t); return new ReadableStream({ start(c) { c.enqueue(bytes); c.close(); } }); } });
+    def(C.prototype, 'bytes', function () { return this.text().then((t) => new TextEncoder().encode(t)); });
+    def(C.prototype, 'arrayBuffer', function () { return this.text().then((t) => new TextEncoder().encode(t).buffer); });
+  }
+
+  // ---- Interfaces scripts feature-detect or extend --------------------------------
+  const iface = (name, proto, base) => {
+    const C = { [name]: function () { throw new TypeError('Illegal constructor'); } }[name];
+    const p = proto || Object.create(base ? base.prototype : Object.prototype);
+    def(C, 'prototype', p); def(p, 'constructor', C);
+    Object.defineProperty(p, Symbol.toStringTag, { value: name, configurable: true });
+    if (base) Object.setPrototypeOf(C, base);
+    expose(name, C);
+    return C;
+  };
+  const adopt = (name, obj, base) => {
+    if (!obj || G[name]) return;
+    const p = Object.create(base ? base.prototype : Object.getPrototypeOf(obj) || Object.prototype);
+    iface(name, p);
+    try { Object.setPrototypeOf(obj, p); } catch (e) {}
+  };
+  adopt('Location', G.location);
+  adopt('History', G.history);
+  adopt('Navigator', G.navigator);
+  adopt('Screen', G.screen);
+  adopt('Performance', G.performance);
+  adopt('Storage', G.localStorage);
+  if (G.sessionStorage && G.Storage) try { Object.setPrototypeOf(G.sessionStorage, G.Storage.prototype); } catch (e) {}
+  if (!G.Window) iface('Window', Object.create(G.EventTarget ? G.EventTarget.prototype : Object.prototype));
+  for (const n of ['CDATASection', 'ProcessingInstruction']) if (!G[n]) iface(n, null, G.Text || G.Node);
+  if (!G.StaticRange) expose('StaticRange', class StaticRange { constructor(i) { Object.assign(this, { startContainer: i.startContainer, startOffset: i.startOffset, endContainer: i.endContainer, endOffset: i.endOffset }); this.collapsed = this.startContainer === this.endContainer && this.startOffset === this.endOffset; } });
+  if (!G.Crypto) adopt('Crypto', G.crypto);
+  if (!G.SubtleCrypto) iface('SubtleCrypto');
+  if (!G.MessagePort) expose('MessagePort', MessagePort);
+  if (!G.ElementInternals) expose('ElementInternals', class ElementInternals { constructor() { this.states = new Set(); this.form = null; this.validity = { valid: true }; } setFormValue() {} setValidity() {} checkValidity() { return true; } reportValidity() { return true; } });
+  if (G.HTMLElement && !G.HTMLElement.prototype.attachInternals) def(G.HTMLElement.prototype, 'attachInternals', function () { return new G.ElementInternals(); });
+  if (!G.DOMMatrix) {
+    class DOMMatrixReadOnly {
+      constructor(init) { const m = Array.isArray(init) && init.length === 6 ? init : [1, 0, 0, 1, 0, 0]; [this.a, this.b, this.c, this.d, this.e, this.f] = m; this.is2D = true; }
+      get m11() { return this.a; } get m12() { return this.b; } get m21() { return this.c; } get m22() { return this.d; } get m41() { return this.e; } get m42() { return this.f; }
+      get isIdentity() { return this.a === 1 && this.b === 0 && this.c === 0 && this.d === 1 && this.e === 0 && this.f === 0; }
+      multiply(o) { const a = this; return new DOMMatrix([a.a * o.a + a.c * o.b, a.b * o.a + a.d * o.b, a.a * o.c + a.c * o.d, a.b * o.c + a.d * o.d, a.a * o.e + a.c * o.f + a.e, a.b * o.e + a.d * o.f + a.f]); }
+      translate(x = 0, y = 0) { return this.multiply(new DOMMatrix([1, 0, 0, 1, x, y])); }
+      scale(s = 1, sy = s) { return this.multiply(new DOMMatrix([s, 0, 0, sy, 0, 0])); }
+      inverse() { const { a, b, c, d, e, f } = this; const det = a * d - b * c; return new DOMMatrix([d / det, -b / det, -c / det, a / det, (c * f - d * e) / det, (b * e - a * f) / det]); }
+      transformPoint(p = {}) { const x = p.x || 0, y = p.y || 0; return { x: this.a * x + this.c * y + this.e, y: this.b * x + this.d * y + this.f, z: 0, w: 1 }; }
+      toString() { return 'matrix(' + [this.a, this.b, this.c, this.d, this.e, this.f].join(', ') + ')'; }
+    }
+    class DOMMatrix extends DOMMatrixReadOnly {}
+    expose('DOMMatrixReadOnly', DOMMatrixReadOnly); expose('DOMMatrix', DOMMatrix); expose('WebKitCSSMatrix', DOMMatrix);
+    expose('DOMPoint', class DOMPoint { constructor(x = 0, y = 0, z = 0, w = 1) { Object.assign(this, { x, y, z, w }); } });
+  }
+  if (!G.Path2D) expose('Path2D', class Path2D { addPath() {} closePath() {} moveTo() {} lineTo() {} bezierCurveTo() {} quadraticCurveTo() {} arc() {} arcTo() {} ellipse() {} rect() {} roundRect() {} });
+  if (!G.EventSource) expose('EventSource', class EventSource extends EventTarget { constructor(url) { super(); this.url = String(url); this.readyState = 2; this.onerror = null; this.onmessage = null; this.onopen = null; setTimeout(() => { const e = new Event('error'); if (typeof this.onerror === 'function') this.onerror(e); this.dispatchEvent(e); }, 0); } close() { this.readyState = 2; } });
+  // IndexedDB is not persisted: opening fails asynchronously so pages take their fallback path
+  if (!G.indexedDB) {
+    class IDBRequest extends EventTarget { constructor() { super(); this.result = undefined; this.error = null; this.readyState = 'pending'; this.onsuccess = null; this.onerror = null; this.onupgradeneeded = null; this.onblocked = null; } }
+    const fail = (req) => setTimeout(() => { req.readyState = 'done'; req.error = new DOMException('IndexedDB is not available', 'UnknownError'); const e = new Event('error'); if (typeof req.onerror === 'function') req.onerror(e); req.dispatchEvent(e); }, 0);
+    class IDBFactory { open() { const r = new IDBRequest(); fail(r); return r; } deleteDatabase() { const r = new IDBRequest(); fail(r); return r; } databases() { return Promise.resolve([]); } cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0; } }
+    expose('IDBRequest', IDBRequest); expose('IDBOpenDBRequest', IDBRequest); expose('IDBFactory', IDBFactory);
+    expose('indexedDB', new IDBFactory());
+  }
+  if (!G.caches) expose('caches', { open: () => Promise.reject(new DOMException('CacheStorage is not available', 'SecurityError')), match: () => Promise.resolve(undefined), has: () => Promise.resolve(false), keys: () => Promise.resolve([]), delete: () => Promise.resolve(false) });
+  // Navigation timing for `performance.getEntriesByType('navigation')`
+  if (G.performance) {
+    const nav = { name: String(G.location && G.location.href), entryType: 'navigation', startTime: 0, duration: 120, initiatorType: 'navigation', nextHopProtocol: 'h2', workerStart: 0, redirectStart: 0, redirectEnd: 0, fetchStart: 1, domainLookupStart: 1, domainLookupEnd: 1, connectStart: 1, connectEnd: 1, secureConnectionStart: 1, requestStart: 2, responseStart: 40, responseEnd: 50, transferSize: 0, encodedBodySize: 0, decodedBodySize: 0, serverTiming: [], unloadEventStart: 0, unloadEventEnd: 0, domInteractive: 80, domContentLoadedEventStart: 90, domContentLoadedEventEnd: 91, domComplete: 110, loadEventStart: 115, loadEventEnd: 120, type: 'navigate', redirectCount: 0, activationStart: 0, toJSON() { return Object.assign({}, this); } };
+    const byType = (t) => (t === 'navigation' ? [nav] : t === 'paint' ? [{ name: 'first-contentful-paint', entryType: 'paint', startTime: 100, duration: 0 }] : []);
+    def(G.performance, 'getEntriesByType', byType);
+    def(G.performance, 'getEntries', () => [nav]);
+    if (!G.performance.timing) def(G.performance, 'timing', { navigationStart: 0, fetchStart: 1, responseStart: 40, responseEnd: 50, domLoading: 60, domInteractive: 80, domContentLoadedEventStart: 90, domContentLoadedEventEnd: 91, domComplete: 110, loadEventStart: 115, loadEventEnd: 120 });
+    if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
+  }
+  if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
 })(globalThis);

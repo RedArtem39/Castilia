@@ -9,10 +9,9 @@ use crate::{
 use alloc::{boxed::Box, string::String, vec::Vec};
 
 const MAX_HTML_BYTES: usize = 8 * 1024 * 1024;
-const MAX_CSS_BYTES: usize = 2 * 1024 * 1024;
+const MAX_CSS_BYTES: usize = 8 * 1024 * 1024;
 const MAX_STYLESHEETS: usize = 64;
-const MAX_JS_BYTES: usize = 2 * 1024 * 1024;
-const MAX_FETCH_BYTES: usize = 4 * 1024 * 1024;
+const MAX_FETCH_BYTES: usize = 16 * 1024 * 1024;
 const MAX_IMAGE_PROBE_BYTES: usize = 512 * 1024;
 const MAX_IMAGE_PROBES: usize = 64;
 
@@ -377,6 +376,7 @@ fn load_page_mode<F: Fetcher>(
         // SAFETY: erases the borrow's lifetime; the pointer is only dereferenced while this function
         // runs and the host holding it is dropped (`clear_host`) before returning.
         let erased: *mut (dyn Fetcher + 'static) = unsafe { core::mem::transmute::<*mut (dyn Fetcher + '_), *mut (dyn Fetcher + 'static)>(fetcher_ptr as *mut (dyn Fetcher + '_)) };
+        let max_js = load_options.config.max_script_bytes;
         let options = crate::page::PageOptions {
             url: Some(response.final_url.clone()),
             host: Some(Box::new(BorrowedHost { fetcher: erased })),
@@ -391,7 +391,8 @@ fn load_page_mode<F: Fetcher>(
             // SAFETY: see `BorrowedHost`; scripts run synchronously inside `Page::load`.
             let fetcher = unsafe { &mut *fetcher_ptr };
             let url = fetcher.resolve(&base_for_scripts, src)?;
-            let response = fetcher.get(&url, MAX_JS_BYTES)?;
+            // one byte over the limit so oversized scripts are rejected instead of run truncated
+            let response = fetcher.get(&url, max_js + 1)?;
             let cs = response.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
             Ok(crate::encoding::decode_resource(&response.body, cs))
         });

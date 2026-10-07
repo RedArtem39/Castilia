@@ -207,6 +207,7 @@ impl Edges<'_> {
                 self.obj(handler);
             }
             Class::ModuleEnv(e) => self.env(e),
+            Class::Typed(v) | Class::DataView(v) => self.obj(&v.buffer),
             _ => {}
         }
     }

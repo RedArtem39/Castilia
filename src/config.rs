@@ -85,7 +85,7 @@ impl EngineConfig {
             gc_threshold: 200_000,
             trace_errors: false,
             max_scripts: 256,
-            max_script_bytes: 4 * 1024 * 1024,
+            max_script_bytes: 24 * 1024 * 1024,
         }
     }
 
@@ -110,7 +110,7 @@ impl EngineConfig {
             settle_fires: 500,
             gc_threshold: 50_000,
             max_scripts: 64,
-            max_script_bytes: 1024 * 1024,
+            max_script_bytes: 4 * 1024 * 1024,
             ..EngineConfig::desktop()
         }
     }

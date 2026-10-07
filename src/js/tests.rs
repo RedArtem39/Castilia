@@ -287,3 +287,24 @@ fn gc_keeps_suspended_generators_and_pending_async() {
         &["gen 2", "async 5"],
     );
 }
+
+#[test]
+fn binary_data_and_streams() {
+    check_vm(
+        "const b = new ArrayBuffer(8); const u = new Uint8Array(b); const d = new DataView(b); d.setUint16(0, 0x1234); d.setFloat32(4, 1.5, true);
+         const f = new Float32Array(b, 4, 1); const i16 = new Int16Array([70000, -1]);
+         console.log(u[0], u[1], f[0], i16.join(), u.length, b.byteLength, new Uint8Array([1,2,3]).map(x => x * 2).join(), Uint8Array.from('12', Number).join(), u.subarray(0, 2).buffer === b, Object.prototype.toString.call(u))",
+        &["18 52 1.5 4464,-1 8 8 2,4,6 1,2 true [object Uint8Array]"],
+    );
+    check_vm(
+        "const t = new TextEncoder().encode('Привет €'); console.log(t.length, new TextDecoder().decode(t), new TextDecoder().decode(t.buffer))",
+        &["16 Привет € Привет €"],
+    );
+    check_vm(
+        "(async () => { const rs = new ReadableStream({ start(c) { c.enqueue('a'); c.enqueue('b'); c.close() } }); let s = ''; for await (const x of rs) s += x;
+          const ts = new TransformStream({ transform(ch, c) { c.enqueue(ch.toUpperCase()) } }); const w = ts.writable.getWriter(); w.write('x'); w.close();
+          const r = await ts.readable.getReader().read(); const body = await new Response('hi').body.getReader().read();
+          console.log(s, r.value, new TextDecoder().decode(body.value)) })()",
+        &["ab X hi"],
+    );
+}

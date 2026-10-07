@@ -122,7 +122,13 @@ impl Interp {
                         if self.trace_errors {
                             let msg = self.error_text(&e);
                             let name = if f.code.name.is_empty() { "<anonymous>" } else { &f.code.name };
-                            let text = format!("unwind {msg} at {name} (op {} {:?})", f.pc.saturating_sub(1), f.code.ops.get(f.pc.saturating_sub(1)));
+                            let op = f.code.ops.get(f.pc.saturating_sub(1)).copied();
+                            let detail = match op {
+                                Some(Op::GetProp(k) | Op::SetProp(k) | Op::GetMethod(k) | Op::InitProp(k)) => format!("{:?}", f.code.keys[k as usize]),
+                                Some(Op::Call(_, d) | Op::New(_, d) | Op::CallSpread(d) | Op::NewSpread(d)) => self.callee_text(&f.code, d),
+                                _ => String::new(),
+                            };
+                            let text = format!("unwind {msg} at {name} (op {} {:?} {detail})", f.pc.saturating_sub(1), op);
                             self.logs.push(crate::js::interp::LogEntry { level: "trace", text });
                         }
                         if f.kind == FrameKind::Async {
