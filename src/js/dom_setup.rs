@@ -514,7 +514,9 @@ fn setup_parent_child_mixins(it: &mut Interp, parents: &[&Obj], children: &[&Obj
                 if d.nodes[n].attribute("id") == Some(&*want) {
                     return Ok(it.wrap(n));
                 }
-                st.extend(d.nodes[n].children.iter().rev().copied());
+                if t_not_template(d, n) {
+                    st.extend(d.nodes[n].children.iter().rev().copied());
+                }
             }
             Ok(Value::Null)
         });
@@ -901,6 +903,10 @@ fn make_attr(it: &mut Interp, owner: NodeId, name: &str, value: &str) -> Value {
     Value::Obj(o)
 }
 
+pub fn t_not_template(d: &crate::dom::Document, n: NodeId) -> bool {
+    d.nodes[n].tag() != Some("template")
+}
+
 fn by_tag(it: &mut Interp, root: NodeId, tag: &str) -> Vec<NodeId> {
     let Some(d) = it.doc() else { return Vec::new() };
     let mut out = Vec::new();
@@ -911,7 +917,9 @@ fn by_tag(it: &mut Interp, root: NodeId, tag: &str) -> Vec<NodeId> {
                 out.push(n);
             }
         }
-        st.extend(d.nodes[n].children.iter().rev().copied());
+        if t_not_template(d, n) {
+            st.extend(d.nodes[n].children.iter().rev().copied());
+        }
     }
     out
 }
@@ -931,7 +939,9 @@ fn by_class(it: &mut Interp, root: NodeId, classes: &str) -> Vec<NodeId> {
                 out.push(n);
             }
         }
-        st.extend(d.nodes[n].children.iter().rev().copied());
+        if t_not_template(d, n) {
+            st.extend(d.nodes[n].children.iter().rev().copied());
+        }
     }
     out
 }
@@ -967,17 +977,13 @@ pub fn content_target(it: &mut Interp, id: NodeId) -> Res<NodeId> {
 }
 
 pub fn template_fragment(it: &mut Interp, id: NodeId) -> Res<NodeId> {
-    if let Some(&f) = it.template_content.get(&id) {
+    let d = it.dom()?;
+    if let Some(&f) = d.nodes[id].children.iter().find(|&&c| d.nodes[c].kind == NodeKind::Fragment) {
         return Ok(f);
     }
-    let d = it.dom()?;
     let frag = d.push(NodeKind::Fragment, None);
-    let kids = core::mem::take(&mut d.nodes[id].children);
-    for k in kids {
-        d.nodes[k].parent = Some(frag);
-        d.nodes[frag].children.push(k);
-    }
-    it.template_content.insert(id, frag);
+    d.nodes[frag].parent = Some(id);
+    d.nodes[id].children.push(frag);
     Ok(frag)
 }
 
@@ -1218,7 +1224,9 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
             if d.nodes[n].attribute("name") == Some(&*s) {
                 out.push(n);
             }
-            st.extend(d.nodes[n].children.iter().rev().copied());
+            if t_not_template(d, n) {
+                st.extend(d.nodes[n].children.iter().rev().copied());
+            }
         }
         Ok(it.node_list(&out))
     });

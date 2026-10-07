@@ -93,7 +93,12 @@ pub fn parse_program(src: &str, interner: &mut Interner, is_module: bool) -> PRe
 
 /// Parse a function body or expression text used by `new Function` and attribute handlers.
 pub fn parse_function_source(params: &str, body: &str, interner: &mut Interner) -> PResult<Rc<FuncDef>> {
-    let src = format!("(function anonymous({params}\n) {{\n{body}\n}})");
+    parse_function_source_kind(params, body, "function", interner)
+}
+
+/// `kind` is the function keyword prefix: "function", "async function", "function*", "async function*".
+pub fn parse_function_source_kind(params: &str, body: &str, kind: &str, interner: &mut Interner) -> PResult<Rc<FuncDef>> {
+    let src = format!("({kind} anonymous({params}\n) {{\n{body}\n}})");
     let prog = parse_program(&src, interner, false)?;
     for s in prog.body.stmts {
         if let Stmt::Expr(Expr::Paren(e)) = s {

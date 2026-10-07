@@ -253,7 +253,15 @@ fn revive(it: &mut Interp, holder: &Value, key: Key, reviver: &Value) -> Res {
             let n = it.array_like_to_vec(&val)?.len();
             (0..n).map(|i| Key::S(Rc::from(i.to_string()))).collect()
         } else {
-            it.own_keys(o)?.into_iter().filter(|k| matches!(k, Key::S(_)) && it.own_prop(o, k).is_some_and(|p| p.flags & ENUMERABLE != 0)).collect()
+            {
+                let mut ks = Vec::new();
+                for k in it.own_keys(o)? {
+                    if matches!(k, Key::S(_)) && it.own_prop_mut(o, &k)?.is_some_and(|p| p.flags & ENUMERABLE != 0) {
+                        ks.push(k);
+                    }
+                }
+                ks
+            }
         };
         for k in keys {
             let nv = revive(it, &val, k.clone(), reviver)?;
@@ -400,7 +408,7 @@ fn ser(it: &mut Interp, st: &mut S, holder: &Value, key: Key, out: &mut String, 
                         let all = it.own_keys(o)?;
                         let mut ks = Vec::new();
                         for k in all {
-                            if matches!(k, Key::S(_)) && it.own_prop(o, &k).is_some_and(|p| p.flags & ENUMERABLE != 0) {
+                            if matches!(k, Key::S(_)) && it.own_prop_mut(o, &k)?.is_some_and(|p| p.flags & ENUMERABLE != 0) {
                                 ks.push(k);
                             }
                         }

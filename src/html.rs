@@ -10,14 +10,38 @@ pub fn parse(source: &str) -> Document {
     let mut doc = Document::new();
     let mut b = Builder::new(&mut doc, None);
     b.run(source);
+    wrap_templates(&mut doc, 0);
     doc
+}
+
+/// `<template>` keeps its parsed children inside a single `Fragment` child (its content), so that
+/// queries and traversal of the live document do not see them.
+fn wrap_templates(doc: &mut Document, from: usize) {
+    for id in from..doc.nodes.len() {
+        if doc.nodes[id].tag() != Some("template") || doc.nodes[id].children.is_empty() {
+            continue;
+        }
+        if doc.nodes[id].children.len() == 1 && doc.nodes[doc.nodes[id].children[0]].kind == NodeKind::Fragment {
+            continue;
+        }
+        let frag = doc.push(NodeKind::Fragment, None);
+        let kids = core::mem::take(&mut doc.nodes[id].children);
+        for k in kids {
+            doc.nodes[k].parent = Some(frag);
+            doc.nodes[frag].children.push(k);
+        }
+        doc.nodes[frag].parent = Some(id);
+        doc.nodes[id].children.push(frag);
+    }
 }
 
 /// Parse `source` as if it were the content of `context` (used for `innerHTML`) and append the
 /// resulting nodes to it.
 pub fn parse_fragment(doc: &mut Document, context: NodeId, source: &str) {
+    let from = doc.nodes.len();
     let mut b = Builder::new(doc, Some(context));
     b.run(source);
+    wrap_templates(doc, from);
 }
 
 pub fn is_void(tag: &str) -> bool {

@@ -3,6 +3,7 @@ use super::*;
 use alloc::{format, vec};
 
 pub fn setup(it: &mut Interp) {
+    setup_function_kinds(it);
     setup_object(it);
     setup_function(it);
     setup_symbol(it);
@@ -184,10 +185,7 @@ fn enumerable_own(it: &mut Interp, v: &Value) -> Res<Vec<(Key, Value)>> {
         if let Key::Y(_) = k {
             continue;
         }
-        let enumerable = match &o.borrow().class {
-            Class::Proxy { .. } => true,
-            _ => it.own_prop(&o, &k).is_some_and(|p| p.flags & ENUMERABLE != 0),
-        };
+        let enumerable = it.own_prop_mut(&o, &k)?.is_some_and(|p| p.flags & ENUMERABLE != 0);
         if enumerable {
             let val = it.get_obj(&o, &k, &Value::Obj(o.clone()))?;
             out.push((k, val));
@@ -224,7 +222,7 @@ fn object_assign(it: &mut Interp, c: &Call) -> Res {
         }
         let so = it.to_object(src)?;
         for k in it.own_keys(&so)? {
-            let enumerable = it.own_prop(&so, &k).is_none_or(|p| p.flags & ENUMERABLE != 0);
+            let enumerable = it.own_prop_mut(&so, &k)?.is_none_or(|p| p.flags & ENUMERABLE != 0);
             if enumerable {
                 let v = it.get_obj(&so, &k, &Value::Obj(so.clone()))?;
                 it.set_v(&Value::Obj(target.clone()), k, v)?;
@@ -363,7 +361,7 @@ fn object_get_own_desc(it: &mut Interp, c: &Call) -> Res {
     if matches!(o.borrow().class, Class::Function(_)) {
         let _ = it.get_obj(&o, &key, &Value::Undefined);
     }
-    match it.own_prop(&o, &key) {
+    match it.own_prop_mut(&o, &key)? {
         Some(p) => Ok(from_prop(it, &p)),
         None => Ok(Value::Undefined),
     }
@@ -373,7 +371,7 @@ fn object_get_own_descs(it: &mut Interp, c: &Call) -> Res {
     let o = it.to_object(&c.arg(0))?;
     let out = it.new_object();
     for k in it.own_keys(&o)? {
-        if let Some(p) = it.own_prop(&o, &k) {
+        if let Some(p) = it.own_prop_mut(&o, &k)? {
             let d = from_prop(it, &p);
             it.define_data(&out, k, d, ALL);
         }
@@ -451,7 +449,7 @@ fn proto_is_proto_of(_: &mut Interp, c: &Call) -> Res {
 fn proto_prop_enumerable(it: &mut Interp, c: &Call) -> Res {
     let k = it.to_key(&c.arg(0))?;
     let o = it.to_object(&c.this)?;
-    Ok(Value::Bool(it.own_prop(&o, &k).is_some_and(|p| p.flags & ENUMERABLE != 0)))
+    Ok(Value::Bool(it.own_prop_mut(&o, &k)?.is_some_and(|p| p.flags & ENUMERABLE != 0)))
 }
 
 pub fn class_tag(it: &mut Interp, v: &Value) -> Res<String> {
@@ -553,13 +551,17 @@ fn setup_function(it: &mut Interp) {
 }
 
 fn function_ctor(it: &mut Interp, c: &Call) -> Res {
+    function_ctor_kind(it, c, "function")
+}
+
+fn function_ctor_kind(it: &mut Interp, c: &Call, kind: &str) -> Res {
     let n = c.args.len();
     let mut params = Vec::new();
     for a in c.args.iter().take(n.saturating_sub(1)) {
         params.push(it.to_str(a)?.to_string());
     }
     let body = if n > 0 { it.to_str(&c.args[n - 1])?.to_string() } else { String::new() };
-    let def = match super::super::parser::parse_function_source(&params.join(","), &body, &mut it.interner) {
+    let def = match super::super::parser::parse_function_source_kind(&params.join(","), &body, kind, &mut it.interner) {
         Ok(d) => d,
         Err(e) => return Err(it.error_ctl("SyntaxError", e.trim_start_matches("SyntaxError: "))),
     };
@@ -921,4 +923,22 @@ fn proxy_ctor(it: &mut Interp, c: &Call) -> Res {
     };
     let proto = t.borrow().proto.clone();
     Ok(Value::Obj(Obj::new(Object::new(proto, Class::Proxy { target: t, handler: h }))))
+}
+
+fn setup_function_kinds(it: &mut Interp) {
+    let fp = it.protos().function.clone();
+    for (key, name, kind) in [("async_function", "AsyncFunction", 1u8), ("generator_function", "GeneratorFunction", 2), ("async_generator_function", "AsyncGeneratorFunction", 3)] {
+        let proto = Obj::new(Object::new(Some(fp.clone()), Class::Plain));
+        let f: NativeFn = match kind {
+            1 => |it, c| function_ctor_kind(it, c, "async function"),
+            2 => |it, c| function_ctor_kind(it, c, "function*"),
+            _ => |it, c| function_ctor_kind(it, c, "async function*"),
+        };
+        let ctor = it.new_native_data(name, 1, f, Value::Undefined, true);
+        it.define_data(&ctor, it.names.prototype.clone(), Value::Obj(proto.clone()), 0);
+        it.define_data(&proto, it.names.constructor.clone(), Value::Obj(ctor), CONFIGURABLE);
+        let tag = it.wk().to_string_tag.clone();
+        it.define_data(&proto, Key::Y(tag.0.id), Value::str(name), CONFIGURABLE);
+        it.protos.as_mut().unwrap().extra.insert(key, proto);
+    }
 }

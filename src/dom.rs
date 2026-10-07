@@ -139,7 +139,9 @@ impl Document {
             if self.nodes[id].attribute("id") == Some(value) {
                 return Some(id);
             }
-            stack.extend(self.nodes[id].children.iter().rev().copied());
+            if self.nodes[id].tag() != Some("template") {
+                stack.extend(self.nodes[id].children.iter().rev().copied());
+            }
         }
         None
     }

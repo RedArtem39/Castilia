@@ -409,7 +409,13 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn make_closure(&mut self, def: Rc<FuncDef>, env: &Env, home: Option<Obj>, name: Option<JsStr>) -> Obj {
-        let proto = self.protos().function.clone();
+        let key = match (def.is_async, def.is_generator) {
+            (true, false) => Some("async_function"),
+            (false, true) => Some("generator_function"),
+            (true, true) => Some("async_generator_function"),
+            _ => None,
+        };
+        let proto = key.and_then(|k| self.protos().extra.get(k).cloned()).unwrap_or_else(|| self.protos().function.clone());
         let clo = Closure { def, env: env.clone(), home, is_class_ctor: false, derived: false, fields: Rc::new(Vec::new()) };
         let o = Obj::new(Object::new(Some(proto), Class::Function(Func::Closure(Box::new(clo)))));
         if let Some(n) = name {
@@ -1189,7 +1195,7 @@ impl Interp {
                             if used.contains(&k) {
                                 continue;
                             }
-                            if let Some(p) = self.own_prop(src, &k) {
+                            if let Some(p) = self.own_prop_mut(src, &k)? {
                                 if p.flags & ENUMERABLE != 0 {
                                     let val = self.get_obj(src, &k, &v)?;
                                     self.define_data(&out, k, val, ALL);
@@ -1827,7 +1833,7 @@ impl Interp {
                     if exclude.contains(&k) {
                         continue;
                     }
-                    if let Some(p) = self.own_prop(s, &k) {
+                    if let Some(p) = self.own_prop_mut(s, &k)? {
                         if p.flags & ENUMERABLE != 0 {
                             let v = self.get_obj(s, &k, src)?;
                             self.define_data(target, k, v, ALL);
@@ -2152,7 +2158,7 @@ impl Interp {
                         continue;
                     }
                     seen.push(k.clone());
-                    if let Some(p) = self.own_prop(&o, &k) {
+                    if let Some(p) = self.own_prop_mut(&o, &k)? {
                         if p.flags & ENUMERABLE != 0 {
                             out.push(s.clone());
                         }

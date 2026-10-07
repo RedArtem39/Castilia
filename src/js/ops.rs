@@ -134,6 +134,27 @@ impl Interp {
         ob.props.get(key).cloned()
     }
 
+    /// Own property lookup that honours Proxy `getOwnPropertyDescriptor` traps.
+    pub fn own_prop_mut(&mut self, o: &Obj, key: &Key) -> Res<Option<Prop>> {
+        let proxy = match &o.borrow().class {
+            Class::Proxy { target, handler } => Some((target.clone(), handler.clone())),
+            _ => None,
+        };
+        let Some((target, handler)) = proxy else { return Ok(self.own_prop(o, key)) };
+        let trap = self.get_obj(&handler, &Key::str("getOwnPropertyDescriptor"), &Value::Obj(handler.clone()))?;
+        if trap.is_undefined() {
+            return self.own_prop_mut(&target, key);
+        }
+        let kv = self.key_to_value(key);
+        let d = self.call(&trap, Value::Obj(handler), &[Value::Obj(target), kv])?;
+        let Value::Obj(d) = d else { return Ok(None) };
+        let dv = Value::Obj(d.clone());
+        let flag = |it: &mut Interp, n: &str, bit: u8| -> Res<u8> { Ok(if it.get_obj(&d, &Key::str(n), &dv)?.truthy() { bit } else { 0 }) };
+        let flags = flag(self, "enumerable", ENUMERABLE)? | flag(self, "configurable", CONFIGURABLE)? | flag(self, "writable", WRITABLE)?;
+        let value = self.get_obj(&d, &Key::str("value"), &dv)?;
+        Ok(Some(Prop { slot: Slot::Data(value), flags }))
+    }
+
     pub fn has_own(&self, o: &Obj, key: &Key) -> bool {
         self.own_prop(o, key).is_some()
     }

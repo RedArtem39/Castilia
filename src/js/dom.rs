@@ -298,7 +298,9 @@ impl Interp {
                     break;
                 }
             }
-            stack.extend(doc.nodes[id].children.iter().rev().copied());
+            if doc.nodes[id].tag() != Some("template") {
+                stack.extend(doc.nodes[id].children.iter().rev().copied());
+            }
         }
         Ok(out)
     }
