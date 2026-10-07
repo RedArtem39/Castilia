@@ -767,4 +767,8 @@
     if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
   }
   if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
+  // the prelude runs before a document exists: patch the prototype, never the instance
+  if (G.Document && !Object.getOwnPropertyDescriptor(G.Document.prototype, 'location')) {
+    Object.defineProperty(G.Document.prototype, 'location', { configurable: true, enumerable: true, get() { return G.location; }, set(v) { G.location.href = v; } });
+  }
 })(globalThis);
