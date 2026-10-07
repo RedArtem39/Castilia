@@ -55,9 +55,9 @@
 <text x="102.35156" y="495" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Two</text>
 <rect x="10" y="550" width="780" height="52" rx="0" fill="#eeeeee" fill-opacity="1"/>
 <rect x="14" y="554" width="59" height="44" rx="0" fill="#88aacc" fill-opacity="1"/>
-<text x="26" y="585" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Big</text>
-<rect x="81" y="564" width="59" height="32" rx="0" fill="#88aacc" fill-opacity="1"/>
-<text x="92.6875" y="585" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Small</text>
+<text x="26" y="584" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Big</text>
+<rect x="81" y="563" width="59" height="32" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="92.6875" y="584" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Small</text>
 <rect x="10" y="612" width="780" height="40" rx="0" fill="#eeeeee" fill-opacity="1"/>
 <rect x="14" y="616" width="250" height="32" rx="0" fill="#88aacc" fill-opacity="1"/>
 <text x="26" y="637" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">a</text>

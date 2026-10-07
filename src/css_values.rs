@@ -41,6 +41,13 @@ impl Dim {
             _ => false,
         }
     }
+    /// Position along an axis where percentages refer to the free space (`object-position`, `background-position`).
+    pub fn resolve_offset(&self, free: f32) -> f32 {
+        match self {
+            Dim::Len(px, pct) => px + free * pct / 100.0,
+            _ => free / 2.0,
+        }
+    }
     /// Resolve against `base`. Intrinsic keywords and `auto` give `None`.
     pub fn resolve(&self, base: f32) -> Option<f32> {
         match self {

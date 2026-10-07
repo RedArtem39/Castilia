@@ -163,6 +163,8 @@ pub enum Command {
         decoration: u8,
         width: f32,
         letter_spacing: f32,
+        /// Gaussian blur radius in px for `text-shadow` copies (0 for normal text).
+        blur: f32,
     },
     Image {
         rect: Rect,
@@ -1058,6 +1060,18 @@ impl<'a> Ctx<'a> {
         }
         if clip {
             out.paint.cmds.push(Command::PopClip);
+        }
+        if s.outline_style.visible() && s.outline_width > 0.0 && s.visibility_visible && !is_root {
+            let (off, w) = (s.outline_offset, s.outline_width);
+            let orect = Rect { x: -off - w, y: -off - w, width: border_w + 2.0 * (off + w), height: border_h + 2.0 * (off + w) };
+            let style = match s.outline_style {
+                BorderStyle::Dashed => 2,
+                BorderStyle::Dotted => 3,
+                BorderStyle::Double => 4,
+                _ => 1,
+            };
+            let color = s.outline_color.unwrap_or(s.color);
+            out.paint.cmds.push(Command::Border { rect: orect, widths: [w; 4], colors: [color; 4], styles: [style; 4], radius: if s.border_radius > 0.0 { s.border_radius + off + w } else { 0.0 } });
         }
         out.baseline = info.first_baseline.map(|b| b + origin_y);
         out.last_baseline = info.last_baseline.or(info.first_baseline).map(|b| b + origin_y);

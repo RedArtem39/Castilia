@@ -41,7 +41,7 @@ abbr[title], acronym[title] { text-decoration: underline dotted }
 center { text-align: center }
 q::before { content: open-quote }
 q::after { content: close-quote }
-hr { margin: 8px auto; border-top: 1px solid #9a9a9a; border-bottom: 1px solid #eeeeee; height: 0; overflow: hidden; color: #808080 }
+hr { margin: 0.5em auto; border-top: 1px solid #9a9a9a; border-bottom: 1px solid #eeeeee; height: 0; overflow: hidden; color: #808080 }
 
 table { display: table; border-collapse: separate; border-spacing: 2px; box-sizing: border-box; text-indent: 0 }
 thead, tbody, tfoot { display: table-row-group; vertical-align: middle }

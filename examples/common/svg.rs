@@ -50,7 +50,7 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
                 );
             }
             Command::Border { rect, widths, colors, styles, radius } => border(&mut out, &snap(rect), &widths.map(|w| if w > 0.0 { w.round().max(1.0) } else { 0.0 }), colors, styles, *radius),
-            Command::Text { x, y, text, size, color, link, weight, italic, family, decoration, width, letter_spacing } => {
+            Command::Text { x, y, text, size, color, link, weight, italic, family, decoration, width, letter_spacing, blur } => {
                 let font = Font { size: *size, weight: *weight, italic: *italic, family: *family };
                 let asc = fonts.ascent(&font);
                 let fam = match family {
@@ -72,9 +72,16 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
                 if decoration & 4 != 0 {
                     deco.push_str(" overline");
                 }
+                let filter = if *blur > 0.0 {
+                    defs += 1;
+                    let _ = writeln!(out, "<filter id=\"b{defs}\" x=\"-20%\" y=\"-50%\" width=\"140%\" height=\"200%\"><feGaussianBlur stdDeviation=\"{}\"/></filter>", blur / 2.0);
+                    format!(" filter=\"url(#b{defs})\"")
+                } else {
+                    String::new()
+                };
                 let _ = write!(
                     out,
-                    "<text x=\"{x}\" y=\"{}\" letter-spacing=\"{letter_spacing}\" font-family=\"{fam}\" font-size=\"{size}\" font-weight=\"{weight}\" font-style=\"{}\" fill=\"{}\" fill-opacity=\"{}\" xml:space=\"preserve\"{}{}>{}</text>",
+                    "<text{filter} x=\"{x}\" y=\"{}\" letter-spacing=\"{letter_spacing}\" font-family=\"{fam}\" font-size=\"{size}\" font-weight=\"{weight}\" font-style=\"{}\" fill=\"{}\" fill-opacity=\"{}\" xml:space=\"preserve\"{}{}>{}</text>",
                     (y + asc).round(),
                     if *italic { "italic" } else { "normal" },
                     rgb(*color),

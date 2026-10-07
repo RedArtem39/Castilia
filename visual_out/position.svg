@@ -10,8 +10,10 @@
 <text x="26" y="69" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">stretch</text>
 <rect x="10" y="184" width="304" height="154" rx="0" fill="#eeeeee" fill-opacity="1"/>
 <rect x="11" y="185" width="302" height="152" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="2"/>
-<rect x="131" y="249" width="62" height="24" rx="0" fill="#6699cc" fill-opacity="1"/>
-<text x="134.75879" y="266" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">centered</text>
+<g transform="matrix(1 0 0 1 -31.24121 -12)">
+<rect x="162" y="261" width="62" height="24" rx="0" fill="#6699cc" fill-opacity="1"/>
+<text x="166" y="278" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">centered</text>
+</g>
 <rect x="10" y="358" width="304" height="154" rx="0" fill="#eeeeee" fill-opacity="1"/>
 <rect x="11" y="359" width="302" height="152" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="2"/>
 <text x="10" y="545" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Text with a</text>

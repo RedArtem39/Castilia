@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="612" viewBox="0 0 800 612">
 <rect width="100%" height="100%" fill="white"/>
-<text x="8" y="51" letter-spacing="0" font-family="Liberation Serif, serif" font-size="32" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 1</text>
+<text x="8" y="50" letter-spacing="0" font-family="Liberation Serif, serif" font-size="32" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 1</text>
 <text x="8" y="101" letter-spacing="0" font-family="Liberation Serif, serif" font-size="24" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 2</text>
 <text x="8" y="144" letter-spacing="0" font-family="Liberation Serif, serif" font-size="18.72" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 3</text>
-<text x="8" y="185" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 4</text>
-<text x="8" y="223" letter-spacing="0" font-family="Liberation Serif, serif" font-size="13.28" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 5</text>
+<text x="8" y="184" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 4</text>
+<text x="8" y="222" letter-spacing="0" font-family="Liberation Serif, serif" font-size="13.28" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 5</text>
 <text x="8" y="261" letter-spacing="0" font-family="Liberation Serif, serif" font-size="10.72" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Heading 6</text>
 <rect x="409" y="293" width="48" height="17" rx="0" fill="#ffff00" fill-opacity="1"/>
 <text x="8" y="307" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">A paragraph with</text>
@@ -26,7 +26,7 @@
 <text x="569.8843" y="307" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">, H</text>
 <text x="589.43896" y="311" letter-spacing="0" font-family="Liberation Serif, serif" font-size="13.333333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2</text>
 <text x="596.10565" y="307" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">O, E=mc</text>
-<text x="654.0041" y="301" letter-spacing="0" font-family="Liberation Serif, serif" font-size="13.333333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2</text>
+<text x="654.0041" y="300" letter-spacing="0" font-family="Liberation Serif, serif" font-size="13.333333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2</text>
 <text x="660.6708" y="307" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">.</text>
 <text x="48" y="345" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">A block quote with some text in it that is long enough to wrap onto a second line when the viewport is narrow</text>
 <text x="48" y="363" letter-spacing="0" font-family="Liberation Serif, serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">enough.</text>

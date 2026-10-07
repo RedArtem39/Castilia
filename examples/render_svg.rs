@@ -53,7 +53,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for error in &page.scripts.errors {
         eprintln!("script error: {error}");
     }
-    let list = page.render_viewport(Viewport::new(width, height), &fonts);
+    let mut list = page.render_viewport(Viewport::new(width, height), &fonts);
+    // read intrinsic sizes of local images and lay out again
+    let mut sizes = std::collections::BTreeMap::new();
+    for src in Page::image_sources(&list) {
+        if let Ok(bytes) = fs::read(dir.join(&src)) {
+            if let Some((w, h)) = castilia::image::probe_size(&bytes) {
+                sizes.insert(src, (w as f32, h as f32));
+            }
+        }
+    }
+    if !sizes.is_empty() {
+        page.set_image_sizes(sizes);
+        list = page.render_viewport(Viewport::new(width, height), &fonts);
+    }
     fs::write(&args[2], svg::to_svg(&list, &fonts, &[], height))?;
     println!("wrote {} drawing commands to {}", list.commands.len(), args[2]);
     Ok(())

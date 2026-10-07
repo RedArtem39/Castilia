@@ -344,6 +344,12 @@ pub struct Style {
     pub border_color: [Option<Color>; 4],
     pub border_radius: f32,
     pub shadows: Vec<Shadow>,
+    pub text_shadows: Vec<Shadow>,
+    pub outline_width: f32,
+    /// Same codes as `border_style`; `None` draws nothing.
+    pub outline_style: BorderStyle,
+    pub outline_color: Option<Color>,
+    pub outline_offset: f32,
 
     pub color: Color,
     pub background_color: Color,
@@ -413,6 +419,9 @@ pub struct Style {
     pub translate: (Dim, Dim),
     pub transform_scale: f32,
     pub transform: Vec<TransformOp>,
+    /// 0 fill, 1 contain, 2 cover, 3 none, 4 scale-down
+    pub object_fit: u8,
+    pub object_position: (Dim, Dim),
     pub transform_origin: (Dim, Dim),
     /// 0 normal, 1 size, 2 inline-size
     pub container_type: u8,
@@ -454,6 +463,11 @@ impl Style {
             border_color: [None; 4],
             border_radius: 0.0,
             shadows: Vec::new(),
+            text_shadows: Vec::new(),
+            outline_width: 3.0,
+            outline_style: BorderStyle::None,
+            outline_color: None,
+            outline_offset: 0.0,
             color: color::BLACK,
             background_color: color::TRANSPARENT,
             background_image: BgImage::None,
@@ -514,6 +528,8 @@ impl Style {
             translate: (Dim::ZERO, Dim::ZERO),
             transform_scale: 1.0,
             transform: Vec::new(),
+            object_fit: 0,
+            object_position: (Dim::pct(50.0), Dim::pct(50.0)),
             transform_origin: (Dim::pct(50.0), Dim::pct(50.0)),
             container_type: 0,
             container_name: None,
@@ -534,6 +550,7 @@ impl Style {
         s.line_height_px = parent.line_height_px;
         s.text_align = parent.text_align;
         s.text_indent = parent.text_indent.clone();
+        s.text_shadows = parent.text_shadows.clone();
         s.text_transform = parent.text_transform;
         s.text_overflow_ellipsis = false;
         s.letter_spacing = parent.letter_spacing;
@@ -2602,6 +2619,53 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
             }
         }
         "box-shadow" => style.shadows = parse_shadows(value, &ctx, current),
+        "text-shadow" => {
+            style.text_shadows = parse_shadows(value, &ctx, current).into_iter().filter(|s| !s.inset).collect();
+        }
+        "outline" => {
+            style.outline_style = BorderStyle::None;
+            style.outline_width = 3.0;
+            style.outline_color = None;
+            if lv != "none" {
+                for tok in split_ws(value) {
+                    let tl = tok.to_ascii_lowercase();
+                    if tl == "auto" {
+                        style.outline_style = BorderStyle::Solid;
+                    } else if let Some(st) = border_style_kw(&tl) {
+                        style.outline_style = st;
+                    } else if let Some(px) = parse_px(tok, &ctx) {
+                        style.outline_width = px.max(0.0);
+                    } else if let Some(c) = parse_color_in(tok, current) {
+                        style.outline_color = c;
+                    }
+                }
+            }
+        }
+        "outline-style" => {
+            style.outline_style = if lv == "auto" { BorderStyle::Solid } else { border_style_kw(&lv).unwrap_or(BorderStyle::None) };
+        }
+        "outline-width" => {
+            if let Some(px) = parse_px(value, &ctx) {
+                style.outline_width = px.max(0.0);
+            } else {
+                style.outline_width = match &*lv {
+                    "thin" => 1.0,
+                    "medium" => 3.0,
+                    "thick" => 5.0,
+                    _ => style.outline_width,
+                };
+            }
+        }
+        "outline-color" => {
+            if let Some(c) = parse_color_in(value, current) {
+                style.outline_color = c;
+            }
+        }
+        "outline-offset" => {
+            if let Some(px) = parse_px(value, &ctx) {
+                style.outline_offset = px;
+            }
+        }
         "color" => {
             if lv == "currentcolor" {
                 // keep
@@ -3152,32 +3216,51 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
             style.transform = ops;
         }
         "transform-origin" => {
-            let toks = split_ws(&lv);
-            let axis = |t: &str, horizontal: bool| -> Option<Dim> {
-                Some(match t {
-                    "left" if horizontal => Dim::pct(0.0),
-                    "right" if horizontal => Dim::pct(100.0),
-                    "top" if !horizontal => Dim::pct(0.0),
-                    "bottom" if !horizontal => Dim::pct(100.0),
-                    "center" => Dim::pct(50.0),
-                    other => dim(other)?,
-                })
-            };
-            let first = toks.first().copied().unwrap_or("50%");
-            let second = toks.get(1).copied();
-            // `top left` style: keyword order may be swapped
-            let (xs, ys) = match (first, second) {
-                ("top" | "bottom", Some(b)) if !matches!(b, "top" | "bottom") => (b, first),
-                (a, Some(b)) => (a, b),
-                ("top" | "bottom", None) => ("center", first),
-                (a, None) => (a, "center"),
-            };
-            if let (Some(x), Some(y)) = (axis(xs, true), axis(ys, false)) {
-                style.transform_origin = (x, y);
+            if let Some(p) = parse_position_pair(&lv, &ctx) {
+                style.transform_origin = p;
+            }
+        }
+        "object-position" => {
+            if let Some(p) = parse_position_pair(&lv, &ctx) {
+                style.object_position = p;
+            }
+        }
+        "object-fit" => {
+            style.object_fit = match &*lv {
+                "contain" => 1,
+                "cover" => 2,
+                "none" => 3,
+                "scale-down" => 4,
+                _ => 0,
             }
         }
         _ => {}
     }
+}
+
+/// `<x> <y>` position with keywords (`left`/`right`/`top`/`bottom`/`center`), lengths and percentages.
+fn parse_position_pair(lv: &str, ctx: &LenCtx) -> Option<(Dim, Dim)> {
+    let toks = split_ws(lv);
+    let axis = |t: &str, horizontal: bool| -> Option<Dim> {
+        Some(match t {
+            "left" if horizontal => Dim::pct(0.0),
+            "right" if horizontal => Dim::pct(100.0),
+            "top" if !horizontal => Dim::pct(0.0),
+            "bottom" if !horizontal => Dim::pct(100.0),
+            "center" => Dim::pct(50.0),
+            other => parse_dim(other, ctx)?,
+        })
+    };
+    let first = toks.first().copied()?;
+    let second = toks.get(1).copied();
+    // `top left` style: keyword order may be swapped
+    let (xs, ys) = match (first, second) {
+        ("top" | "bottom", Some(b)) if !matches!(b, "top" | "bottom") => (b, first),
+        (a, Some(b)) => (a, b),
+        ("top" | "bottom", None) => ("center", first),
+        (a, None) => (a, "center"),
+    };
+    Some((axis(xs, true)?, axis(ys, false)?))
 }
 
 fn parse_transform_function(f: &str, ctx: &LenCtx) -> Option<TransformOp> {

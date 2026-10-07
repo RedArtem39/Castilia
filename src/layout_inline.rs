@@ -615,12 +615,17 @@ impl<'a> Ctx<'a> {
         let (sa, sd, lh) = self.vmetrics(block);
         run.strut_content = sa + sd;
         run.strut_asc = sa;
-        let half = (lh - run.strut_content) / 2.0;
+        // Blink: half-leading is floored; the descent absorbs the remainder so the box is exactly `lh`
+        let half = math::floor32((lh - run.strut_content) / 2.0);
         run.strut_above = sa + half;
-        run.strut_below = sd + half;
+        run.strut_below = lh - run.strut_above;
         let _ = (&mut run.first_line,);
+        run.max_lines = block.line_clamp.filter(|_| block.overflow_x.clips() || block.overflow_y.clips()).map(|n| n.max(1) as usize);
         self.begin_line(&mut run, fl);
         for atom in atoms {
+            if run.stopped {
+                break;
+            }
             match atom {
                 Atom::Float(bx) => {
                     if run.has_content {
@@ -684,7 +689,9 @@ impl<'a> Ctx<'a> {
                 }
             }
         }
-        if run.has_content || run.frags.iter().any(|f| matches!(f.kind, FragKind::Atomic { .. })) {
+        if run.stopped {
+            run.frags.clear();
+        } else if run.has_content || run.frags.iter().any(|f| matches!(f.kind, FragKind::Atomic { .. })) {
             self.finish_line(&mut run, false, true, fl);
         } else {
             run.frags.clear();
@@ -882,11 +889,12 @@ impl<'a> Ctx<'a> {
                 FragKind::Text { bx, .. } | FragKind::Space { bx } => {
                     let s = self.style(*bx);
                     let (asc, desc, lh) = self.vmetrics(s);
-                    let half = (lh - asc - desc) / 2.0;
-                    M { above: asc + half, below: desc + half }
+                    let half = math::floor32((lh - asc - desc) / 2.0);
+                    M { above: asc + half, below: lh - (asc + half) }
                 }
                 FragKind::Atomic { out, mt, mb, .. } => {
-                    let above = out.baseline.map_or(out.h, |b| b.min(out.h)) + mt;
+                    // boxes without a baseline (replaced elements) sit on the bottom *margin* edge
+                    let above = out.baseline.map_or(out.h + mb, |b| b.min(out.h)) + mt;
                     M { above, below: out.h + mt + mb - above }
                 }
                 _ => M { above: 0.0, below: 0.0 },
@@ -966,11 +974,13 @@ impl<'a> Ctx<'a> {
         let mut atomics: Vec<(Out, f32, f32, bool)> = Vec::new();
         let mut line_paint = Paint::default();
         let _ = &mut line_paint;
-        let ellipsis_limit = if block.text_overflow_ellipsis && block.overflow_x.clips() && trimmed_w > avail + 0.5 { Some(avail) } else { None };
+        let clamp_last = !last && run.max_lines.is_some_and(|m| run.lines + 1 >= m);
+        let ellipsis_limit = if clamp_last || (block.text_overflow_ellipsis && block.overflow_x.clips() && trimmed_w > avail + 0.5) { Some(avail) } else { None };
+        let last_text_idx = frags.iter().rposition(|f| matches!(f.kind, FragKind::Text { .. }));
         let mut used = 0.0f32;
         let mut truncated = false;
         let mut text_hits: Vec<HitRegion> = Vec::new();
-        for (f, m) in frags.into_iter().zip(metrics) {
+        for (fi, (f, m)) in frags.into_iter().zip(metrics).enumerate() {
             let w = match &f.kind {
                 FragKind::Space { .. } => f.w + extra_per_space,
                 _ => f.w,
@@ -1031,7 +1041,12 @@ impl<'a> Ctx<'a> {
                     let mut w = w;
                     if let Some(limit) = ellipsis_limit {
                         let ell = self.text_w("\u{2026}", s);
-                        if used + w > limit {
+                        if clamp_last && Some(fi) == last_text_idx && used + w + ell <= limit {
+                            // the clamped line is not full: the ellipsis simply follows the text
+                            text.push('\u{2026}');
+                            w += ell;
+                            truncated = true;
+                        } else if used + w > limit || (clamp_last && Some(fi) == last_text_idx) {
                             // cut characters until the ellipsis fits
                             let mut chars: Vec<char> = text.chars().collect();
                             let room = limit - used - ell;
@@ -1126,6 +1141,23 @@ impl<'a> Ctx<'a> {
             };
             let link = self.link_of(t.bx);
             let hit_node = if t.bx.pseudo != 0 { t.bx.id } else { self.doc.nodes[t.bx.id].parent.unwrap_or(t.bx.id) };
+            for sh in s.text_shadows.iter().rev() {
+                run.paint.cmds.push(Command::Text {
+                    x: t.x + sh.dx,
+                    y: y + sh.dy,
+                    text: t.text.clone(),
+                    size: s.font_size,
+                    color: sh.color,
+                    link: None,
+                    weight: s.font_weight,
+                    italic: s.font_italic,
+                    family: s.font_family,
+                    decoration: 0,
+                    width: t.w,
+                    letter_spacing: s.letter_spacing,
+                    blur: sh.blur,
+                });
+            }
             run.paint.cmds.push(Command::Text {
                 x: t.x,
                 y,
@@ -1139,6 +1171,7 @@ impl<'a> Ctx<'a> {
                 decoration: s.text_decoration,
                 width: t.w,
                 letter_spacing: s.letter_spacing,
+                blur: 0.0,
             });
             if s.pointer_events {
                 text_hits.push(HitRegion { rect: Rect { x: t.x, y, width: t.w, height: ch }, node: hit_node });
@@ -1164,6 +1197,9 @@ impl<'a> Ctx<'a> {
         }
         run.last_baseline = Some(baseline);
         run.lines += 1;
+        if clamp_last {
+            run.stopped = true;
+        }
         run.y += line_h;
         run.first_line = false;
         run.line_w = 0.0;
@@ -1231,6 +1267,9 @@ struct Run<'a> {
     strut_asc: f32,
     strut_above: f32,
     strut_below: f32,
+    /// `-webkit-line-clamp`: lines kept; the last one ends with an ellipsis when content was dropped.
+    max_lines: Option<usize>,
+    stopped: bool,
 }
 
 impl<'a> Run<'a> {
@@ -1263,6 +1302,8 @@ impl<'a> Run<'a> {
             strut_asc: 0.0,
             strut_above: 0.0,
             strut_below: 0.0,
+            max_lines: None,
+            stopped: false,
         }
     }
 }

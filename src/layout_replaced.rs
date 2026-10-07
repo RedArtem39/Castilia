@@ -297,13 +297,38 @@ impl<'a> Ctx<'a> {
                 decoration: 0,
                 width: w,
                 letter_spacing: 0.0,
+                blur: 0.0,
             });
         };
         match tag {
             "img" => {
                 match self.image_src(bx) {
                     Some(src) if cw > 0.0 && ch > 0.0 => {
-                        out.paint.cmds.push(Command::Image { rect, src, link: link.clone(), opacity: 1.0 });
+                        let natural = if s.object_fit != 0 { self.fonts.image_size(&src).filter(|n| n.0 > 0.0 && n.1 > 0.0) } else { None };
+                        match natural {
+                            Some((nw, nh)) => {
+                                let contain = (cw / nw).min(ch / nh);
+                                let scale = match s.object_fit {
+                                    1 => contain,
+                                    2 => (cw / nw).max(ch / nh),
+                                    3 => 1.0,
+                                    _ => contain.min(1.0),
+                                };
+                                let (w, h) = (nw * scale, nh * scale);
+                                let x = s.object_position.0.resolve_offset(cw - w);
+                                let y = s.object_position.1.resolve_offset(ch - h);
+                                let draw = Rect { x, y, width: w, height: h };
+                                let overflow = x < -0.01 || y < -0.01 || x + w > cw + 0.01 || y + h > ch + 0.01;
+                                if overflow {
+                                    out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
+                                }
+                                out.paint.cmds.push(Command::Image { rect: draw, src, link: link.clone(), opacity: 1.0 });
+                                if overflow {
+                                    out.paint.cmds.push(Command::PopClip);
+                                }
+                            }
+                            None => out.paint.cmds.push(Command::Image { rect, src, link: link.clone(), opacity: 1.0 }),
+                        }
                     }
                     None => {
                         if let Some(alt) = self.attr(bx, "alt")
@@ -362,8 +387,7 @@ impl<'a> Ctx<'a> {
                                 family: s.font_family,
                                 decoration: 0,
                                 width: cw * 0.6,
-                                letter_spacing: 0.0,
-                            });
+                                letter_spacing: 0.0, blur: 0.0, });
                         }
                     }
                 } else if ty == "range" {
@@ -507,8 +531,7 @@ impl<'a> Ctx<'a> {
             family: s.font_family,
             decoration: 0,
             width: mw,
-            letter_spacing: 0.0,
-        });
+            letter_spacing: 0.0, blur: 0.0, });
     }
 
     #[allow(dead_code)]

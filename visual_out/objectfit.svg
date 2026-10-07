@@ -5,23 +5,27 @@
 <image x="11" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
 <rect x="142" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
 <rect x="142.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="143" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<image x="143" y="21" width="120" height="60" preserveAspectRatio="none" opacity="1" href="image.png"/>
 <rect x="274" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
 <rect x="274.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="275" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<clipPath id="c1"><rect x="275" y="11" width="120" height="80" rx="0"/></clipPath><g clip-path="url(#c1)">
+<image x="255" y="11" width="160" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+</g>
 <rect x="406" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
 <rect x="406.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="407" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<image x="419" y="27" width="96" height="48" preserveAspectRatio="none" opacity="1" href="image.png"/>
 <rect x="538" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
 <rect x="538.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="539" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
-<rect x="10" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
-<rect x="10.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="11" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
-<rect x="142" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
-<rect x="142.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="143" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
-<rect x="274" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
-<rect x="274.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
-<image x="275" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<image x="551" y="27" width="96" height="48" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="10" y="105" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="10.5" y="105.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c2"><rect x="11" y="106" width="120" height="80" rx="0"/></clipPath><g clip-path="url(#c2)">
+<image x="11" y="106" width="160" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+</g>
+<rect x="142" y="105" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="142.5" y="105.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="143" y="126" width="120" height="60" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="274" y="105" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="274.5" y="105.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="279.8" y="115.6" width="96" height="48" preserveAspectRatio="none" opacity="1" href="image.png"/>
 </svg>
