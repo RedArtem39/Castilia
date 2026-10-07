@@ -253,6 +253,9 @@ pub enum Track {
     MaxContent,
     MinMax(Box<Track>, Box<Track>),
     FitContent(f32),
+    /// `min()`/`max()`/`clamp()` of lengths (px, percent): 0 min, 1 max, 2 clamp. Resolved
+    /// against the grid's inline size at layout time.
+    Func(u8, Vec<(f32, f32)>),
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -1870,11 +1873,40 @@ fn parse_track(tok: &str, ctx: &LenCtx) -> Option<Track> {
     if let Some(inner) = strip_function(t, "fit-content") {
         return parse_px(inner, ctx).map(Track::FitContent);
     }
+    for (name, op) in [("min", 0u8), ("max", 1), ("clamp", 2)] {
+        if let Some(inner) = strip_function(t, name) {
+            let mut args = Vec::new();
+            for a in split_commas(inner) {
+                match parse_dim(a.trim(), ctx)? {
+                    Dim::Len(px, pct) => args.push((px, pct)),
+                    _ => return None,
+                }
+            }
+            if args.is_empty() || (op == 2 && args.len() != 3) {
+                return None;
+            }
+            // without percentages the value is known now
+            if args.iter().all(|a| a.1 == 0.0) {
+                return Some(Track::Px(resolve_track_func(op, &args, 0.0)));
+            }
+            return Some(Track::Func(op, args));
+        }
+    }
     match parse_dim(t, ctx)? {
         Dim::Len(px, pct) if pct == 0.0 => Some(Track::Px(px)),
         Dim::Len(px, pct) if px == 0.0 => Some(Track::Pct(pct)),
         Dim::Len(px, _) => Some(Track::Px(px)),
         _ => None,
+    }
+}
+
+/// Evaluate a `min()`/`max()`/`clamp()` track function against `basis` (100% in px).
+pub fn resolve_track_func(op: u8, args: &[(f32, f32)], basis: f32) -> f32 {
+    let vals: Vec<f32> = args.iter().map(|(px, pct)| px + pct * basis / 100.0).collect();
+    match op {
+        0 => vals.iter().copied().fold(f32::INFINITY, f32::min),
+        1 => vals.iter().copied().fold(f32::NEG_INFINITY, f32::max),
+        _ => vals[1].min(vals[2]).max(vals[0]),
     }
 }
 

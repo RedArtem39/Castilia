@@ -51,6 +51,7 @@ fn track_state(def: &Track, avail: Option<f32>) -> TrackState {
             }
             Track::MinContent => SizeKind::Min,
             Track::MaxContent => SizeKind::Max,
+            Track::Func(op, args) => SizeKind::Fixed(crate::css::resolve_track_func(*op, args, avail.unwrap_or(0.0)).max(0.0)),
             Track::FitContent(_) => {
                 if is_min {
                     SizeKind::Min
@@ -261,6 +262,17 @@ struct Placed<'a> {
     mt: f32,
 }
 
+fn has_funcs(list: &TrackList) -> bool {
+    fn f(t: &Track) -> bool {
+        match t {
+            Track::Func(..) => true,
+            Track::MinMax(a, b) => f(a) || f(b),
+            _ => false,
+        }
+    }
+    list.before.iter().chain(list.after.iter()).any(f) || list.repeat.as_ref().is_some_and(|(_, ts)| ts.iter().any(f))
+}
+
 struct Template {
     cols: Vec<Track>,
     rows: Vec<Track>,
@@ -279,7 +291,28 @@ fn track_min_size(t: &Track) -> f32 {
     }
 }
 
+/// Replace `min()/max()/clamp()` tracks by fixed sizes once the container size is known.
+fn resolve_funcs(t: &Track, avail: Option<f32>) -> Track {
+    match t {
+        Track::Func(op, args) => Track::Px(crate::css::resolve_track_func(*op, args, avail.unwrap_or(0.0)).max(0.0)),
+        Track::MinMax(a, b) => Track::MinMax(alloc::boxed::Box::new(resolve_funcs(a, avail)), alloc::boxed::Box::new(resolve_funcs(b, avail))),
+        other => other.clone(),
+    }
+}
+
 fn expand(list: &TrackList, avail: Option<f32>, gap: f32) -> (Vec<Track>, Vec<bool>) {
+    let resolved;
+    let list = if has_funcs(list) {
+        resolved = TrackList {
+            before: list.before.iter().map(|t| resolve_funcs(t, avail)).collect(),
+            repeat: list.repeat.as_ref().map(|(f, ts)| (*f, ts.iter().map(|t| resolve_funcs(t, avail)).collect())),
+            after: list.after.iter().map(|t| resolve_funcs(t, avail)).collect(),
+            ..list.clone()
+        };
+        &resolved
+    } else {
+        list
+    };
     let mut out: Vec<Track> = list.before.clone();
     let mut fit = vec![false; out.len()];
     if let Some((is_fit, tracks)) = &list.repeat {
