@@ -45,7 +45,8 @@ def ours(url):
     return r
 
 _local = threading.local()
-WALL_MARKERS = ('/cdn-cgi/challenge-platform/', 'awswaf.com', 'bm-verify', 'captcha-delivery.com', '_Incapsula_Resource', 'px-captcha', 'challenges.cloudflare.com', '/_sec/verify')
+WALL_MARKERS = ('/cdn-cgi/challenge-platform/', 'awswaf.com', 'bm-verify', 'captcha-delivery.com', '_Incapsula_Resource', 'px-captcha', 'challenges.cloudflare.com', '/_sec/verify', 'errors.edgesuite.net')
+WALL_TITLES = ('access denied', 'just a moment...', 'attention required! | cloudflare', 'forbidden', '403 forbidden', 'request rejected')
 
 def chrome(url):
     from playwright.sync_api import sync_playwright
@@ -60,7 +61,8 @@ def chrome(url):
         text = page.evaluate("document.body ? document.body.innerText : ''") or ''
         height = page.evaluate("document.documentElement.scrollHeight")
         html = page.content()
-        wall = len(html) < 300000 and any(m in html for m in WALL_MARKERS)
+        title = (page.title() or '').strip().lower()
+        wall = len(html) < 300000 and (any(m in html for m in WALL_MARKERS) or title in WALL_TITLES)
         return {'chars': sum(1 for c in text if not c.isspace()), 'height': height, 'wall': wall}
     except Exception as e:
         return {'error': str(e)[:160]}
