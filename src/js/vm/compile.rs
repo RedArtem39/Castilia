@@ -168,6 +168,50 @@ pub fn compile_function(it: &mut Interp, def: &Rc<FuncDef>) -> CResult<Code> {
     Ok(code)
 }
 
+/// Compile the statements of a classic script. Top-level declarations are hoisted by the caller
+/// (`var`/functions on the global object, `let`/`const`/`class` in the global lexical scope), so
+/// they resolve dynamically here; bindings of nested blocks may still use registers.
+pub fn compile_script(it: &mut Interp, prog: &Program) -> CResult<Code> {
+    let eval_name = it.interner.intern("eval");
+    let mut an = Analysis { captured: BTreeSet::new(), dynamic: false, eval_name };
+    an.block(&prog.body, false);
+    let mut c = Compiler {
+        ops: Vec::new(),
+        consts: Vec::new(),
+        keys: Vec::new(),
+        key_index: BTreeMap::new(),
+        strs: Vec::new(),
+        funcs: Vec::new(),
+        classes: Vec::new(),
+        templates: Vec::new(),
+        regexes: Vec::new(),
+        nregs: 0,
+        free_temps: Vec::new(),
+        scopes: Vec::new(),
+        an,
+        handler_depth: 0,
+        scope_depth: 0,
+        jumps: Vec::new(),
+        pending_labels: Vec::new(),
+        chains: Vec::new(),
+        strict: false,
+        is_async: false,
+        is_gen: false,
+        undefined_name: it.names.undefined,
+        arguments_name: it.names.arguments,
+        annex_b: BTreeSet::new(),
+    };
+    for s in &prog.body.stmts {
+        c.stmt(s)?;
+    }
+    c.emit(Op::Undef);
+    c.emit(Op::Return);
+    let mut code = c.finish(Rc::from("<script>"), false, false);
+    code.source = Some((prog.source.clone(), (0, prog.source.len().min(160))));
+    code.needs_scope = true;
+    Ok(code)
+}
+
 // ---------------------------------------------------------------------------
 // Capture analysis
 // ---------------------------------------------------------------------------

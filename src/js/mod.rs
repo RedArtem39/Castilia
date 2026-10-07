@@ -384,7 +384,8 @@ impl interp::Interp {
     /// Parse and run a classic script in the global scope.
     pub fn eval_script(&mut self, source: &str) -> Result<(), String> {
         let prog = parser::parse_program(source, &mut self.interner, false).map_err(|e| alloc::format!("SyntaxError: {e}"))?;
-        match self.run_program(&prog) {
+        let r = if self.tier == vm::Tier::Ast { self.run_program(&prog) } else { self.run_script_vm(&prog) };
+        match r {
             Ok(_) => Ok(()),
             Err(value::Ctl::Throw(v)) => Err(self.error_text(&v)),
             Err(_) => Ok(()),

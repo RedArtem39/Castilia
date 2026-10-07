@@ -474,6 +474,51 @@ impl Interp {
         Ok(last)
     }
 
+    /// Run a classic script's top level on the bytecode VM (falls back to the AST walker for
+    /// constructs the compiler does not handle).
+    pub fn run_script_vm(&mut self, prog: &Program) -> Res {
+        let code = match super::vm::compile::compile_script(self, prog) {
+            Ok(c) => Rc::new(c),
+            Err(_) => {
+                self.vm_stats.fallbacks += 1;
+                return self.run_program(prog);
+            }
+        };
+        let env = self.global_env.clone();
+        for &n in &prog.var_names {
+            let key = Key::S(self.interner.get(n).clone());
+            let g = self.global.clone();
+            if !self.has_own(&g, &key) {
+                self.define_data(&g, key, Value::Undefined, ALL);
+            }
+        }
+        self.hoist_block(&prog.body, &env, true)?;
+        let nregs = code.nregs as usize;
+        let frame = super::vm::Frame {
+            code,
+            pc: 0,
+            stack: Vec::with_capacity(8),
+            regs: alloc::vec![Value::Undefined; nregs],
+            env: env.clone(),
+            scopes: Vec::new(),
+            fenv: env,
+            handlers: Vec::new(),
+            completions: Vec::new(),
+            args: Vec::new(),
+            callee: None,
+            kind: super::vm::FrameKind::Normal,
+            promise: None,
+            pending_resume: None,
+            yield_raw: false,
+            this: Some(Value::Obj(self.global.clone())),
+        };
+        match self.vm_run(frame) {
+            super::vm::Outcome::Return(v) => Ok(v),
+            super::vm::Outcome::Throw(e) => Err(Ctl::Throw(e)),
+            _ => Ok(Value::Undefined),
+        }
+    }
+
     pub(crate) fn hoist_block(&mut self, b: &Block, env: &Env, global: bool) -> Res<()> {
         for (n, k) in &b.lets {
             if global {
