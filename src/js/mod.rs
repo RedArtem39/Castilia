@@ -61,6 +61,7 @@ impl Runtime {
         it.tick_limit = config.task_budget;
         it.max_frames = config.max_frames;
         it.heap.threshold = config.gc_threshold;
+        it.trace_errors = config.trace_errors;
         #[cfg(feature = "jit")]
         {
             it.jit.threshold = config.jit_threshold;

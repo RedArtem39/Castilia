@@ -33,6 +33,8 @@ pub struct Lexer {
     pub src: Rc<str>,
     pub pos: usize,
     prev_regex_ok: bool,
+    /// The previous token was `.`/`?.`: a following identifier is a property name.
+    prev_dot: bool,
 }
 
 const PUNCTS: &[&str] = &[
@@ -46,14 +48,19 @@ fn is_id_start(c: char) -> bool {
 }
 
 fn is_id_part(c: char) -> bool {
-    c == '$' || c == '_' || c.is_alphanumeric() || c == '\u{200c}' || c == '\u{200d}'
+    if c.is_ascii() {
+        return c == '$' || c == '_' || c.is_ascii_alphanumeric();
+    }
+    // non-ASCII: letters, digits and combining marks (no category tables in core: exclude
+    // whitespace and the punctuation/symbol blocks instead)
+    c.is_alphanumeric() || c == '\u{200c}' || c == '\u{200d}' || (!super::value::is_js_ws(c) && !matches!(c, '\u{2000}'..='\u{206f}' | '\u{2190}'..='\u{2bff}' | '\u{3000}'..='\u{303f}' | '\u{fe30}'..='\u{fe4f}' | '\u{ff00}'..='\u{ff0f}' | '\u{ff1a}'..='\u{ff20}'))
 }
 
 const REGEX_KEYWORDS: &[&str] = &["return", "typeof", "case", "do", "else", "in", "of", "instanceof", "new", "delete", "void", "throw", "yield", "await"];
 
 impl Lexer {
     pub fn new(src: Rc<str>) -> Lexer {
-        let mut l = Lexer { src, pos: 0, prev_regex_ok: true };
+        let mut l = Lexer { src, pos: 0, prev_regex_ok: true, prev_dot: false };
         if l.src.starts_with("#!") {
             l.pos = l.src.find('\n').unwrap_or(l.src.len());
         }
@@ -146,10 +153,21 @@ impl Lexer {
         };
         self.prev_regex_ok = match &tok {
             Tok::Num(_) | Tok::Str(_) | Tok::Template(..) | Tok::Regex(..) | Tok::Private(_) => false,
-            Tok::Ident(s) => REGEX_KEYWORDS.contains(&&**s),
+            Tok::Ident(s) => !self.prev_dot && REGEX_KEYWORDS.contains(&&**s),
             Tok::Punct(p) => !matches!(*p, ")" | "]" | "}"),
             Tok::Eof => true,
         };
+        self.prev_dot = matches!(tok, Tok::Punct(".") | Tok::Punct("?."));
+        Ok(Token { tok, nl, start, end: self.pos })
+    }
+
+    /// Re-read the token at `start` as a regular expression literal (the parser knows a `/` here
+    /// starts an expression, which the lexer's one-token heuristic cannot always tell).
+    pub fn rescan_regex(&mut self, start: usize, nl: bool) -> Result<Token, String> {
+        self.pos = start;
+        let tok = self.regex()?;
+        self.prev_regex_ok = false;
+        self.prev_dot = false;
         Ok(Token { tok, nl, start, end: self.pos })
     }
 

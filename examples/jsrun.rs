@@ -35,6 +35,7 @@ fn real_main() {
         config.exec_mode = m;
     }
     config.max_native_depth = 1000;
+    config.trace_errors = std::env::var("CASTILIA_TRACE").is_ok();
     let mut html = String::from("<!doctype html><html><head></head><body></body></html>");
     let mut scripts = Vec::new();
     let mut expr = None;

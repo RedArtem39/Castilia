@@ -63,6 +63,8 @@ pub struct EngineConfig {
     pub settle_fires: usize,
     /// Allocations between cycle collections (0 disables the collector).
     pub gc_threshold: usize,
+    /// Log the functions each uncaught exception unwinds through (debugging).
+    pub trace_errors: bool,
     /// Maximum number of `<script>` elements executed per page.
     pub max_scripts: usize,
     /// Scripts larger than this (bytes) are skipped.
@@ -81,6 +83,7 @@ impl EngineConfig {
             settle_ms: 1500.0,
             settle_fires: 3000,
             gc_threshold: 200_000,
+            trace_errors: false,
             max_scripts: 256,
             max_script_bytes: 4 * 1024 * 1024,
         }

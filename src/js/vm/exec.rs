@@ -119,6 +119,12 @@ impl Interp {
                         }
                         let f = frames.pop().expect("frame");
                         self.vm_frames -= 1;
+                        if self.trace_errors {
+                            let msg = self.error_text(&e);
+                            let name = if f.code.name.is_empty() { "<anonymous>" } else { &f.code.name };
+                            let text = format!("unwind {msg} at {name} (op {} {:?})", f.pc.saturating_sub(1), f.code.ops.get(f.pc.saturating_sub(1)));
+                            self.logs.push(crate::js::interp::LogEntry { level: "trace", text });
+                        }
                         if f.kind == FrameKind::Async {
                             if let Some(p) = &f.promise {
                                 self.reject_promise(p, e.clone());

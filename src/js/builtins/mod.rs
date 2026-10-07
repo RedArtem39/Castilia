@@ -162,6 +162,7 @@ pub fn new_interp() -> Interp {
         vm_stats: Default::default(),
         vm_frames: 0,
         max_frames: 10_000,
+        trace_errors: false,
         heap: Default::default(),
         eval_fn: None,
         #[cfg(feature = "jit")]

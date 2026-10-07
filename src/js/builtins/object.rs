@@ -400,7 +400,7 @@ fn object_has_own(it: &mut Interp, c: &Call) -> Res {
     if matches!(o.borrow().class, Class::Function(_)) {
         let _ = it.get_obj(&o, &k, &Value::Undefined);
     }
-    Ok(Value::Bool(it.has_own(&o, &k)))
+    Ok(Value::Bool(it.own_prop_mut(&o, &k)?.is_some()))
 }
 
 fn object_group_by(it: &mut Interp, c: &Call) -> Res {
@@ -431,7 +431,7 @@ fn proto_has_own(it: &mut Interp, c: &Call) -> Res {
     if matches!(o.borrow().class, Class::Function(_)) {
         let _ = it.get_obj(&o, &k, &Value::Undefined);
     }
-    Ok(Value::Bool(it.has_own(&o, &k)))
+    Ok(Value::Bool(it.own_prop_mut(&o, &k)?.is_some()))
 }
 
 fn proto_is_proto_of(_: &mut Interp, c: &Call) -> Res {

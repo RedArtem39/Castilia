@@ -64,7 +64,8 @@ pub struct Parser<'i> {
 
 type PResult<T> = Result<T, String>;
 
-const MAX_DEPTH: usize = 160;
+/// Syntactic nesting limit (each level costs host stack; minified bundles nest deeply).
+const MAX_DEPTH: usize = 700;
 
 pub fn parse_program(src: &str, interner: &mut Interner, is_module: bool) -> PResult<Program> {
     let src: Rc<str> = Rc::from(src);
@@ -1624,6 +1625,9 @@ impl<'i> Parser<'i> {
     }
 
     fn primary_inner(&mut self) -> PResult<Expr> {
+        if matches!(self.tok.tok, Tok::Punct("/") | Tok::Punct("/=")) {
+            self.tok = self.lex.rescan_regex(self.tok.start, self.tok.nl)?;
+        }
         let tok = self.tok.tok.clone();
         match tok {
             Tok::Num(n) => {

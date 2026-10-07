@@ -208,6 +208,8 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Log the functions an exception unwinds through (debugging aid).
+    pub trace_errors: bool,
     /// Cycle collector registry.
     pub heap: super::gc::Heap,
     /// The realm's `eval` (direct eval detection).
