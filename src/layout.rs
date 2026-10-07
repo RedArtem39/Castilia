@@ -516,6 +516,8 @@ pub(crate) struct Ctx<'a> {
     /// Set by the table layout for the next cell box: borders to drop in collapsed mode.
     pub cell_border_skip: Option<[bool; 4]>,
     pub containers: Vec<(NodeId, f32, f32)>,
+    /// Set while painting a fieldset with a legend: (gap start x, gap end x, border top offset).
+    pub fieldset_gap: Option<(f32, f32, f32)>,
 }
 
 pub(crate) const MAX_DEPTH: usize = 90;
@@ -558,6 +560,7 @@ pub fn layout(doc: &Document, styles: &Styles, viewport: Viewport, fonts: &dyn F
         anon: Vec::new(),
         cell_border_skip: None,
         containers: Vec::new(),
+        fieldset_gap: None,
     };
     ctx.layout_document()
 }
@@ -595,6 +598,12 @@ impl<'a> Ctx<'a> {
         doc.nodes[bx.id].attribute(name)
     }
 
+    /// The first `<legend>` child of a `<fieldset>` (the "rendered legend").
+    pub fn rendered_legend(&self, fieldset: NodeId) -> Option<NodeId> {
+        let doc: &Document = self.doc;
+        doc.nodes[fieldset].children.iter().copied().find(|&c| doc.nodes[c].tag() == Some("legend") && self.st.nodes[c].display != Display::None)
+    }
+
     /// Children as layout boxes, including generated content. Honors closed `<details>`.
     pub fn children(&self, bx: Bx) -> Vec<Bx> {
         if bx.pseudo != 0 {
@@ -607,7 +616,11 @@ impl<'a> Ctx<'a> {
         }
         let closed_details = node.tag() == Some("details") && node.attribute("open").is_none();
         let mut summary_seen = false;
+        let skip_legend = if node.tag() == Some("fieldset") { self.rendered_legend(bx.id) } else { None };
         for &c in &node.children {
+            if Some(c) == skip_legend {
+                continue;
+            }
             if closed_details {
                 if self.doc.nodes[c].tag() == Some("summary") && !summary_seen {
                     summary_seen = true;
@@ -855,7 +868,24 @@ impl<'a> Ctx<'a> {
 
     fn layout_box_inner(&mut self, bx: Bx, s: &'a Style, a: &Args, fl: Option<(&mut Floats, f32, f32)>, is_root: bool) -> Out {
         let skip = self.cell_border_skip.take().unwrap_or([false; 4]);
-        let (margin, padding, mut border, auto) = self.edges(s, a.avail_w);
+        let (margin, mut padding, mut border, auto) = self.edges(s, a.avail_w);
+        // fieldset: lay out the rendered legend first; it sits on the top border
+        let mut legend: Option<(Out, Bx)> = None;
+        let mut legend_extra = 0.0;
+        if self.tag(bx) == Some("fieldset") {
+            if let Some(l) = self.rendered_legend(bx.id) {
+                let lb = Bx::node(l);
+                let avail = (a.avail_w - margin.h() - padding.h() - border.h()).max(0.0);
+                let largs = Args { avail_w: avail, cb_h: None, forced_w: None, forced_h: None, shrink: true };
+                let lo = self.layout_box(lb, &largs, None, false);
+                let lh = lo.h + lo.mt + lo.mb;
+                if lh > border.t {
+                    legend_extra = lh - border.t;
+                    padding.t += legend_extra;
+                }
+                legend = Some((lo, lb));
+            }
+        }
         if skip[0] {
             border.t = 0.0;
         }
@@ -958,6 +988,7 @@ impl<'a> Ctx<'a> {
         if rsize.is_some() {
             content_h = content_h_known.unwrap_or(0.0);
             content = self.paint_replaced(bx, s, content_w, content_h);
+            info.first_baseline = content.baseline;
         } else {
             match s.display {
                 Display::Flex | Display::InlineFlex => {
@@ -1031,9 +1062,17 @@ impl<'a> Ctx<'a> {
         let mut out = Out { w: border_w, h: border_h, ml, mr, ..Default::default() };
         let rect = Rect { x: 0.0, y: 0.0, width: border_w, height: border_h };
         let propagate_bg = is_root || (self.tag(bx) == Some("body") && self.html_bg_none());
+        if let Some((lo, _)) = &legend {
+            let lh = lo.h + lo.mt + lo.mb;
+            let off = if lh > border.t { ((lh - border.t) / 2.0).max(0.0) + 0.0 } else { 0.0 };
+            let off = if lh > border.t { math::floor32((lh - border.t) / 2.0) } else { off };
+            let x0 = border.l + padding.l + lo.ml;
+            self.fieldset_gap = Some((x0, x0 + lo.w, off));
+        }
         if s.visibility_visible {
             self.paint_decorations(&mut out.paint, s, rect, propagate_bg, skip);
         }
+        self.fieldset_gap = None;
         let clip = (s.overflow_x.clips() || s.overflow_y.clips()) && !is_root && !matches!(s.display, Display::Contents);
         if clip {
             let inner = Rect {
@@ -1046,6 +1085,17 @@ impl<'a> Ctx<'a> {
         }
         if s.pointer_events {
             out.paint.hits.push(HitRegion { rect, node: bx.id });
+        }
+        if let Some((lo, _)) = legend {
+            let mut tmp = Out::default();
+            let (lw, lml, lmt) = (lo.w, lo.ml, lo.mt);
+            let _ = lw;
+            tmp.absorb(lo, 0.0, 0.0);
+            out.paint.append(tmp.paint, border.l + padding.l + lml, lmt);
+            for (z, mut p) in tmp.layers {
+                p.translate(border.l + padding.l + lml, lmt);
+                out.layers.push((z, p));
+            }
         }
         let mut abs = core::mem::take(&mut content.abs);
         let content_layers = core::mem::take(&mut content.layers);
@@ -1170,6 +1220,11 @@ impl<'a> Ctx<'a> {
     }
 
     pub fn paint_decorations(&mut self, paint: &mut Paint, s: &Style, rect: Rect, propagate_bg: bool, skip: [bool; 4]) {
+        let gap = self.fieldset_gap.take();
+        let rect = match gap {
+            Some((_, _, off)) => Rect { y: rect.y + off, height: (rect.height - off).max(0.0), ..rect },
+            None => rect,
+        };
         for sh in s.shadows.iter().filter(|x| !x.inset) {
             paint.cmds.push(Command::Shadow {
                 rect,
@@ -1228,7 +1283,27 @@ impl<'a> Ctx<'a> {
                 }
                 colors[i] = s.border_color[i].unwrap_or(s.color);
             }
-            paint.cmds.push(Command::Border { rect, widths, colors, styles, radius: s.border_radius });
+            if let Some((gx0, gx1, _)) = gap {
+                // top border interrupted by the legend
+                let w = widths[0];
+                let (x0, x1) = ((gx0 - 2.0).max(rect.x), (gx1 + 2.0).min(rect.x + rect.width));
+                if w > 0.0 && x1 > x0 {
+                    let seg = |x: f32, width: f32| Command::Border { rect: Rect { x, y: rect.y, width, height: w }, widths: [w, 0.0, 0.0, 0.0], colors, styles, radius: 0.0 };
+                    if x0 > rect.x {
+                        paint.cmds.push(seg(rect.x, x0 - rect.x));
+                    }
+                    if rect.x + rect.width > x1 {
+                        paint.cmds.push(seg(x1, rect.x + rect.width - x1));
+                    }
+                    widths[0] = 0.0;
+                }
+            }
+            if s.native_border && widths == [2.0; 4] {
+                // native form control: thin rounded border
+                paint.cmds.push(Command::Border { rect, widths: [1.0; 4], colors, styles, radius: s.border_radius.max(2.0) });
+            } else {
+                paint.cmds.push(Command::Border { rect, widths, colors, styles, radius: s.border_radius });
+            }
         }
     }
 

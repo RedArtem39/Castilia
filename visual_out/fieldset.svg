@@ -1,23 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="300" viewBox="0 0 800 300">
 <rect width="100%" height="100%" fill="white"/>
-<rect x="13" y="11" width="774" height="78" rx="0" fill="none" stroke="#c0c0c0" stroke-opacity="1" stroke-width="2"/>
-<text x="26.5" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Account</text>
-<text x="24.5" y="54" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Name</text>
-<rect x="66" y="33" width="185" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
-<rect x="67" y="34" width="183" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
-<clipPath id="c1"><rect x="69.734375" y="35.9" width="177" height="15" rx="0"/></clipPath><g clip-path="url(#c1)">
-<text x="69.734375" y="48" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">x</text>
+<polygon points="12,17 23,17 23,19 12,19" fill="#c0c0c0" fill-opacity="1"/>
+<polygon points="81,17 788,17 788,19 81,19" fill="#c0c0c0" fill-opacity="1"/>
+<polygon points="788,17 788,82 786,80 786,17" fill="#c0c0c0" fill-opacity="1"/>
+<polygon points="12,82 788,82 786,80 14,80" fill="#c0c0c0" fill-opacity="1"/>
+<polygon points="12,17 12,82 14,80 14,17" fill="#c0c0c0" fill-opacity="1"/>
+<text x="26.5" y="23" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Account</text>
+<text x="24.5" y="46" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Name</text>
+<rect x="66" y="31" width="185" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="66.5" y="31.5" width="184" height="20" rx="1.5" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c1"><rect x="69.734375" y="33.9" width="177" height="15" rx="0"/></clipPath><g clip-path="url(#c1)">
+<text x="69.734375" y="46" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">x</text>
 </g>
-<text x="48.38965" y="76" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Remember</text>
-<rect x="29" y="60" width="13" height="13" rx="2" fill="#0075ff" fill-opacity="1"/>
-<rect x="29.5" y="60.5" width="12" height="12" rx="1.5" fill="none" stroke="#0075ff" stroke-opacity="1" stroke-width="1"/>
-<text x="31.1" y="70" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="11.9999695" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">✓</text>
-<rect x="13" y="103" width="774" height="47" rx="0" fill="none" stroke="#dd3333" stroke-opacity="1" stroke-width="2"/>
-<text x="32.5" y="122" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#dd3333" fill-opacity="1" xml:space="preserve">Styled</text>
-<text x="24.5" y="138" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Content inside</text>
-<text x="10" y="176" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Open details</text>
-<text x="1.2089844" y="176" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">•</text>
-<text x="10" y="192" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Inner text</text>
-<text x="10" y="220" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Closed details</text>
-<text x="1.2089844" y="220" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">•</text>
+<text x="48.38965" y="68" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Remember</text>
+<rect x="29" y="55" width="13" height="13" rx="2" fill="#0075ff" fill-opacity="1"/>
+<rect x="29.5" y="55.5" width="12" height="12" rx="1.5" fill="none" stroke="#0075ff" stroke-opacity="1" stroke-width="1"/>
+<text x="31.1" y="65" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="11.9999695" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">✓</text>
+<polygon points="12,101 23,101 23,103 12,103" fill="#dd3333" fill-opacity="1"/>
+<polygon points="81,101 788,101 788,103 81,103" fill="#dd3333" fill-opacity="1"/>
+<polygon points="788,101 788,141 786,139 786,101" fill="#dd3333" fill-opacity="1"/>
+<polygon points="12,141 788,141 786,139 14,139" fill="#dd3333" fill-opacity="1"/>
+<polygon points="12,101 12,141 14,139 14,101" fill="#dd3333" fill-opacity="1"/>
+<text x="32.5" y="107" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#dd3333" fill-opacity="1" xml:space="preserve">Styled</text>
+<text x="24.5" y="128" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Content inside</text>
+<text x="10" y="166" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">▼</text>
+<text x="27.746094" y="166" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Open details</text>
+<text x="10" y="182" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Inner text</text>
+<text x="10" y="210" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">▶</text>
+<text x="31.361649" y="210" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Closed details</text>
 </svg>

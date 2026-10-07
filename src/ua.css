@@ -69,6 +69,7 @@ select { border: 1px solid #767676; background-color: #fff; box-sizing: border-b
 option { display: block; min-height: 1.2em; padding: 0 2px 1px }
 fieldset { margin: 0 2px; padding: 0.35em 0.75em 0.625em; border: 2px groove #c0c0c0; min-width: min-content }
 legend { padding: 0 2px }
-details > summary:first-of-type { display: list-item }
+details > summary:first-of-type { display: list-item; list-style: disclosure-closed inside }
+details[open] > summary:first-of-type { list-style-type: disclosure-open }
 progress, meter { display: inline-block; width: 160px; height: 16px; background-color: #e6e6e6 }
 label { cursor: default }

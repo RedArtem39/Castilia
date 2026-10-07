@@ -77,7 +77,13 @@ fn width_with(font: &FdFont, text: &str, size: f32) -> f32 {
         }
         if font.lookup_glyph_index(character) == 0 && !character.is_control() {
             // Missing glyph: the browser falls back to another font (emoji are about 1.2em wide).
-            width += if character as u32 >= 0x2190 { size * 1.17 } else { size * 0.6 };
+            let cp = character as u32;
+            width += match cp {
+                0xFE00..=0xFE0F | 0x200B..=0x200D | 0x20E3 | 0x1F3FB..=0x1F3FF => 0.0,
+                0x2E80..=0x9FFF | 0xAC00..=0xD7A3 | 0xFF00..=0xFF60 | 0x3000..=0x303F => size,
+                0x2190..=0x2BFF | 0x1F000..=0x1FAFF | 0x2600..=0x27BF => size * 1.248,
+                _ => size * 0.6,
+            };
             previous = None;
             continue;
         }

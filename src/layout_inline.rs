@@ -890,7 +890,16 @@ impl<'a> Ctx<'a> {
                     let s = self.style(*bx);
                     let (asc, desc, lh) = self.vmetrics(s);
                     let half = math::floor32((lh - asc - desc) / 2.0);
-                    M { above: asc + half, below: lh - (asc + half) }
+                    let mut m = M { above: asc + half, below: lh - (asc + half) };
+                    // Emoji come from a fallback font (Noto Color Emoji: ascent .928em, descent .244em)
+                    // whose metrics also size the line when `line-height: normal`.
+                    if let FragKind::Text { text, .. } = &f.kind {
+                        if s.line_height_number.is_none() && s.line_height_px.is_none() && text.chars().any(is_emoji) {
+                            m.above = m.above.max(math::round32(0.928 * s.font_size));
+                            m.below = m.below.max(math::round32(0.244 * s.font_size));
+                        }
+                    }
+                    m
                 }
                 FragKind::Atomic { out, mt, mb, .. } => {
                     // boxes without a baseline (replaced elements) sit on the bottom *margin* edge
@@ -1311,4 +1320,8 @@ impl<'a> Run<'a> {
 #[allow(dead_code)]
 fn _unused(_: f32) -> f32 {
     math::floor32(0.0)
+}
+
+fn is_emoji(c: char) -> bool {
+    matches!(c as u32, 0x1F000..=0x1FAFF | 0x2600..=0x27BF | 0x2B50 | 0x2B55 | 0x231A..=0x23FF)
 }

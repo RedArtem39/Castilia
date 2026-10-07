@@ -365,6 +365,7 @@ impl<'a> Ctx<'a> {
                 let ty = ty.as_str();
                 if (ty == "checkbox" || ty == "radio") && s.appearance_none {
                 } else if ty == "checkbox" || ty == "radio" {
+                    out.baseline = Some(ch);
                     let checked = self.attr(bx, "checked").is_some();
                     let round = if ty == "radio" { cw / 2.0 } else { 2.0 };
                     let (fill, edge) = if checked { (0xff0075ffu32, 0xff0075ffu32) } else { (0xffffffff, 0xff767676) };
@@ -404,6 +405,11 @@ impl<'a> Ctx<'a> {
                     let placeholder = self.attr(bx, "placeholder").unwrap_or("");
                     let button_like = matches!(ty, "submit" | "button" | "reset");
                     let (shown, c) = if value.is_empty() && !button_like { (placeholder.to_string(), 0xff757575u32) } else { (value, s.color) };
+                    {
+                        // text controls align on the baseline of their text
+                        let asc = self.fonts.ascent(&Font::of(s));
+                        out.baseline = Some(((ch - lh) / 2.0).max(0.0) + asc);
+                    }
                     if !shown.is_empty() {
                         out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
                         let w = self.text_w(&shown, s);
@@ -429,6 +435,7 @@ impl<'a> Ctx<'a> {
             "select" => {
                 let lh = self.used_line_height(s);
                 let t = self.selected_option_text(bx);
+                out.baseline = Some(((ch - lh) / 2.0).max(0.0) + self.fonts.ascent(&Font::of(s)));
                 out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
                 if !t.is_empty() {
                     text(self, &mut out.paint, 2.0, ((ch - lh) / 2.0).max(0.0), t, s.color);
@@ -494,6 +501,8 @@ impl<'a> Ctx<'a> {
             L::UpperAlpha => format!("{}.", to_alpha(n(), true)),
             L::LowerRoman => format!("{}.", to_roman(n(), false)),
             L::UpperRoman => format!("{}.", to_roman(n(), true)),
+            L::DisclosureClosed => "\u{25b6}".to_string(),
+            L::DisclosureOpen => "\u{25bc}".to_string(),
             L::LowerGreek => {
                 let i = (n() - 1).rem_euclid(24) as u32;
                 format!("{}.", char::from_u32(0x3b1 + i + (i >= 17) as u32).unwrap_or('α'))

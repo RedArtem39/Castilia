@@ -239,6 +239,8 @@ pub enum ListStyleType {
     LowerRoman,
     UpperRoman,
     LowerGreek,
+    DisclosureClosed,
+    DisclosureOpen,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -345,6 +347,8 @@ pub struct Style {
     pub border_radius: f32,
     pub shadows: Vec<Shadow>,
     pub text_shadows: Vec<Shadow>,
+    /// UA `inset`/`outset` border on a form control: painted like the native 1px control border.
+    pub native_border: bool,
     pub outline_width: f32,
     /// Same codes as `border_style`; `None` draws nothing.
     pub outline_style: BorderStyle,
@@ -464,6 +468,7 @@ impl Style {
             border_radius: 0.0,
             shadows: Vec::new(),
             text_shadows: Vec::new(),
+            native_border: false,
             outline_width: 3.0,
             outline_style: BorderStyle::None,
             outline_color: None,
@@ -2528,6 +2533,9 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
                 width = 0.0;
             }
             let _ = color_set;
+            if sides.len() == 4 {
+                style.native_border = split_ws(value).iter().any(|t| matches!(t.to_ascii_lowercase().as_str(), "inset" | "outset"));
+            }
             for &s in sides {
                 style.border_width[s] = width;
                 style.border_style[s] = bstyle;
@@ -2938,6 +2946,8 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
                     "lower-roman" => Some(ListStyleType::LowerRoman),
                     "upper-roman" => Some(ListStyleType::UpperRoman),
                     "lower-greek" => Some(ListStyleType::LowerGreek),
+                    "disclosure-closed" => Some(ListStyleType::DisclosureClosed),
+                    "disclosure-open" => Some(ListStyleType::DisclosureOpen),
                     _ => None,
                 } {
                     style.list_style_type = ty;
