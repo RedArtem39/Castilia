@@ -135,7 +135,9 @@ pub fn compile_function(it: &mut Interp, def: &Rc<FuncDef>) -> CResult<Code> {
         }
     }
     let name = def.name.map(|n| it.interner.get(n).clone()).unwrap_or_else(|| Rc::from(""));
-    Ok(c.finish(name, def.is_generator, def.is_async))
+    let mut code = c.finish(name, def.is_generator, def.is_async);
+    code.source = Some((def.source.clone(), def.span));
+    Ok(code)
 }
 
 // ---------------------------------------------------------------------------
@@ -446,6 +448,7 @@ impl Compiler {
             #[cfg(feature = "jit")]
             native: core::cell::RefCell::new(Default::default()),
             name,
+            source: None,
             template_cache: core::cell::RefCell::new(Vec::new()),
         }
     }

@@ -42,7 +42,7 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     let output_index = url_index + 1;
     let mut fetcher = net::HostFetcher::new();
     let fonts = font::SystemFont::new()?;
-    let page = if reader {
+    let mut page = if reader {
         load_reader_page(&mut fetcher, &args[url_index], width, &fonts)?
     } else {
         castilia::network::load_page_with(&mut fetcher, &args[url_index], width, &fonts, castilia::network::LoadOptions { config, code_memory: None })?
@@ -85,6 +85,12 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     }
     for warning in &images.warnings {
         println!("Warning: {warning}");
+    }
+    if let (Ok(expr), Some(p)) = (env::var("CASTILIA_EVAL"), page.page.as_mut()) {
+        match p.evaluate(&expr) {
+            Ok(v) => println!("eval => {v}"),
+            Err(e) => println!("eval !! {e}"),
+        }
     }
     if env::var("CASTILIA_CONSOLE").is_ok() {
         if let Some(p) = &page.page {

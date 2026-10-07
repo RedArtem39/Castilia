@@ -308,3 +308,12 @@ fn binary_data_and_streams() {
         &["ab X hi"],
     );
 }
+
+#[test]
+fn array_holes() {
+    check_vm(
+        "const a = new Array(3); a[1] = 'x'; const b = [1, , 3]; delete b[0]; const seen = []; a.forEach((v, i) => seen.push(i));
+         console.log(a.length, seen.join(), a.map(v => v + '!').join('|'), 1 in a, 0 in a, b.join('-'), Object.keys(b).join(), [...a].length, a[0] === undefined, JSON.stringify(a), a.filter(() => true).length, a.indexOf(undefined), a.includes(undefined))",
+        &["3 1 |x!| true false --3 2 3 true [null,\"x\",null] 1 -1 true"],
+    );
+}

@@ -177,7 +177,15 @@ impl Interp {
                 return Ok(id);
             }
         }
-        self.type_error("Illegal invocation: not a DOM node")
+        let what = match v {
+            Value::Obj(o) => {
+                let ctor = self.get_v(v, &self.names.constructor.clone()).ok().and_then(|c| self.get_str(&c, "name").ok()).map(|n| self.to_string_lossy(&n)).unwrap_or_default();
+                let proxy = matches!(o.borrow().class, Class::Proxy { .. });
+                alloc::format!("{}{}", if proxy { "Proxy of " } else { "" }, if ctor.is_empty() { "object" } else { &ctor })
+            }
+            other => self.describe(other),
+        };
+        self.type_error(&alloc::format!("Illegal invocation: not a DOM node ({what})"))
     }
 
     pub fn this_node(&mut self, c: &Call) -> Res<NodeId> {

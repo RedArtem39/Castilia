@@ -115,7 +115,7 @@ impl Interp {
         match &ob.class {
             Class::Array(a) => {
                 if let Some(i) = key.as_index() {
-                    return a.get(i).map(|v| Prop { slot: Slot::Data(v.clone()), flags: ALL });
+                    return a.get(i).filter(|v| !is_hole(v)).map(|v| Prop { slot: Slot::Data(v.clone()), flags: ALL });
                 }
                 if matches!(key, Key::S(s) if &**s == "length") {
                     return Some(Prop { slot: Slot::Data(Value::Num(a.len() as f64)), flags: WRITABLE });
@@ -174,7 +174,7 @@ impl Interp {
                     return;
                 }
                 if i < MAX_ARRAY_LEN && i <= a.len() + 10_000_000 {
-                    a.resize(i, Value::Undefined);
+                    a.resize(i, hole());
                     a.push(v);
                     return;
                 }
@@ -182,7 +182,7 @@ impl Interp {
             if matches!(&key, Key::S(s) if &**s == "length") {
                 if let Value::Num(n) = v {
                     let n = (n as usize).min(MAX_ARRAY_LEN);
-                    a.resize(n, Value::Undefined);
+                    a.resize(n, hole());
                 }
                 return;
             }
@@ -223,8 +223,10 @@ impl Interp {
         let mut out = Vec::new();
         match &ob.class {
             Class::Array(a) => {
-                for i in 0..a.len() {
-                    out.push(Key::S(Rc::from(i.to_string())));
+                for (i, v) in a.iter().enumerate() {
+                    if !is_hole(v) {
+                        out.push(Key::S(Rc::from(i.to_string())));
+                    }
                 }
                 out.push(Key::str("length"));
             }
@@ -259,11 +261,7 @@ impl Interp {
         if let Class::Array(a) = &mut ob.class {
             if let Some(i) = key.as_index() {
                 if i < a.len() {
-                    if i == a.len() - 1 && false {
-                        a.pop();
-                    } else {
-                        a[i] = Value::Undefined;
-                    }
+                    a[i] = hole();
                 }
                 return Ok(true);
             }
@@ -352,6 +350,16 @@ impl Interp {
         }
     }
 
+    /// An accessor held by a shared DOM prototype reached from a receiver that is not a node.
+    fn dom_accessor_on_non_node(&self, holder: &Obj, receiver: &Value) -> bool {
+        let Value::Obj(r) = receiver else { return false };
+        if matches!(r.borrow().class, Class::Node(_) | Class::Document | Class::Window) {
+            return false;
+        }
+        let p = self.protos();
+        holder.ptr_eq(&p.html_element) || holder.ptr_eq(&p.element) || holder.ptr_eq(&p.node)
+    }
+
     pub fn get_obj(&mut self, o: &Obj, key: &Key, receiver: &Value) -> Res {
         let mut cur = o.clone();
         for _ in 0..2000 {
@@ -365,6 +373,7 @@ impl Interp {
             if let Some(p) = self.own_prop(&cur, key) {
                 return match p.slot {
                     Slot::Data(v) => Ok(v),
+                    Slot::Accessor(Some(_), _) if self.dom_accessor_on_non_node(&cur, receiver) => Ok(Value::Undefined),
                     Slot::Accessor(Some(g), _) => self.call_obj(&g, receiver.clone(), &[], None),
                     Slot::Accessor(None, _) => Ok(Value::Undefined),
                 };
@@ -437,7 +446,7 @@ impl Interp {
             match &o.borrow().class {
                 Class::Array(a) => {
                     let i = *n as usize;
-                    if i as f64 == *n && i < a.len() {
+                    if i as f64 == *n && i < a.len() && !is_hole(&a[i]) {
                         return Ok(a[i].clone());
                     }
                 }
@@ -556,6 +565,14 @@ impl Interp {
                 return Ok(r.truthy());
             }
             if let Some(p) = self.own_prop(&cur, &key) {
+                if matches!(p.slot, Slot::Accessor(..)) && self.dom_accessor_on_non_node(&cur, receiver) {
+                    // element accessors live on shared prototypes here; for a non-element receiver
+                    // (a class prototype, a plain object) behave as if the accessor were absent
+                    if let Value::Obj(r) = receiver {
+                        self.define_data(r, key, v, ALL);
+                        return Ok(true);
+                    }
+                }
                 match p.slot {
                     Slot::Accessor(_, Some(s)) => {
                         self.call_obj(&s, receiver.clone(), &[v], None)?;

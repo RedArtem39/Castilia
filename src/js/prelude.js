@@ -721,6 +721,8 @@
   adopt('Storage', G.localStorage);
   if (G.sessionStorage && G.Storage) try { Object.setPrototypeOf(G.sessionStorage, G.Storage.prototype); } catch (e) {}
   if (!G.Window) iface('Window', Object.create(G.EventTarget ? G.EventTarget.prototype : Object.prototype));
+  // window → Window.prototype → EventTarget.prototype (polyfills capture natives from the prototypes)
+  try { if (Object.getPrototypeOf(G) !== G.Window.prototype) Object.setPrototypeOf(G, G.Window.prototype); } catch (e) {}
   for (const n of ['CDATASection', 'ProcessingInstruction']) if (!G[n]) iface(n, null, G.Text || G.Node);
   if (!G.StaticRange) expose('StaticRange', class StaticRange { constructor(i) { Object.assign(this, { startContainer: i.startContainer, startOffset: i.startOffset, endContainer: i.endContainer, endOffset: i.endOffset }); this.collapsed = this.startContainer === this.endContainer && this.startOffset === this.endOffset; } });
   if (!G.Crypto) adopt('Crypto', G.crypto);

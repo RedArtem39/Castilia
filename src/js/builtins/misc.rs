@@ -63,7 +63,7 @@ pub fn inspect(it: &mut Interp, v: &Value, depth: usize, top: bool, seen: &mut V
                 Prim(Value),
             }
             let kind = match &o.borrow().class {
-                Class::Array(a) => K::Arr(a.clone()),
+                Class::Array(a) => K::Arr(unhole_vec(a.clone())),
                 Class::Error => K::Err,
                 Class::Date(t) => K::Date(*t),
                 Class::RegExp(_) => K::Re,
@@ -450,7 +450,7 @@ fn clone_value(it: &mut Interp, v: &Value, seen: &mut Vec<(Obj, Obj)>) -> Res {
         Plain,
     }
     let k = match &o.borrow().class {
-        Class::Array(a) => K::Arr(a.clone()),
+        Class::Array(a) => K::Arr(unhole_vec(a.clone())),
         Class::Date(t) => K::Date(*t),
         Class::Map(d) => K::Map(d.entries.iter().flatten().cloned().collect()),
         Class::Set(d) => K::Set(d.entries.iter().flatten().map(|e| e.0.clone()).collect()),

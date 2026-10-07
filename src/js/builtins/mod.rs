@@ -255,7 +255,7 @@ impl Interp {
     pub fn array_like_to_vec(&mut self, v: &Value) -> Res<Vec<Value>> {
         if let Value::Obj(o) = v {
             if let Class::Array(a) = &o.borrow().class {
-                return Ok(a.clone());
+                return Ok(unhole_vec(a.clone()));
             }
             let len = self.get_v(v, &self.names.length.clone())?;
             let n = self.to_number(&len)?;
@@ -314,7 +314,7 @@ pub fn list_iterator_next(it: &mut Interp, c: &Call) -> Res {
     };
     let v = match &items {
         Value::Obj(a) => match &a.borrow().class {
-            Class::Array(a) => a.get(pos).cloned(),
+            Class::Array(a) => a.get(pos).cloned().map(unhole),
             _ => None,
         },
         _ => None,

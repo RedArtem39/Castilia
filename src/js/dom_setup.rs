@@ -61,7 +61,7 @@ pub fn setup_all(it: &mut Interp) {
         let i = to_integer(it.arg_num(c, 0)?);
         Ok(match &c.this {
             Value::Obj(o) => match &o.borrow().class {
-                Class::Array(a) if i >= 0.0 => a.get(i as usize).cloned().unwrap_or(Value::Null),
+                Class::Array(a) if i >= 0.0 => a.get(i as usize).cloned().map(unhole).unwrap_or(Value::Null),
                 _ => Value::Null,
             },
             _ => Value::Null,

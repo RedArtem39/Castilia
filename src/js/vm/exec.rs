@@ -128,7 +128,15 @@ impl Interp {
                                 Some(Op::Call(_, d) | Op::New(_, d) | Op::CallSpread(d) | Op::NewSpread(d)) => self.callee_text(&f.code, d),
                                 _ => String::new(),
                             };
-                            let text = format!("unwind {msg} at {name} (op {} {:?} {detail})", f.pc.saturating_sub(1), op);
+                            let src = f.code.source.as_ref().map(|(s, (a, b))| {
+                                let end = (*b).min(s.len()).min(a + 160);
+                                let mut a = *a;
+                                while a < end && !s.is_char_boundary(a) { a += 1; }
+                                let mut e = end;
+                                while e > a && !s.is_char_boundary(e) { e -= 1; }
+                                String::from(&s[a..e])
+                            }).unwrap_or_default();
+                            let text = format!("unwind {msg} at {name} (op {} {:?} {detail}) src: {src}", f.pc.saturating_sub(1), op);
                             self.logs.push(crate::js::interp::LogEntry { level: "trace", text });
                         }
                         if f.kind == FrameKind::Async {
@@ -305,7 +313,7 @@ impl Interp {
     fn array_values(&mut self, v: &Value) -> Vec<Value> {
         match v {
             Value::Obj(o) => match &o.borrow().class {
-                Class::Array(a) => a.clone(),
+                Class::Array(a) => unhole_vec(a.clone()),
                 _ => Vec::new(),
             },
             _ => Vec::new(),
@@ -368,7 +376,7 @@ impl Interp {
                 match v {
                     Some(v) => {
                         f.regs[r + 1] = Value::Num((i + 1) as f64);
-                        Ok(Some(v))
+                        Ok(Some(unhole(v)))
                     }
                     None => {
                         f.regs[r + 1] = Value::Undefined;
@@ -868,7 +876,7 @@ impl Interp {
                     f.stack.push(a);
                 }
                 Op::ArrPush | Op::ArrHole => {
-                    let v = if op == Op::ArrPush { Self::pop(f) } else { Value::Undefined };
+                    let v = if op == Op::ArrPush { Self::pop(f) } else { hole() };
                     if let Some(Value::Obj(o)) = f.stack.last() {
                         if let Class::Array(a) = &mut o.borrow_mut().class {
                             a.push(v);
@@ -1270,7 +1278,7 @@ impl Interp {
         if let (Value::Obj(ob), Value::Num(n)) = (o, k) {
             if let Class::Array(a) = &ob.borrow().class {
                 let i = *n as usize;
-                if i as f64 == *n && i < a.len() {
+                if i as f64 == *n && i < a.len() && !is_hole(&a[i]) {
                     return Ok(a[i].clone());
                 }
             }

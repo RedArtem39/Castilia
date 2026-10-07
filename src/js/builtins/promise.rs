@@ -110,7 +110,7 @@ fn finally_cb(it: &mut Interp, c: &Call, rejected: bool) -> Res {
 
 fn arr_get(o: &Obj, i: usize) -> Value {
     match &o.borrow().class {
-        Class::Array(a) => a.get(i).cloned().unwrap_or(Value::Undefined),
+        Class::Array(a) => a.get(i).cloned().map(unhole).unwrap_or(Value::Undefined),
         _ => Value::Undefined,
     }
 }

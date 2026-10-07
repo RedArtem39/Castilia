@@ -218,6 +218,8 @@ pub struct Code {
     #[cfg(feature = "jit")]
     pub native: RefCell<super::jit::NativeSlot>,
     pub name: JsStr,
+    /// Source text and span of the function (diagnostics).
+    pub source: Option<(JsStr, (usize, usize))>,
     /// Template objects are created once per site (`lit-html` relies on their identity).
     pub template_cache: RefCell<Vec<Option<Value>>>,
 }

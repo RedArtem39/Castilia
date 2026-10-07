@@ -432,6 +432,31 @@ impl Value {
     }
 }
 
+/// Marker stored in array storage for a missing element (`new Array(3)`, `[,,]`, `delete a[i]`).
+/// It never escapes to scripts: every read path turns it into `undefined` or skips it.
+pub fn hole() -> Value {
+    Value::Sym(Sym(Rc::new(SymData { id: 0, desc: None })))
+}
+
+#[inline]
+pub fn is_hole(v: &Value) -> bool {
+    matches!(v, Value::Sym(s) if s.0.id == 0)
+}
+
+#[inline]
+pub fn unhole(v: Value) -> Value {
+    if is_hole(&v) { Value::Undefined } else { v }
+}
+
+pub fn unhole_vec(mut v: Vec<Value>) -> Vec<Value> {
+    for x in v.iter_mut() {
+        if is_hole(x) {
+            *x = Value::Undefined;
+        }
+    }
+    v
+}
+
 pub fn strict_equals(a: &Value, b: &Value) -> bool {
     match (a, b) {
         (Value::Undefined, Value::Undefined) | (Value::Null, Value::Null) => true,

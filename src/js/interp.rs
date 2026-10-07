@@ -1155,7 +1155,7 @@ impl Interp {
                         let mut i = 0;
                         loop {
                             let v = match &o.borrow().class {
-                                Class::Array(a) => a.get(i).cloned(),
+                                Class::Array(a) => a.get(i).cloned().map(unhole),
                                 _ => None,
                             };
                             let Some(mut v) = v else { break };
@@ -1415,7 +1415,7 @@ impl Interp {
                 let mut out = Vec::with_capacity(elems.len());
                 for el in elems {
                     match el {
-                        None => out.push(Value::Undefined),
+                        None => out.push(hole()),
                         Some(ArgElem::Expr(e)) => out.push(self.eval(e, env)?),
                         Some(ArgElem::Spread(e)) => {
                             let v = self.eval(e, env)?;
@@ -2228,7 +2228,7 @@ impl Interp {
         if let Value::Obj(o) = v {
             if let Class::Array(a) = &o.borrow().class {
                 if self.array_iter_pristine_ref(o) {
-                    return Ok(a.clone());
+                    return Ok(unhole_vec(a.clone()));
                 }
             }
         }

@@ -118,7 +118,7 @@ fn array_ctor(it: &mut Interp, c: &Call) -> Res {
             if n > 50_000_000.0 {
                 return Err(it.error_ctl("RangeError", "Invalid array length"));
             }
-            vec![Value::Undefined; n as usize]
+            vec![hole(); n as usize]
         } else {
             c.args.to_vec()
         }
@@ -170,6 +170,11 @@ fn array_from(it: &mut Interp, c: &Call) -> Res {
 // ---- helpers ----
 
 fn list(it: &mut Interp, c: &Call) -> Res<Vec<Value>> {
+    list_raw(it, c).map(unhole_vec)
+}
+
+/// Elements with holes kept (for the methods that skip missing elements).
+fn list_raw(it: &mut Interp, c: &Call) -> Res<Vec<Value>> {
     if let Value::Obj(o) = &c.this {
         if let Class::Array(a) = &o.borrow().class {
             return Ok(a.clone());
@@ -413,7 +418,7 @@ fn to_string(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn index_of(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let from = rel_arg(it, c, 1, items.len(), 0)?;
     let t = c.arg(0);
     for (i, v) in items.iter().enumerate().skip(from) {
@@ -480,11 +485,14 @@ fn find_impl(it: &mut Interp, c: &Call, want_index: bool, from_end: bool) -> Res
 }
 
 fn filter(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     let mut out = Vec::new();
     for (i, v) in items.into_iter().enumerate() {
+        if is_hole(&v) {
+            continue;
+        }
         if it.call(&f, c.arg(1), &[v.clone(), Value::Num(i as f64), c.this.clone()])?.truthy() {
             out.push(v);
         }
@@ -493,31 +501,41 @@ fn filter(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn map(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     let mut out = Vec::with_capacity(items.len());
     for (i, v) in items.into_iter().enumerate() {
+        if is_hole(&v) {
+            out.push(v);
+            continue;
+        }
         out.push(it.call(&f, c.arg(1), &[v, Value::Num(i as f64), c.this.clone()])?);
     }
     Ok(it.new_array(out))
 }
 
 fn for_each(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     for (i, v) in items.into_iter().enumerate() {
+        if is_hole(&v) {
+            continue;
+        }
         it.call(&f, c.arg(1), &[v, Value::Num(i as f64), c.this.clone()])?;
     }
     Ok(Value::Undefined)
 }
 
 fn some(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     for (i, v) in items.into_iter().enumerate() {
+        if is_hole(&v) {
+            continue;
+        }
         if it.call(&f, c.arg(1), &[v, Value::Num(i as f64), c.this.clone()])?.truthy() {
             return Ok(Value::Bool(true));
         }
@@ -526,10 +544,13 @@ fn some(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn every(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     for (i, v) in items.into_iter().enumerate() {
+        if is_hole(&v) {
+            continue;
+        }
         if !it.call(&f, c.arg(1), &[v, Value::Num(i as f64), c.this.clone()])?.truthy() {
             return Ok(Value::Bool(false));
         }
@@ -538,11 +559,11 @@ fn every(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn reduce_impl(it: &mut Interp, c: &Call, right: bool) -> Res {
-    let mut items = list(it, c)?;
+    let mut items = list_raw(it, c)?;
     let f = c.arg(0);
     check_fn(it, &f)?;
     let n = items.len();
-    let idx: Vec<usize> = if right { (0..n).rev().collect() } else { (0..n).collect() };
+    let idx: Vec<usize> = if right { (0..n).rev().filter(|&i| !is_hole(&items[i])).collect() } else { (0..n).filter(|&i| !is_hole(&items[i])).collect() };
     let mut iter = idx.into_iter();
     let mut acc = if c.args.len() > 1 {
         c.args[1].clone()
