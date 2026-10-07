@@ -134,7 +134,18 @@ impl<'i> Parser<'i> {
 
     fn err<T>(&self, msg: &str) -> PResult<T> {
         let line = self.lex.line_of(self.tok.start);
-        Err(format!("SyntaxError: {msg} (line {line}, near {})", describe(&self.tok.tok)))
+        // a little source context makes minified-bundle failures diagnosable
+        let src = &self.lex.src;
+        let mut a = self.tok.start.saturating_sub(40).min(src.len());
+        while a > 0 && !src.is_char_boundary(a) {
+            a -= 1;
+        }
+        let mut b = (self.tok.start + 40).min(src.len());
+        while b < src.len() && !src.is_char_boundary(b) {
+            b += 1;
+        }
+        let ctx: String = src[a..b].chars().map(|c| if c.is_control() { ' ' } else { c }).collect();
+        Err(format!("SyntaxError: {msg} (line {line}, near {}) in `{ctx}`", describe(&self.tok.tok)))
     }
 
     fn is_punct(&self, p: &str) -> bool {

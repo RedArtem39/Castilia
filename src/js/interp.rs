@@ -667,15 +667,7 @@ impl Interp {
 
     fn bind_params(&mut self, def: &Rc<FuncDef>, scope: &Env, args: &[Value], fo: &Obj) -> Res<()> {
         if def.uses_args && !def.is_arrow {
-            let argobj = self.new_array(args.to_vec());
-            if let Value::Obj(o) = &argobj {
-                let op = self.protos().object.clone();
-                o.borrow_mut().proto = Some(op);
-                let it = self.wk().iterator.clone();
-                let values = self.get_obj(&self.protos().array.clone(), &Key::str("values"), &Value::Undefined).unwrap_or(Value::Undefined);
-                self.define_data(o, Key::Y(it.0.id), values, HIDDEN);
-                self.define_data(o, Key::str("callee"), Value::Obj(fo.clone()), HIDDEN);
-            }
+            let argobj = self.make_arguments(args, Some(fo));
             let an = self.names.arguments;
             self.declare(scope, an, 0, argobj, true);
         }
@@ -1732,6 +1724,23 @@ impl Interp {
             self.init_fields(o, &fields)?;
         }
         Ok(this)
+    }
+
+    /// An unmapped `arguments` object: indexed data properties, `length`, `callee`, iterable.
+    pub fn make_arguments(&mut self, args: &[Value], callee: Option<&Obj>) -> Value {
+        let proto = self.protos().object.clone();
+        let o = self.alloc(Object::new(Some(proto), Class::Arguments));
+        for (i, v) in args.iter().enumerate() {
+            self.define_data(&o, Key::S(Rc::from(i.to_string())), v.clone(), ALL);
+        }
+        self.define_data(&o, self.names.length.clone(), Value::Num(args.len() as f64), HIDDEN);
+        let it = self.wk().iterator.clone();
+        let values = self.get_obj(&self.protos().array.clone(), &Key::str("values"), &Value::Undefined).unwrap_or(Value::Undefined);
+        self.define_data(&o, Key::Y(it.0.id), values, HIDDEN);
+        if let Some(c) = callee {
+            self.define_data(&o, Key::str("callee"), Value::Obj(c.clone()), HIDDEN);
+        }
+        Value::Obj(o)
     }
 
     pub(crate) fn func_ctx_pub<'a>(&self, env: &'a Env) -> Option<&'a FuncCtx> {

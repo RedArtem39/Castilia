@@ -321,20 +321,7 @@ impl Interp {
     }
 
     fn arguments_object(&mut self, f: &Frame) -> Value {
-        let argobj = self.new_array(f.args.clone());
-        if let Value::Obj(o) = &argobj {
-            let op = self.protos().object.clone();
-            o.borrow_mut().proto = Some(op);
-            let it = self.wk().iterator.clone();
-            let values = self.get_obj(&self.protos().array.clone(), &Key::str("values"), &Value::Undefined).unwrap_or(Value::Undefined);
-            self.define_data(o, Key::Y(it.0.id), values, HIDDEN);
-            if let Some(c) = &f.callee {
-                self.define_data(o, Key::str("callee"), Value::Obj(c.clone()), HIDDEN);
-            }
-            let len = f.args.len();
-            self.define_data(o, self.names.length.clone(), Value::Num(len as f64), HIDDEN);
-        }
-        argobj
+        self.make_arguments(&f.args, f.callee.as_ref())
     }
 
     fn iter_init(&mut self, f: &mut Frame, r: usize, v: Value) -> Res<()> {

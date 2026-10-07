@@ -154,7 +154,8 @@ impl Lexer {
         self.prev_regex_ok = match &tok {
             Tok::Num(_) | Tok::Str(_) | Tok::Template(..) | Tok::Regex(..) | Tok::Private(_) => false,
             Tok::Ident(s) => !self.prev_dot && REGEX_KEYWORDS.contains(&&**s),
-            Tok::Punct(p) => !matches!(*p, ")" | "]" | "}"),
+            // after `)`, `]`, `}` and postfix `++`/`--` a slash divides
+            Tok::Punct(p) => !matches!(*p, ")" | "]" | "}" | "++" | "--"),
             Tok::Eof => true,
         };
         self.prev_dot = matches!(tok, Tok::Punct(".") | Tok::Punct("?."));

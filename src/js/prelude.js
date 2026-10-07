@@ -767,6 +767,21 @@
     if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
   }
   if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
+  if (G.performance && !G.performance.mark) {
+    const marks = [];
+    def(G.performance, 'mark', (name, o = {}) => { const e = { name: String(name), entryType: 'mark', startTime: o.startTime !== undefined ? o.startTime : G.performance.now(), duration: 0, detail: o.detail === undefined ? null : o.detail }; marks.push(e); return e; });
+    def(G.performance, 'measure', (name, a, b) => { const find = (n) => { const m = marks.filter((x) => x.name === n).pop(); return m ? m.startTime : 0; }; const s = typeof a === 'string' ? find(a) : (a && a.start) || 0; const e = typeof b === 'string' ? find(b) : G.performance.now(); const m = { name: String(name), entryType: 'measure', startTime: s, duration: e - s, detail: null }; marks.push(m); return m; });
+    def(G.performance, 'clearMarks', (n) => { for (let i = marks.length - 1; i >= 0; i--) if (marks[i].entryType === 'mark' && (n === undefined || marks[i].name === n)) marks.splice(i, 1); });
+    def(G.performance, 'clearMeasures', (n) => { for (let i = marks.length - 1; i >= 0; i--) if (marks[i].entryType === 'measure' && (n === undefined || marks[i].name === n)) marks.splice(i, 1); });
+    def(G.performance, 'clearResourceTimings', () => {});
+    def(G.performance, 'setResourceTimingBufferSize', () => {});
+    def(G.performance, 'getEntriesByName', (n, t) => marks.filter((m) => m.name === n && (!t || m.entryType === t)));
+    const byType = G.performance.getEntriesByType;
+    def(G.performance, 'getEntriesByType', (t) => (t === 'mark' || t === 'measure' ? marks.filter((m) => m.entryType === t) : byType(t)));
+    if (G.performance.timeOrigin === undefined) def(G.performance, 'timeOrigin', Date.now() - G.performance.now());
+    def(G.performance, 'toJSON', () => ({ timeOrigin: G.performance.timeOrigin }));
+  }
+  if (!G.PerformanceObserver) expose('PerformanceObserver', class PerformanceObserver { constructor(cb) { this._cb = cb; } observe() {} disconnect() {} takeRecords() { return []; } static get supportedEntryTypes() { return ['mark', 'measure', 'navigation', 'paint']; } });
   // the prelude runs before a document exists: patch the prototype, never the instance
   if (G.Document && !Object.getOwnPropertyDescriptor(G.Document.prototype, 'location')) {
     Object.defineProperty(G.Document.prototype, 'location', { configurable: true, enumerable: true, get() { return G.location; }, set(v) { G.location.href = v; } });
