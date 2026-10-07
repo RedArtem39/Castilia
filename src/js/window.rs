@@ -500,9 +500,9 @@ fn setup_storage(it: &mut Interp) {
         }
     });
     for (name, session) in [("localStorage", false), ("sessionStorage", true)] {
-        let t = Obj::new(Object::new(Some(proto.clone()), Class::Plain));
+        let t = it.alloc(Object::new(Some(proto.clone()), Class::Plain));
         it.define_data(&t, Key::str("__session"), Value::Bool(session), 0);
-        let p = Obj::new(Object::new(None, Class::Proxy { target: t, handler: h.clone() }));
+        let p = it.alloc(Object::new(None, Class::Proxy { target: t, handler: h.clone() }));
         it.define_data(&g, Key::str(name), Value::Obj(p), HIDDEN);
     }
 }
@@ -579,7 +579,7 @@ fn get_computed_style(it: &mut Interp, c: &Call) -> Res {
             h
         }
     };
-    Ok(Value::Obj(Obj::new(Object::new(None, Class::Proxy { target: t, handler: h }))))
+    Ok(Value::Obj(it.alloc(Object::new(None, Class::Proxy { target: t, handler: h }))))
 }
 
 fn computed_value(it: &mut Interp, id: usize, name: &str) -> String {

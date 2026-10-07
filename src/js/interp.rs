@@ -208,6 +208,8 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Cycle collector registry.
+    pub heap: super::gc::Heap,
     /// The realm's `eval` (direct eval detection).
     pub eval_fn: Option<Obj>,
     /// Native tier state.
@@ -271,7 +273,7 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn new_scope(&self, parent: &Env, func: Option<FuncCtx>) -> Env {
-        Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(parent.clone()), func, with_obj: None })
+        self.track_scope(Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(parent.clone()), func, with_obj: None }))
     }
 
     pub fn declare(&self, env: &Env, name: Name, kind: u8, v: Value, init: bool) {
@@ -482,7 +484,7 @@ impl Interp {
         };
         let proto = key.and_then(|k| self.protos().extra.get(k).cloned()).unwrap_or_else(|| self.protos().function.clone());
         let clo = Closure { def, env: env.clone(), home, is_class_ctor: false, derived: false, fields: Rc::new(Vec::new()) };
-        let o = Obj::new(Object::new(Some(proto), Class::Function(Func::Closure(Box::new(clo)))));
+        let o = self.alloc(Object::new(Some(proto), Class::Function(Func::Closure(Box::new(clo)))));
         if let Some(n) = name {
             self.define_data(&o, self.names.name.clone(), Value::Str(n), CONFIGURABLE);
         }
@@ -596,7 +598,7 @@ impl Interp {
                 }
             };
             let g = GenData { values: Vec::new(), pos: 0, started: false, ret: Value::Undefined, pending: Some((def.clone(), scope)), co: None };
-            return Ok(Value::Obj(Obj::new(Object::new(Some(proto), Class::Generator(Box::new(g))))));
+            return Ok(Value::Obj(self.alloc(Object::new(Some(proto), Class::Generator(Box::new(g))))));
         }
         if def.is_async {
             return self.run_async(&def, &scope);
@@ -749,7 +751,7 @@ impl Interp {
                     return self.construct_derived(fo, &nt, args, &fields);
                 }
                 let proto = self.proto_for(&nt, false)?;
-                let this = Obj::new(Object::new(Some(proto), Class::Plain));
+                let this = self.alloc(Object::new(Some(proto), Class::Plain));
                 self.init_fields(&this, &fields)?;
                 let r = self.call_obj(fo, Value::Obj(this.clone()), args, Some(nt))?;
                 let _ = is_class;
@@ -946,7 +948,7 @@ impl Interp {
             Stmt::With(obj, body) => {
                 let v = self.eval(obj, env)?;
                 let o = self.to_object(&v)?;
-                let scope = Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(env.clone()), func: None, with_obj: Some(o) });
+                let scope = self.track_scope(Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(env.clone()), func: None, with_obj: Some(o) }));
                 self.exec(body, &scope, &mut Vec::new())
             }
             Stmt::Break(l) => Err(Ctl::Break(*l)),
@@ -1994,7 +1996,7 @@ impl Interp {
                 }
             }
         };
-        let proto = Obj::new(Object::new(proto_parent, Class::Plain));
+        let proto = self.alloc(Object::new(proto_parent, Class::Plain));
         let derived = c.superclass.is_some();
         // constructor
         let ctor_def = match &c.ctor {
@@ -2018,7 +2020,7 @@ impl Interp {
             }),
         };
         let clo = Closure { def: ctor_def, env: scope.clone(), home: Some(proto.clone()), is_class_ctor: true, derived, fields: Rc::new(Vec::new()) };
-        let ctor = Obj::new(Object::new(Some(ctor_parent), Class::Function(Func::Closure(Box::new(clo)))));
+        let ctor = self.alloc(Object::new(Some(ctor_parent), Class::Function(Func::Closure(Box::new(clo)))));
         let name = c.name.map(|n| self.interner.get(n).clone()).or(inferred).unwrap_or_else(|| Rc::from(""));
         self.define_data(&ctor, self.names.name.clone(), Value::Str(name), CONFIGURABLE);
         self.define_data(&ctor, self.names.prototype.clone(), Value::Obj(proto.clone()), 0);

@@ -64,7 +64,7 @@ impl Interp {
             Err(e) => return Err(self.error_ctl("SyntaxError", &format!("{url}: {}", e.trim_start_matches("SyntaxError: ")))),
         };
         // namespace first (cycles see the partially populated object)
-        let ns = Obj::new(Object::new(None, Class::Plain));
+        let ns = self.alloc(Object::new(None, Class::Plain));
         let tag = Key::Y(self.wk().to_string_tag.0.id);
         self.define_data(&ns, tag, Value::str("Module"), 0);
         self.modules.insert(url.to_string(), ns.clone());
@@ -74,7 +74,7 @@ impl Interp {
             func: Some(FuncCtx { this: RefCell::new(Some(Value::Undefined)), callee: None, new_target: Value::Undefined, home: None, is_global: false, strict: true }),
             with_obj: None,
         });
-        let holder = Obj::new(Object::new(None, Class::ModuleEnv(env.clone())));
+        let holder = self.alloc(Object::new(None, Class::ModuleEnv(env.clone())));
         let r = self.run_module_body(url, &prog, &env, &holder, &ns);
         if r.is_err() {
             self.modules.remove(url);

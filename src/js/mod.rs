@@ -5,6 +5,7 @@ pub mod dom;
 pub mod dom_extra;
 pub mod dom_setup;
 pub mod events;
+pub mod gc;
 pub mod window;
 pub mod interp;
 #[cfg(feature = "jit")]
@@ -59,6 +60,7 @@ impl Runtime {
         it.max_depth = config.max_native_depth;
         it.tick_limit = config.task_budget;
         it.max_frames = config.max_frames;
+        it.heap.threshold = config.gc_threshold;
         #[cfg(feature = "jit")]
         {
             it.jit.threshold = config.jit_threshold;
@@ -75,6 +77,15 @@ impl Runtime {
         drop(mem);
     }
 
+    /// Run the cycle collector now; returns freed objects + scopes.
+    pub fn collect_garbage(&mut self) -> usize {
+        self.interp.gc()
+    }
+
+    pub fn gc_stats(&self) -> gc::GcStats {
+        self.interp.gc_stats()
+    }
+
     /// Bytecode/native tier counters.
     pub fn vm_stats(&self) -> vm::VmStats {
         self.interp.vm_stats.clone()
@@ -83,6 +94,7 @@ impl Runtime {
     fn with<R>(&mut self, doc: &mut Document, f: impl FnOnce(&mut interp::Interp) -> R) -> R {
         self.interp.doc = doc as *mut Document;
         let r = f(&mut self.interp);
+        self.interp.maybe_gc();
         self.interp.doc = core::ptr::null_mut();
         r
     }

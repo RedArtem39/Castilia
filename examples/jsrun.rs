@@ -61,7 +61,7 @@ fn real_main() {
     let started = std::time::Instant::now();
     let mut page = Page::load(doc, "", PageOptions { url: Some("http://localhost/".into()), host: Some(Box::new(FileHost(root))), config, ..Default::default() }, |_| Err("no loader".into()));
     eprintln!("scripts: executed={} errors={:?} ({:?})", page.scripts.executed, page.scripts.errors, started.elapsed());
-    eprintln!("vm: {:?}", page.vm_stats());
+    eprintln!("vm: {:?} gc: {:?}", page.vm_stats(), page.gc_stats());
     if let Some(e) = expr {
         match page.evaluate(&e) {
             Ok(v) => println!("=> {v}"),

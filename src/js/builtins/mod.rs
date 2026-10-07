@@ -162,6 +162,7 @@ pub fn new_interp() -> Interp {
         vm_stats: Default::default(),
         vm_frames: 0,
         max_frames: 10_000,
+        heap: Default::default(),
         eval_fn: None,
         #[cfg(feature = "jit")]
         jit: Default::default(),
@@ -294,7 +295,7 @@ impl Interp {
     /// Create a list iterator object backed by a snapshot of values.
     pub fn make_list_iterator(&mut self, items: Vec<Value>) -> Value {
         let proto = self.protos().array_iterator.clone();
-        let o = Obj::new(Object::new(Some(proto), Class::Plain));
+        let o = self.alloc(Object::new(Some(proto), Class::Plain));
         let state = self.new_array(items);
         self.define_data(&o, Key::str("__items"), state, 0);
         self.define_data(&o, Key::str("__pos"), Value::Num(0.0), WRITABLE);

@@ -91,10 +91,10 @@ pub fn setup(it: &mut Interp) {
     it.define_data(&gp, Key::Y(tag.0.id), Value::str("Generator"), CONFIGURABLE);
     // %AsyncGeneratorPrototype% and %AsyncIteratorPrototype%
     let op = it.protos().object.clone();
-    let aip = Obj::new(Object::new(Some(op), Class::Plain));
+    let aip = it.alloc(Object::new(Some(op), Class::Plain));
     let async_iter = it.wk().async_iterator.clone();
     it.def_sym_method(&aip, &async_iter, "[Symbol.asyncIterator]", 0, |_, c| Ok(c.this.clone()));
-    let agp = Obj::new(Object::new(Some(aip), Class::Plain));
+    let agp = it.alloc(Object::new(Some(aip), Class::Plain));
     for (name, mode) in [("next", 0u8), ("return", 1), ("throw", 2)] {
         let f: NativeFn = match mode {
             0 => |it, c| async_gen_method(it, c, crate::js::vm::Resume::Next),
@@ -125,7 +125,7 @@ fn array_ctor(it: &mut Interp, c: &Call) -> Res {
     } else {
         c.args.to_vec()
     };
-    Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Array(items)))))
+    Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Array(items)))))
 }
 
 fn array_from(it: &mut Interp, c: &Call) -> Res {
@@ -730,7 +730,7 @@ fn flat_map(it: &mut Interp, c: &Call) -> Res {
 fn make_array_iter(it: &mut Interp, c: &Call, kind: u8) -> Res {
     let target = Value::Obj(it.to_object(&c.this)?);
     let proto = it.protos().array_iterator.clone();
-    let o = Obj::new(Object::new(Some(proto), Class::Plain));
+    let o = it.alloc(Object::new(Some(proto), Class::Plain));
     it.define_data(&o, Key::str("__t"), target, 0);
     it.define_data(&o, Key::str("__i"), Value::Num(0.0), WRITABLE);
     it.define_data(&o, Key::str("__k"), Value::Num(kind as f64), 0);

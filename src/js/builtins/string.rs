@@ -112,7 +112,7 @@ fn string_ctor(it: &mut Interp, c: &Call) -> Res {
     }
     let proto = it.protos().string.clone();
     let p = it.proto_from_call(c, &proto)?;
-    Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Str(s)))))
+    Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Str(s)))))
 }
 
 pub fn this_str(it: &mut Interp, c: &Call) -> Res<JsStr> {
@@ -409,7 +409,7 @@ fn make_regexp(it: &mut Interp, pattern: &str, flags: &str, proto: Obj) -> Res {
         Ok(d) => d,
         Err(e) => return Err(it.error_ctl("SyntaxError", &format!("Invalid regular expression: /{pattern}/: {e}"))),
     };
-    let o = Obj::new(Object::new(Some(proto), Class::RegExp(Box::new(data))));
+    let o = it.alloc(Object::new(Some(proto), Class::RegExp(Box::new(data))));
     it.define_data(&o, Key::str("lastIndex"), Value::Num(0.0), WRITABLE);
     Ok(Value::Obj(o))
 }

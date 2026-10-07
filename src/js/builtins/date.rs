@@ -355,7 +355,7 @@ fn date_ctor(it: &mut Interp, c: &Call) -> Res {
     };
     let proto = it.protos().date.clone();
     let p = it.proto_from_call(c, &proto)?;
-    Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Date(t)))))
+    Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Date(t)))))
 }
 
 fn this_date(it: &mut Interp, c: &Call) -> Res<Obj> {

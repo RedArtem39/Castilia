@@ -9,6 +9,8 @@ fn run_tier(src: &str, tier: vm::Tier) -> Vec<String> {
     let mut doc = crate::html::parse("<html><body></body></html>");
     let mut rt = Runtime::new();
     rt.interp.tier = tier;
+    // collect very often so a wrongly freed object shows up as a test failure
+    rt.interp.heap.threshold = 50;
     if let Err(e) = rt.execute(src, &mut doc) {
         let mut l = rt.logs();
         l.push(alloc::format!("ERR {e}"));
@@ -253,4 +255,35 @@ fn bom_apis() {
 fn forms_and_values() {
     check_html("<form id=f><input name=a value=1><input name=b type=checkbox checked><select name=s><option value=x>X</option><option value=y selected>Y</option></select><textarea name=t>hello</textarea></form>", "const f=document.getElementById('f');console.log(f.elements.length,new FormData(f).get('s'),new FormData(f).get('t'),f.querySelector('select').value,f.querySelector('[name=a]').value)", &["4 y hello y 1"]);
     check_html("<input id=i>", "const i=document.getElementById('i');i.value='abc';console.log(i.value,i.getAttribute('value'),i.type)", &["abc abc text"]);
+}
+
+#[test]
+fn gc_collects_cycles_and_keeps_live_objects() {
+    let mut doc = crate::html::parse("<html><body></body></html>");
+    let mut rt = Runtime::new();
+    rt.interp.heap.threshold = 0;
+    rt.execute(
+        "globalThis.keep = []; for (let i = 0; i < 2000; i++) { const a = {i}; const b = {a}; a.b = b; function f(){ return a } a.f = f; if (i % 100 == 0) keep.push(a) }
+         class K { constructor(){ this.self = this } } for (let i = 0; i < 500; i++) new K();",
+        &mut doc,
+    )
+    .unwrap();
+    let freed = rt.collect_garbage();
+    assert!(freed > 5000, "freed {freed}");
+    let out = rt.eval_in_page(&mut doc, "keep.length + ':' + keep[3].b.a.i + ':' + keep[3].f().i + ':' + new K().self.constructor.name").unwrap();
+    assert_eq!(out, "20:300:300:K");
+    // a second pass finds nothing new
+    assert!(rt.collect_garbage() < 50);
+}
+
+#[test]
+fn gc_keeps_suspended_generators_and_pending_async() {
+    check_vm(
+        "function* g(){ const o = {v: 1}; o.me = o; yield 1; yield o.me.v + 1 } globalThis.it = g(); it.next();
+         for (let i = 0; i < 3000; i++) { const x = {}; x.x = x }
+         async function a(){ const o = {n: 5}; o.o = o; await new Promise(r => setTimeout(r, 10)); console.log('async', o.o.n) } a();
+         for (let i = 0; i < 3000; i++) { const x = {}; x.x = x }
+         console.log('gen', it.next().value)",
+        &["gen 2", "async 5"],
+    );
 }

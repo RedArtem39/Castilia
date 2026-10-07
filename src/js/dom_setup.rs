@@ -20,9 +20,9 @@ pub fn setup_all(it: &mut Interp) {
     let text = it.protos().text.clone();
     let document = it.protos().document.clone();
     let obj = it.protos().object.clone();
-    let comment = Obj::new(Object::new(Some(node.clone()), Class::Plain));
-    let fragment = Obj::new(Object::new(Some(node.clone()), Class::Plain));
-    let nodelist = Obj::new(Object::new(Some(it.protos().array.clone()), Class::Plain));
+    let comment = it.alloc(Object::new(Some(node.clone()), Class::Plain));
+    let fragment = it.alloc(Object::new(Some(node.clone()), Class::Plain));
+    let nodelist = it.alloc(Object::new(Some(it.protos().array.clone()), Class::Plain));
     let _ = obj;
     {
         let p = it.protos.as_mut().unwrap();
@@ -120,7 +120,7 @@ pub fn setup_all(it: &mut Interp) {
     ];
     for (key, ctor_name, _) in tags {
         let parent = if *key == "svg" { element.clone() } else { html_element.clone() };
-        let p = Obj::new(Object::new(Some(parent), Class::Plain));
+        let p = it.alloc(Object::new(Some(parent), Class::Plain));
         it.make_ctor(ctor_name, 0, illegal, &p);
         it.protos.as_mut().unwrap().extra.insert(key, p);
     }

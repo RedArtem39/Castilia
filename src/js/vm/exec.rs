@@ -284,7 +284,7 @@ impl Interp {
         let Some(code) = self.vm_code(&def) else { return Ok(None) };
         self.tick()?;
         let proto = self.proto_for(fo, false)?;
-        let this = Obj::new(Object::new(Some(proto), Class::Plain));
+        let this = self.alloc(Object::new(Some(proto), Class::Plain));
         self.init_fields(&this, &fields)?;
         let frame = self.vm_frame(code, fo, &def, &env, home, Some(Value::Obj(this)), args, Some(fo.clone()));
         Ok(Some(Box::new(frame)))
@@ -513,13 +513,13 @@ impl Interp {
                         for (k, v) in f.env.vars.borrow().entries() {
                             nv.insert(k, crate::js::interp::Var { v: v.v.clone(), kind: v.kind, init: v.init });
                         }
-                        f.env = Rc::new(Scope { vars: RefCell::new(nv), parent, func: None, with_obj: None });
+                        f.env = self.track_scope(Rc::new(Scope { vars: RefCell::new(nv), parent, func: None, with_obj: None }));
                     }
                 }
                 Op::PushWith => {
                     let v = Self::pop(f);
                     let o = self.to_object(&v)?;
-                    let s = Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(f.env.clone()), func: None, with_obj: Some(o) });
+                    let s = self.track_scope(Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(f.env.clone()), func: None, with_obj: Some(o) }));
                     let old = core::mem::replace(&mut f.env, s);
                     f.scopes.push(old);
                 }

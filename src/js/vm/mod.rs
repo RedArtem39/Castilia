@@ -433,7 +433,7 @@ impl Interp {
         let mut st = CoState::new(kind);
         st.frame = Some(frame);
         let g = GenData { values: Vec::new(), pos: 0, started: true, ret: Value::Undefined, pending: None, co: Some(Box::new(st)) };
-        Obj::new(Object::new(Some(proto), Class::Generator(Box::new(g))))
+        self.alloc(Object::new(Some(proto), Class::Generator(Box::new(g))))
     }
 
     fn co_take(&mut self, g: &Obj) -> Option<(Box<Frame>, FrameKind)> {
@@ -540,7 +540,7 @@ impl Interp {
                 st.frame = Some(frame);
                 st.running = true;
                 let gd = GenData { values: Vec::new(), pos: 0, started: true, ret: Value::Undefined, pending: None, co: Some(Box::new(st)) };
-                Obj::new(Object::new(None, Class::Generator(Box::new(gd))))
+                self.alloc(Object::new(None, Class::Generator(Box::new(gd))))
             }
         };
         let p = match self.promise_resolved(v) {

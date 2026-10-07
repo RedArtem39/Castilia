@@ -474,17 +474,17 @@ fn clone_value(it: &mut Interp, v: &Value, seen: &mut Vec<(Obj, Obj)>) -> Res {
             }
             Ok(arr)
         }
-        K::Date(t) => Ok(Value::Obj(Obj::new(Object::new(Some(it.protos().date.clone()), Class::Date(t))))),
+        K::Date(t) => Ok(Value::Obj(it.alloc(Object::new(Some(it.protos().date.clone()), Class::Date(t))))),
         K::Prim(c) => {
             let proto = match &c {
                 Class::Num(_) => it.protos().number.clone(),
                 Class::Str(_) => it.protos().string.clone(),
                 _ => it.protos().boolean.clone(),
             };
-            Ok(Value::Obj(Obj::new(Object::new(Some(proto), c))))
+            Ok(Value::Obj(it.alloc(Object::new(Some(proto), c))))
         }
         K::Map(es) => {
-            let n = Obj::new(Object::new(Some(it.protos().map.clone()), Class::Map(Box::default())));
+            let n = it.alloc(Object::new(Some(it.protos().map.clone()), Class::Map(Box::default())));
             seen.push((o.clone(), n.clone()));
             for (a, b) in es {
                 let (a, b) = (clone_value(it, &a, seen)?, clone_value(it, &b, seen)?);
@@ -495,7 +495,7 @@ fn clone_value(it: &mut Interp, v: &Value, seen: &mut Vec<(Obj, Obj)>) -> Res {
             Ok(Value::Obj(n))
         }
         K::Set(es) => {
-            let n = Obj::new(Object::new(Some(it.protos().set.clone()), Class::Set(Box::default())));
+            let n = it.alloc(Object::new(Some(it.protos().set.clone()), Class::Set(Box::default())));
             seen.push((o.clone(), n.clone()));
             for a in es {
                 let a = clone_value(it, &a, seen)?;
@@ -531,7 +531,7 @@ fn setup_typed_arrays(it: &mut Interp) {
     it.make_ctor("ArrayBuffer", 1, |it, c| {
         let n = to_integer(it.arg_num(c, 0)?).max(0.0);
         let proto = it.protos().extra.get("arraybuffer").cloned().unwrap();
-        let o = Obj::new(Object::new(Some(proto), Class::Plain));
+        let o = it.alloc(Object::new(Some(proto), Class::Plain));
         it.define_data(&o, Key::str("byteLength"), Value::Num(n), 0);
         Ok(Value::Obj(o))
     }, &ab);
@@ -539,7 +539,7 @@ fn setup_typed_arrays(it: &mut Interp) {
 
     let kinds: [(&'static str, f64); 9] = [("Int8Array", 1.0), ("Uint8Array", 1.0), ("Uint8ClampedArray", 1.0), ("Int16Array", 2.0), ("Uint16Array", 2.0), ("Int32Array", 4.0), ("Uint32Array", 4.0), ("Float32Array", 4.0), ("Float64Array", 8.0)];
     let array_proto = it.protos().array.clone();
-    let base = Obj::new(Object::new(Some(array_proto), Class::Plain));
+    let base = it.alloc(Object::new(Some(array_proto), Class::Plain));
     it.def_method(&base, "set", 1, |it, c| {
         let src = it.array_like_to_vec(&c.arg(0))?;
         let off = to_integer(it.arg_num(c, 1)?).max(0.0) as usize;
@@ -561,7 +561,7 @@ fn setup_typed_arrays(it: &mut Interp) {
         it.call(&f, c.this.clone(), c.args)
     });
     for (idx, (name, size)) in kinds.iter().enumerate() {
-        let proto = Obj::new(Object::new(Some(base.clone()), Class::Plain));
+        let proto = it.alloc(Object::new(Some(base.clone()), Class::Plain));
         it.define_data(&proto, Key::str("__kind"), Value::Num(idx as f64), 0);
         it.define_data(&proto, Key::str("BYTES_PER_ELEMENT"), Value::Num(*size), 0);
         let ctor = it.make_ctor(name, 3, typed_ctor, &proto);
@@ -612,7 +612,7 @@ fn typed_ctor(it: &mut Interp, c: &Call) -> Res {
         let n = it.to_number(&v)?;
         out.push(Value::Num(coerce(&name, n, clamp)));
     }
-    Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Array(out)))))
+    Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Array(out)))))
 }
 
 fn coerce(name: &str, n: f64, clamp: bool) -> f64 {

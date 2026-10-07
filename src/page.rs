@@ -245,6 +245,11 @@ impl Page {
         self.runtime.vm_stats()
     }
 
+    /// Cycle collector counters.
+    pub fn gc_stats(&self) -> crate::js::gc::GcStats {
+        self.runtime.gc_stats()
+    }
+
     /// Console output and uncaught errors collected so far.
     pub fn console(&self) -> Vec<String> {
         self.runtime.logs()

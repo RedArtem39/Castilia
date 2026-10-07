@@ -169,7 +169,7 @@ fn object_ctor(it: &mut Interp, c: &Call) -> Res {
         if !nt.ptr_eq(c.callee) {
             let default = it.protos().object.clone();
             let proto = it.proto_from_call(c, &default)?;
-            return Ok(Value::Obj(Obj::new(Object::new(Some(proto), Class::Plain))));
+            return Ok(Value::Obj(it.alloc(Object::new(Some(proto), Class::Plain))));
         }
     }
     match c.arg(0) {
@@ -287,7 +287,7 @@ fn object_create(it: &mut Interp, c: &Call) -> Res {
         Value::Null => None,
         _ => return it.type_error("Object prototype may only be an Object or null"),
     };
-    let o = Obj::new(Object::new(proto, Class::Plain));
+    let o = it.alloc(Object::new(proto, Class::Plain));
     if let Value::Obj(props) = c.arg(1) {
         define_props(it, &o, &Value::Obj(props))?;
     }
@@ -404,7 +404,7 @@ fn object_has_own(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn object_group_by(it: &mut Interp, c: &Call) -> Res {
-    let out = Obj::new(Object::new(None, Class::Plain));
+    let out = it.alloc(Object::new(None, Class::Plain));
     let f = c.arg(1);
     for (i, v) in it.iter_to_vec(&c.arg(0))?.into_iter().enumerate() {
         let k = it.call(&f, Value::Undefined, &[v.clone(), Value::Num(i as f64)])?;
@@ -598,7 +598,7 @@ fn function_bind(it: &mut Interp, c: &Call) -> Res {
         _ => 0.0,
     };
     let proto = target.borrow().proto.clone();
-    let b = Obj::new(Object::new(proto, Class::Function(Func::Bound { target: target.clone(), this: c.arg(0), args })));
+    let b = it.alloc(Object::new(proto, Class::Function(Func::Bound { target: target.clone(), this: c.arg(0), args })));
     it.define_data(&b, it.names.name.clone(), Value::string(format!("bound {name}")), CONFIGURABLE);
     it.define_data(&b, it.names.length.clone(), Value::Num(len), CONFIGURABLE);
     Ok(Value::Obj(b))
@@ -739,7 +739,7 @@ fn boolean_ctor(it: &mut Interp, c: &Call) -> Res {
     if c.new_target.is_some() {
         let default = it.protos().boolean.clone();
         let proto = it.proto_from_call(c, &default)?;
-        return Ok(Value::Obj(Obj::new(Object::new(Some(proto), Class::Bool(b)))));
+        return Ok(Value::Obj(it.alloc(Object::new(Some(proto), Class::Bool(b)))));
     }
     Ok(Value::Bool(b))
 }
@@ -796,7 +796,7 @@ fn error_ctor(it: &mut Interp, c: &Call) -> Res {
     };
     let default = it.protos().error_kinds.get(&*kind).cloned().unwrap_or_else(|| it.protos().error.clone());
     let proto = it.proto_from_call(c, &default)?;
-    let o = Obj::new(Object::new(Some(proto), Class::Error));
+    let o = it.alloc(Object::new(Some(proto), Class::Error));
     let (msg_idx, opts_idx) = if &*kind == "AggregateError" { (1, 2) } else { (0, 1) };
     let msg = c.arg(msg_idx);
     let mut message = String::new();
@@ -922,13 +922,13 @@ fn proxy_ctor(it: &mut Interp, c: &Call) -> Res {
         return it.type_error("Cannot create proxy with a non-object as target or handler");
     };
     let proto = t.borrow().proto.clone();
-    Ok(Value::Obj(Obj::new(Object::new(proto, Class::Proxy { target: t, handler: h }))))
+    Ok(Value::Obj(it.alloc(Object::new(proto, Class::Proxy { target: t, handler: h }))))
 }
 
 fn setup_function_kinds(it: &mut Interp) {
     let fp = it.protos().function.clone();
     for (key, name, kind) in [("async_function", "AsyncFunction", 1u8), ("generator_function", "GeneratorFunction", 2), ("async_generator_function", "AsyncGeneratorFunction", 3)] {
-        let proto = Obj::new(Object::new(Some(fp.clone()), Class::Plain));
+        let proto = it.alloc(Object::new(Some(fp.clone()), Class::Plain));
         let f: NativeFn = match kind {
             1 => |it, c| function_ctor_kind(it, c, "async function"),
             2 => |it, c| function_ctor_kind(it, c, "function*"),

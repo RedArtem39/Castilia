@@ -12,7 +12,7 @@ enum Kind {
 
 pub fn setup(it: &mut Interp) {
     let ip = it.protos().iterator.clone();
-    let ci = Obj::new(Object::new(Some(ip), Class::Plain));
+    let ci = it.alloc(Object::new(Some(ip), Class::Plain));
     it.def_method(&ci, "next", 0, coll_iter_next);
     let tag = it.wk().to_string_tag.clone();
     it.define_data(&ci, Key::Y(tag.0.id), Value::str("Map Iterator"), CONFIGURABLE);
@@ -26,7 +26,7 @@ pub fn setup(it: &mut Interp) {
         let items = it.iter_to_vec(&c.arg(0))?;
         let f = c.arg(1);
         let proto = it.protos().map.clone();
-        let m = Obj::new(Object::new(Some(proto), Class::Map(Box::default())));
+        let m = it.alloc(Object::new(Some(proto), Class::Map(Box::default())));
         for (i, v) in items.into_iter().enumerate() {
             let k = it.call(&f, Value::Undefined, &[v.clone(), Value::Num(i as f64)])?;
             let existing = with_data(&m, |d| d.get(&k).cloned());
@@ -127,7 +127,7 @@ pub fn setup(it: &mut Interp) {
     it.make_ctor("WeakRef", 1, |it, c| {
         let proto = it.protos().extra.get("weakref").cloned().unwrap();
         let p = it.proto_from_call(c, &proto)?;
-        let o = Obj::new(Object::new(Some(p), Class::Plain));
+        let o = it.alloc(Object::new(Some(p), Class::Plain));
         it.define_data(&o, Key::str("__target"), c.arg(0), 0);
         Ok(Value::Obj(o))
     }, &wr);
@@ -137,7 +137,7 @@ pub fn setup(it: &mut Interp) {
     it.make_ctor("FinalizationRegistry", 1, |it, c| {
         let proto = it.protos().extra.get("finreg").cloned().unwrap();
         let p = it.proto_from_call(c, &proto)?;
-        Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Plain))))
+        Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Plain))))
     }, &fr);
     it.def_method(&fr, "register", 2, |_, _| Ok(Value::Undefined));
     it.def_method(&fr, "unregister", 1, |_, _| Ok(Value::Bool(false)));
@@ -210,7 +210,7 @@ fn set_algebra(it: &mut Interp, sp: &Obj) {
         for v in items {
             d.set(v.clone(), v);
         }
-        Value::Obj(Obj::new(Object::new(Some(proto), Class::Set(Box::new(d)))))
+        Value::Obj(it.alloc(Object::new(Some(proto), Class::Set(Box::new(d)))))
     }
     it.def_method(sp, "union", 1, |it, c| {
         let mut a = mine(it, c)?;
@@ -290,7 +290,7 @@ fn construct(it: &mut Interp, c: &Call, kind: Kind) -> Res {
         Kind::WeakSet => (it.protos().weakset.clone(), Class::WeakSet(Box::default())),
     };
     let proto = it.proto_from_call(c, &default)?;
-    let o = Obj::new(Object::new(Some(proto), class));
+    let o = it.alloc(Object::new(Some(proto), class));
     let src = c.arg(0);
     if !src.is_nullish() {
         let items = it.iter_to_vec(&src)?;
@@ -320,7 +320,7 @@ fn construct(it: &mut Interp, c: &Call, kind: Kind) -> Res {
 fn make_iter(it: &mut Interp, c: &Call, kind: Kind, mode: u8) -> Res {
     let o = this_coll(it, c, kind)?;
     let proto = it.protos().extra.get("collection_iterator").cloned().unwrap();
-    let io = Obj::new(Object::new(Some(proto), Class::Plain));
+    let io = it.alloc(Object::new(Some(proto), Class::Plain));
     it.define_data(&io, Key::str("__c"), Value::Obj(o), 0);
     it.define_data(&io, Key::str("__i"), Value::Num(0.0), WRITABLE);
     it.define_data(&io, Key::str("__m"), Value::Num(mode as f64), 0);

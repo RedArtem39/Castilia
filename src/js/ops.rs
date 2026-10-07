@@ -17,11 +17,11 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn new_object(&self) -> Obj {
-        Obj::new(Object::new(Some(self.protos().object.clone()), Class::Plain))
+        self.alloc(Object::new(Some(self.protos().object.clone()), Class::Plain))
     }
 
     pub fn new_array(&self, v: Vec<Value>) -> Value {
-        Value::Obj(Obj::new(Object::new(Some(self.protos().array.clone()), Class::Array(v))))
+        Value::Obj(self.alloc(Object::new(Some(self.protos().array.clone()), Class::Array(v))))
     }
 
     pub fn new_native(&mut self, name: &str, len: u32, f: NativeFn) -> Obj {
@@ -29,7 +29,7 @@ impl Interp {
     }
 
     pub fn new_native_data(&mut self, name: &str, len: u32, f: NativeFn, data: Value, ctor: bool) -> Obj {
-        let o = Obj::new(Object::new(Some(self.protos().function.clone()), Class::Function(Func::Native { f, data, ctor })));
+        let o = self.alloc(Object::new(Some(self.protos().function.clone()), Class::Function(Func::Native { f, data, ctor })));
         self.define_data(&o, self.names.name.clone(), Value::str(name), CONFIGURABLE);
         self.define_data(&o, self.names.length.clone(), Value::Num(len as f64), CONFIGURABLE);
         o
@@ -70,7 +70,7 @@ impl Interp {
 
     pub fn make_error(&mut self, kind: &str, msg: &str) -> Value {
         let proto = self.protos().error_kinds.get(kind).cloned().unwrap_or_else(|| self.protos().error.clone());
-        let o = Obj::new(Object::new(Some(proto), Class::Error));
+        let o = self.alloc(Object::new(Some(proto), Class::Error));
         self.define_data(&o, self.names.message.clone(), Value::str(msg), HIDDEN);
         let stack = format!("{kind}: {msg}\n    at <anonymous>");
         self.define_data(&o, self.names.stack.clone(), Value::string(stack), HIDDEN);
@@ -326,7 +326,7 @@ impl Interp {
                     (false, true) => self.protos().generator.clone(),
                     _ => self.protos().object.clone(),
                 };
-                let p = Obj::new(Object::new(Some(proto_proto), Class::Plain));
+                let p = self.alloc(Object::new(Some(proto_proto), Class::Plain));
                 if !def.is_generator {
                     self.define_data(&p, self.names.constructor.clone(), Value::Obj(o.clone()), HIDDEN);
                 }
@@ -680,10 +680,10 @@ impl Interp {
         match v {
             Value::Obj(o) => Ok(o.clone()),
             Value::Undefined | Value::Null => Err(self.error_ctl("TypeError", "Cannot convert undefined or null to object")),
-            Value::Bool(b) => Ok(Obj::new(Object::new(Some(self.protos().boolean.clone()), Class::Bool(*b)))),
-            Value::Num(n) => Ok(Obj::new(Object::new(Some(self.protos().number.clone()), Class::Num(*n)))),
-            Value::Str(s) => Ok(Obj::new(Object::new(Some(self.protos().string.clone()), Class::Str(s.clone())))),
-            Value::Sym(s) => Ok(Obj::new(Object::new(Some(self.protos().symbol.clone()), Class::Symbol(s.clone())))),
+            Value::Bool(b) => Ok(self.alloc(Object::new(Some(self.protos().boolean.clone()), Class::Bool(*b)))),
+            Value::Num(n) => Ok(self.alloc(Object::new(Some(self.protos().number.clone()), Class::Num(*n)))),
+            Value::Str(s) => Ok(self.alloc(Object::new(Some(self.protos().string.clone()), Class::Str(s.clone())))),
+            Value::Sym(s) => Ok(self.alloc(Object::new(Some(self.protos().symbol.clone()), Class::Symbol(s.clone())))),
         }
     }
 
@@ -869,7 +869,7 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn new_promise(&mut self) -> Obj {
-        Obj::new(Object::new(
+        self.alloc(Object::new(
             Some(self.protos().promise.clone()),
             Class::Promise(Box::new(PromiseData { state: PromiseState::Pending, reactions: Vec::new(), handled: false })),
         ))
@@ -1093,6 +1093,7 @@ impl Interp {
             self.report_error(&e);
         }
         self.run_microtasks();
+        self.maybe_gc();
         Ok(true)
     }
 

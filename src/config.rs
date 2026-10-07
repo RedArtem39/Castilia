@@ -61,6 +61,8 @@ pub struct EngineConfig {
     pub settle_ms: f64,
     /// Upper bound on timer callbacks fired while settling.
     pub settle_fires: usize,
+    /// Allocations between cycle collections (0 disables the collector).
+    pub gc_threshold: usize,
     /// Maximum number of `<script>` elements executed per page.
     pub max_scripts: usize,
     /// Scripts larger than this (bytes) are skipped.
@@ -78,6 +80,7 @@ impl EngineConfig {
             max_frames: 10_000,
             settle_ms: 1500.0,
             settle_fires: 3000,
+            gc_threshold: 200_000,
             max_scripts: 256,
             max_script_bytes: 4 * 1024 * 1024,
         }
@@ -102,6 +105,7 @@ impl EngineConfig {
             max_frames: 2_000,
             settle_ms: 500.0,
             settle_fires: 500,
+            gc_threshold: 50_000,
             max_scripts: 64,
             max_script_bytes: 1024 * 1024,
             ..EngineConfig::desktop()

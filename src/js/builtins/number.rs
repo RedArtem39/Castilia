@@ -55,7 +55,7 @@ fn number_ctor(it: &mut Interp, c: &Call) -> Res {
     }
     let proto = it.protos().number.clone();
     let p = it.proto_from_call(c, &proto)?;
-    Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Num(n)))))
+    Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Num(n)))))
 }
 
 fn this_num(it: &mut Interp, c: &Call) -> Res<f64> {

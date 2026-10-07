@@ -164,6 +164,10 @@ impl PropMap {
     pub fn len(&self) -> usize {
         self.live
     }
+    /// Own properties in insertion order.
+    pub fn iter(&self) -> impl Iterator<Item = (&Key, &Prop)> {
+        self.list.iter().flatten().map(|e| (&e.0, &e.1))
+    }
     pub fn is_empty(&self) -> bool {
         self.live == 0
     }

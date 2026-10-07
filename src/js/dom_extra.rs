@@ -466,7 +466,7 @@ pub fn set_url_component(u: &mut Url, part: &str, v: &str) {
 
 fn token_list(it: &mut Interp, id: NodeId, attr: &str) -> Value {
     let proto = it.protos().extra.get("domtokenlist").cloned().unwrap();
-    let o = Obj::new(Object::new(Some(proto), Class::Plain));
+    let o = it.alloc(Object::new(Some(proto), Class::Plain));
     it.define_data(&o, Key::str("__id"), Value::Num(id as f64), 0);
     it.define_data(&o, Key::str("__attr"), Value::str(attr), 0);
     Value::Obj(o)
@@ -830,7 +830,7 @@ fn setup_dataset_and_style(it: &mut Interp, p: &Obj) {
         let t = it.new_object();
         it.define_data(&t, Key::str("__id"), Value::Num(id as f64), 0);
         let h = it.protos().extra.get("dataset_handler").cloned().unwrap();
-        Ok(Value::Obj(Obj::new(Object::new(None, Class::Proxy { target: t, handler: h }))))
+        Ok(Value::Obj(it.alloc(Object::new(None, Class::Proxy { target: t, handler: h }))))
     });
 
     // style
@@ -947,10 +947,10 @@ fn setup_dataset_and_style(it: &mut Interp, p: &Obj) {
         |it, c| {
             let id = it.this_node(c)?;
             let sp = it.protos().extra.get("style_proto").cloned().unwrap();
-            let t = Obj::new(Object::new(Some(sp), Class::Plain));
+            let t = it.alloc(Object::new(Some(sp), Class::Plain));
             it.define_data(&t, Key::str("__id"), Value::Num(id as f64), 0);
             let h = it.protos().extra.get("style_handler").cloned().unwrap();
-            Ok(Value::Obj(Obj::new(Object::new(None, Class::Proxy { target: t, handler: h }))))
+            Ok(Value::Obj(it.alloc(Object::new(None, Class::Proxy { target: t, handler: h }))))
         },
         |it, c| {
             let id = it.this_node(c)?;

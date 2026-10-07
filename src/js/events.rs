@@ -82,7 +82,7 @@ pub fn setup(it: &mut Interp) {
     // constructors, one prototype per class chained through Event
     let mut base = ep.clone();
     for (name, _defaults) in EVENT_CLASSES {
-        let proto = if *name == "Event" { ep.clone() } else { Obj::new(Object::new(Some(ep.clone()), Class::Plain)) };
+        let proto = if *name == "Event" { ep.clone() } else { it.alloc(Object::new(Some(ep.clone()), Class::Plain)) };
         if *name == "UIEvent" {
             base = proto.clone();
         }
@@ -106,7 +106,7 @@ pub fn setup(it: &mut Interp) {
     it.make_ctor("EventTarget", 0, |it, c| {
         let proto = it.protos().event_target.clone();
         let p = it.proto_from_call(c, &proto)?;
-        Ok(Value::Obj(Obj::new(Object::new(Some(p), Class::Plain))))
+        Ok(Value::Obj(it.alloc(Object::new(Some(p), Class::Plain))))
     }, &et);
     for target in [et.clone(), it.global.clone()] {
         it.def_method(&target, "addEventListener", 2, add_listener);
@@ -131,7 +131,7 @@ fn event_ctor(it: &mut Interp, c: &Call) -> Res {
     let ty = it.arg_str(c, 0)?;
     let default = it.protos().extra.get(name.as_str()).cloned().unwrap_or_else(|| it.protos().event.clone());
     let proto = it.proto_from_call(c, &default)?;
-    let ev = Obj::new(Object::new(Some(proto), Class::Plain));
+    let ev = it.alloc(Object::new(Some(proto), Class::Plain));
     let ts = it.now + 0.0;
     it.init_event(&ev, &ty, &name, ts);
     if let Value::Obj(init) = c.arg(1) {
@@ -176,7 +176,7 @@ impl Interp {
 
     pub fn make_event(&mut self, ty: &str, class: &str, bubbles: bool, cancelable: bool, props: &[(&str, Value)]) -> Obj {
         let proto = self.protos().extra.get(class).cloned().unwrap_or_else(|| self.protos().event.clone());
-        let ev = Obj::new(Object::new(Some(proto), Class::Plain));
+        let ev = self.alloc(Object::new(Some(proto), Class::Plain));
         let ts = self.now;
         self.init_event(&ev, ty, class, ts);
         self.define_data(&ev, Key::str("bubbles"), Value::Bool(bubbles), ALL);
@@ -496,7 +496,7 @@ fn setup_mutation_observer(it: &mut Interp) {
         let cb = c.arg(0);
         let proto = it.protos().extra.get("mutation_observer").cloned().unwrap();
         let p = it.proto_from_call(c, &proto)?;
-        let o = Obj::new(Object::new(Some(p), Class::Plain));
+        let o = it.alloc(Object::new(Some(p), Class::Plain));
         it.dom.observer_seq += 1;
         let id = it.dom.observer_seq;
         it.define_data(&o, Key::str("__mid"), Value::Num(id as f64), 0);

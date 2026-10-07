@@ -201,7 +201,7 @@ impl Interp {
             None => self.protos().node.clone(),
         };
         let class = if matches!(self.doc().map(|d| &d.nodes[id].kind), Some(NodeKind::Document)) { Class::Node(id) } else { Class::Node(id) };
-        let o = Obj::new(Object::new(Some(proto), class));
+        let o = self.alloc(Object::new(Some(proto), class));
         self.node_cache.insert(id, o.clone());
         Value::Obj(o)
     }
@@ -257,7 +257,7 @@ impl Interp {
     pub fn node_list(&mut self, ids: &[NodeId]) -> Value {
         let items: Vec<Value> = ids.iter().map(|&i| self.wrap(i)).collect();
         let proto = self.protos().extra.get("nodelist").cloned().unwrap_or_else(|| self.protos().array.clone());
-        Value::Obj(Obj::new(Object::new(Some(proto), Class::Array(items))))
+        Value::Obj(self.alloc(Object::new(Some(proto), Class::Array(items))))
     }
 
     pub fn attr(&mut self, id: NodeId, name: &str) -> Option<String> {
