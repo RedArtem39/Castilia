@@ -2,8 +2,13 @@ use super::*;
 use alloc::{string::ToString, vec::Vec};
 
 fn run(src: &str) -> Vec<String> {
+    run_tier(src, vm::Tier::Bytecode)
+}
+
+fn run_tier(src: &str, tier: vm::Tier) -> Vec<String> {
     let mut doc = crate::html::parse("<html><body></body></html>");
     let mut rt = Runtime::new();
+    rt.interp.tier = tier;
     if let Err(e) = rt.execute(src, &mut doc) {
         let mut l = rt.logs();
         l.push(alloc::format!("ERR {e}"));
@@ -13,9 +18,89 @@ fn run(src: &str) -> Vec<String> {
     rt.logs().into_iter().map(|l| l.strip_prefix("log: ").map(|s| s.to_string()).unwrap_or(l)).collect()
 }
 
+/// Both the AST walker and the bytecode VM must agree with the expectation.
 fn check(src: &str, expect: &[&str]) {
+    let got = run_tier(src, vm::Tier::Ast);
+    assert_eq!(got, expect, "AST tier, script: {src}");
     let got = run(src);
-    assert_eq!(got, expect, "script: {src}");
+    assert_eq!(got, expect, "bytecode tier, script: {src}");
+}
+
+/// Semantics only the bytecode tier implements (real suspension, deep recursion).
+fn check_vm(src: &str, expect: &[&str]) {
+    let got = run(src);
+    assert_eq!(got, expect, "bytecode tier, script: {src}");
+}
+
+#[test]
+fn vm_compiles_common_code() {
+    let mut doc = crate::html::parse("<html><body></body></html>");
+    let mut rt = Runtime::new();
+    rt.execute(
+        "function a(x,{y,z=2}=[],...r){for(const k in {p:1}){} for(let i=0;i<2;i++){try{x+=i}catch(e){}finally{}} switch(x){case 1:break;default:} return x?.toString()+`${y}`} a(1); class C{m(){return [...arguments]}} new C().m(); (async()=>{await 1})(); (function*(){yield* [1]})().next();",
+        &mut doc,
+    )
+    .unwrap();
+    assert!(rt.interp.vm_stats.compiled >= 5, "{:?}", rt.interp.vm_stats);
+    assert_eq!(rt.interp.vm_stats.fallbacks, 0, "{:?}", rt.interp.vm_stats);
+}
+
+#[test]
+fn vm_generators_suspend() {
+    check_vm(
+        "function* g(){ const x = yield 1; console.log('got', x); try { yield 2 } finally { console.log('cleanup') } }
+         const it=g(); console.log(it.next().value); console.log(it.next('A').value); console.log(it.return(5).value, it.next().done)",
+        &["1", "got A", "2", "cleanup", "5 true"],
+    );
+    check_vm("function* nat(){let i=0; while(true) yield i++} const it=nat(); it.next(); it.next(); console.log(it.next().value)", &["2"]);
+    check_vm(
+        "function* inner(){ const r = yield 'a'; return r + '!' } function* outer(){ const v = yield* inner(); yield v }
+         const o = outer(); console.log(o.next().value, o.next('x').value, o.next().done)",
+        &["a x! true"],
+    );
+    check_vm("function* g(){ try { yield 1 } catch(e) { yield 'caught ' + e } } const it=g(); it.next(); console.log(it.throw('E').value)", &["caught E"]);
+}
+
+#[test]
+fn vm_async_ordering() {
+    check_vm(
+        "async function a(){ console.log('a1'); await null; console.log('a2') } a(); console.log('sync'); Promise.resolve().then(()=>console.log('p'))",
+        &["a1", "sync", "a2", "p"],
+    );
+    check_vm("async function w(){ await new Promise(()=>{}); console.log('never') } w(); console.log('after')", &["after"]);
+    check_vm(
+        "async function f(){ try { await Promise.reject(new Error('boom')) } catch(e) { return e.message } } f().then(v=>console.log('caught', v))",
+        &["caught boom"],
+    );
+    check_vm(
+        "async function* ag(){ yield 1; await null; yield 2 } (async()=>{ for await (const v of ag()) console.log(v); console.log('done') })()",
+        &["1", "2", "done"],
+    );
+    check_vm(
+        "const sleep=ms=>new Promise(r=>setTimeout(r,ms)); (async()=>{ const t0=Date.now(); await sleep(50); console.log('slept', Date.now()-t0>=50) })(); console.log('first')",
+        &["first", "slept true"],
+    );
+}
+
+#[test]
+fn vm_semantics() {
+    check_vm("function f(n){return n?f(n-1)+1:0} console.log(f(5000))", &["5000"]);
+    check_vm("var x = 1; function f(){ var x = 2; return eval('x') } console.log(f(), eval('x'), (0,eval)('typeof f'))", &["2 1 function"]);
+    check_vm("function t(){ if (true) { function inner(){ return 'i' } } return inner() } console.log(t())", &["i"]);
+    check_vm("function f(){ try { return 1 } finally { console.log('fin') } } console.log(f())", &["fin", "1"]);
+    check_vm("function f(){ for (const x of [1,2,3]) { try { if (x==2) break } finally { console.log('f'+x) } } return 'end' } console.log(f())", &["f1", "f2", "end"]);
+    check_vm(
+        "function f(){ const it={i:0,[Symbol.iterator](){return this},next(){return {value:this.i++,done:false}},return(){console.log('closed');return {}}}; for(const v of it){ if(v==1) break } } f()",
+        &["closed"],
+    );
+    check_vm("function f(){ const fs=[]; for(let i=0;i<3;i++) fs.push(()=>i); return fs.map(f=>f()).join() } console.log(f())", &["0,1,2"]);
+    check_vm("function f(){ const o={a:{b(){return this.c}, c:5}}; return [o?.a?.b(), o.x?.y.z, o.a.zz?.(), o.x?.[1]] } console.log(f().join('|'))", &["5|||"]);
+    check_vm("function f(){ let s=''; a: for (const i of [1,2]) { try { for (const j of [1,2]) { if (j==2) continue a; s+=i+''+j } } finally { s+='F' } } return s } console.log(f())", &["11F21F"]);
+    check_vm("function f(a, b = a + 1, {c} = {c: b * 2}){ return [a,b,c] } console.log(f(1).join(), f(1,5).join())", &["1,2,4 1,5,10"]);
+    check_vm("function f(){ 'use strict'; const c = 1; try { c = 2 } catch(e) { return e instanceof TypeError } } console.log(f())", &["true"]);
+    check_vm("function f(){ let x = 0; x ||= 5; x &&= x + 1; let y; y ??= 'd'; const o = {n:null}; o.n ??= 3; o['m'] ||= 4; return [x,y,o.n,o.m].join() } console.log(f())", &["6,d,3,4"]);
+    check_vm("function f(){ return typeof undeclared + typeof f + (void 0) } console.log(f())", &["undefinedfunctionundefined"]);
+    check_vm("class A { static #c = 0; #v; constructor(v){ this.#v = v; A.#c++ } get v(){ return this.#v } static count(){ return A.#c } } function f(){ new A(1); return new A(7).v + ':' + A.count() } console.log(f())", &["7:2"]);
 }
 
 #[test]

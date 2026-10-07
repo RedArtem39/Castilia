@@ -321,7 +321,11 @@ impl Interp {
                 if def.is_arrow || def.is_async && !def.is_generator || matches!(def.kind, super::ast::FnKind::Method | super::ast::FnKind::Getter | super::ast::FnKind::Setter) {
                     return;
                 }
-                let proto_proto = if def.is_generator { self.protos().generator.clone() } else { self.protos().object.clone() };
+                let proto_proto = match (def.is_async, def.is_generator) {
+                    (true, true) => self.protos().extra.get("async_generator").cloned().unwrap_or_else(|| self.protos().generator.clone()),
+                    (false, true) => self.protos().generator.clone(),
+                    _ => self.protos().object.clone(),
+                };
                 let p = Obj::new(Object::new(Some(proto_proto), Class::Plain));
                 if !def.is_generator {
                     self.define_data(&p, self.names.constructor.clone(), Value::Obj(o.clone()), HIDDEN);

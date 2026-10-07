@@ -56,6 +56,8 @@ pub struct FuncDef {
     pub span: (usize, usize),
     /// Number of formal parameters before the first default/rest (the `length` property).
     pub length: usize,
+    /// Bytecode compiled on first call (`None` inside: not compilable, use the AST walker).
+    pub code: core::cell::OnceCell<Option<Rc<super::vm::Code>>>,
 }
 
 pub enum PropKey {

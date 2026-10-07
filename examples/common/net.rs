@@ -11,7 +11,7 @@ impl HostFetcher {
     pub fn new() -> Self {
         let config = Agent::config_builder()
             .timeout_global(Some(Duration::from_secs(20)))
-            .user_agent("Castilia/0.1 (local engine test)")
+            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Castilia/0.1")
             .build();
         Self {
             agent: Agent::new_with_config(config),

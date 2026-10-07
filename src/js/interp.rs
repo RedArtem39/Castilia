@@ -202,6 +202,17 @@ pub struct Interp {
     pub upgrade_target: Option<usize>,
     pub counters: BTreeMap<String, u32>,
     pub dom_symbols: BTreeMap<u32, Sym>,
+    /// Execution tier for closures (see [`crate::config::ExecMode`]).
+    pub tier: super::vm::Tier,
+    pub vm_stats: super::vm::VmStats,
+    /// Frames currently on VM loop stacks.
+    pub vm_frames: usize,
+    pub max_frames: usize,
+    /// The realm's `eval` (direct eval detection).
+    pub eval_fn: Option<Obj>,
+    /// Native tier state.
+    #[cfg(feature = "jit")]
+    pub jit: super::jit::JitState,
 }
 
 pub struct Names {
@@ -545,6 +556,11 @@ impl Interp {
 
     #[allow(clippy::too_many_arguments)]
     fn call_closure(&mut self, fo: &Obj, def: Rc<FuncDef>, env: Env, home: Option<Obj>, this: Value, args: &[Value], new_target: Option<Obj>, derived: bool) -> Res {
+        if let Some(code) = self.vm_code(&def) {
+            let this = if derived && new_target.is_some() { None } else { Some(this) };
+            let frame = self.vm_frame(code, fo, &def, &env, home, this, args, new_target);
+            return self.vm_invoke(frame);
+        }
         let func_ctx = if def.is_arrow {
             None
         } else {
@@ -579,7 +595,7 @@ impl Interp {
                     _ => gp,
                 }
             };
-            let g = GenData { values: Vec::new(), pos: 0, started: false, ret: Value::Undefined, pending: Some((def.clone(), scope)) };
+            let g = GenData { values: Vec::new(), pos: 0, started: false, ret: Value::Undefined, pending: Some((def.clone(), scope)), co: None };
             return Ok(Value::Obj(Obj::new(Object::new(Some(proto), Class::Generator(Box::new(g))))));
         }
         if def.is_async {
@@ -797,6 +813,17 @@ impl Interp {
             Class::Function(Func::Closure(c)) => c.home.clone(),
             _ => None,
         };
+        if let Some(code) = self.vm_code(&def) {
+            self.depth += 1;
+            if self.depth > self.max_depth {
+                self.depth -= 1;
+                return Err(self.error_ctl("RangeError", "Maximum call stack size exceeded"));
+            }
+            let frame = self.vm_frame(code, fo, &def, &env, home, None, args, Some(nt.clone()));
+            let r = self.vm_invoke(frame);
+            self.depth -= 1;
+            return r;
+        }
         let ctx = FuncCtx {
             this: RefCell::new(None),
             callee: Some(fo.clone()),
@@ -1504,42 +1531,7 @@ impl Interp {
             Expr::NewTarget => Ok(self.func_ctx(env).map_or(Value::Undefined, |f| f.new_target.clone())),
             Expr::SuperCall(args) => {
                 let argv = self.eval_args(args, env)?;
-                let (callee, nt) = match self.func_ctx(env) {
-                    Some(f) => (f.callee.clone(), f.new_target.clone()),
-                    None => (None, Value::Undefined),
-                };
-                let Some(callee) = callee else {
-                    return Err(self.error_ctl("SyntaxError", "'super' keyword unexpected here"));
-                };
-                let parent = callee.borrow().proto.clone();
-                let Some(parent) = parent else {
-                    return Err(self.error_ctl("TypeError", "Super constructor null of anonymous class is not a constructor"));
-                };
-                let nt_obj = match nt {
-                    Value::Obj(o) => Some(o),
-                    _ => None,
-                };
-                let this = self.construct(&Value::Obj(parent), &argv, nt_obj)?;
-                // bind `this`
-                let mut cur = env;
-                loop {
-                    if let Some(f) = &cur.func {
-                        *f.this.borrow_mut() = Some(this.clone());
-                        break;
-                    }
-                    match &cur.parent {
-                        Some(p) => cur = p,
-                        None => break,
-                    }
-                }
-                let fields = match &callee.borrow().class {
-                    Class::Function(Func::Closure(c)) => c.fields.clone(),
-                    _ => Rc::new(Vec::new()),
-                };
-                if let Value::Obj(o) = &this {
-                    self.init_fields(o, &fields)?;
-                }
-                Ok(this)
+                self.super_call(env, &argv)
             }
             Expr::SuperDot(name) => {
                 let this = self.this_value(env)?;
@@ -1681,6 +1673,68 @@ impl Interp {
             },
             other => Ok((self.eval(other, env)?, Value::Undefined)),
         }
+    }
+
+    /// `super(...args)` in a derived constructor whose scope chain is `env`.
+    pub fn super_call(&mut self, env: &Env, argv: &[Value]) -> Res {
+        let (callee, nt) = match self.func_ctx(env) {
+            Some(f) => (f.callee.clone(), f.new_target.clone()),
+            None => (None, Value::Undefined),
+        };
+        let Some(callee) = callee else {
+            return Err(self.error_ctl("SyntaxError", "'super' keyword unexpected here"));
+        };
+        let parent = callee.borrow().proto.clone();
+        let Some(parent) = parent else {
+            return Err(self.error_ctl("TypeError", "Super constructor null of anonymous class is not a constructor"));
+        };
+        let nt_obj = match nt {
+            Value::Obj(o) => Some(o),
+            _ => None,
+        };
+        let this = self.construct(&Value::Obj(parent), argv, nt_obj)?;
+        let mut cur = env;
+        loop {
+            if let Some(f) = &cur.func {
+                if f.this.borrow().is_some() {
+                    return Err(self.error_ctl("ReferenceError", "Super constructor may only be called once"));
+                }
+                *f.this.borrow_mut() = Some(this.clone());
+                break;
+            }
+            match &cur.parent {
+                Some(p) => cur = p,
+                None => break,
+            }
+        }
+        let fields = match &callee.borrow().class {
+            Class::Function(Func::Closure(c)) => c.fields.clone(),
+            _ => Rc::new(Vec::new()),
+        };
+        if let Value::Obj(o) = &this {
+            self.init_fields(o, &fields)?;
+        }
+        Ok(this)
+    }
+
+    pub(crate) fn func_ctx_pub<'a>(&self, env: &'a Env) -> Option<&'a FuncCtx> {
+        self.func_ctx(env)
+    }
+
+    pub(crate) fn super_get_pub(&mut self, home: Option<Obj>, key: &Key, this: &Value) -> Res {
+        self.super_get(home, key, this)
+    }
+
+    pub(crate) fn template_object_pub(&mut self, t: &Rc<TemplateObj>) -> Value {
+        self.template_object(t)
+    }
+
+    pub(crate) fn for_in_keys_pub(&mut self, v: &Value) -> Res<Vec<JsStr>> {
+        self.for_in_keys(v)
+    }
+
+    pub(crate) fn array_iter_pristine_pub(&mut self, o: &Obj) -> bool {
+        self.array_iter_pristine(o)
     }
 
     fn super_get(&mut self, home: Option<Obj>, key: &Key, this: &Value) -> Res {
@@ -1960,6 +2014,7 @@ impl Interp {
                 source: c.source.clone(),
                 span: (0, 0),
                 length: 0,
+                code: Default::default(),
             }),
         };
         let clo = Closure { def: ctor_def, env: scope.clone(), home: Some(proto.clone()), is_class_ctor: true, derived, fields: Rc::new(Vec::new()) };

@@ -158,6 +158,13 @@ pub fn new_interp() -> Interp {
         upgrade_target: None,
         counters: BTreeMap::new(),
         dom_symbols: BTreeMap::new(),
+        tier: super::vm::Tier::Bytecode,
+        vm_stats: Default::default(),
+        vm_frames: 0,
+        max_frames: 10_000,
+        eval_fn: None,
+        #[cfg(feature = "jit")]
+        jit: Default::default(),
     };
     object::setup(&mut it);
     array::setup(&mut it);
@@ -171,7 +178,24 @@ pub fn new_interp() -> Interp {
     super::dom_setup::setup_all(&mut it);
     super::events::setup(&mut it);
     super::window::setup(&mut it);
+    setup_eval(&mut it);
     it
+}
+
+/// Global `eval`. Called indirectly it runs in the global scope; direct calls inside VM functions
+/// are recognised by identity and run in the caller's scope.
+fn setup_eval(it: &mut Interp) {
+    let f = it.new_native("eval", 1, |it, c| {
+        let Value::Str(src) = c.arg(0) else { return Ok(c.arg(0)) };
+        let prog = match super::parser::parse_program(&src, &mut it.interner, false) {
+            Ok(p) => p,
+            Err(e) => return Err(it.error_ctl("SyntaxError", e.trim_start_matches("SyntaxError: "))),
+        };
+        it.run_program(&prog)
+    });
+    let g = it.global.clone();
+    it.define_data(&g, Key::str("eval"), Value::Obj(f.clone()), HIDDEN);
+    it.eval_fn = Some(f);
 }
 
 // ---------------------------------------------------------------------------

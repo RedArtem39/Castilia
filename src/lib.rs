@@ -8,6 +8,7 @@
 extern crate alloc;
 
 pub mod color;
+pub mod config;
 pub mod css;
 pub mod cssload;
 mod css_values;
@@ -26,10 +27,12 @@ mod layout_table;
 pub mod math;
 pub mod network;
 pub mod page;
+pub mod platform;
 mod presentation;
 pub mod selector;
 pub mod shadow;
 
+pub use config::{EngineConfig, ExecMode};
 pub use css::Viewport;
 pub use dom::{Document, Node, NodeId, NodeKind};
 pub use layout::{Command, DisplayList, Font, FontMetrics, HitRegion, Rect};

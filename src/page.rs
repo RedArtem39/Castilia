@@ -16,11 +16,6 @@ use alloc::{
 };
 use core::cell::RefCell;
 
-const MAX_SCRIPT_BYTES: usize = 2 * 1024 * 1024;
-const MAX_SCRIPTS: usize = 256;
-/// Virtual milliseconds of timers run after load so that `setTimeout`-driven UIs settle.
-const SETTLE_MS: f64 = 1500.0;
-const SETTLE_FIRES: usize = 3000;
 
 #[derive(Debug, Default)]
 pub struct ScriptReport {
@@ -43,6 +38,10 @@ pub struct PageOptions {
     pub document_base: Option<String>,
     /// Text of `<link rel=stylesheet>` elements, applied in document order.
     pub link_css: BTreeMap<NodeId, String>,
+    /// Execution mode and limits.
+    pub config: crate::config::EngineConfig,
+    /// Executable memory for the native tier (only used in `ExecMode::Jit`).
+    pub code_memory: Option<Box<dyn crate::platform::CodeMemory>>,
 }
 
 /// Document and JS state live together so DOM changes can be rendered again.
@@ -104,11 +103,15 @@ impl Page {
             external_css: external_css.to_string(),
             link_css: BTreeMap::new(),
             sheet_cache: RefCell::new(None),
-            runtime: Runtime::new(),
+            runtime: Runtime::with_config(&options.config),
             scripts: ScriptReport::default(),
             layout_rects: RefCell::new(None),
             image_sizes: BTreeMap::new(),
         };
+        if let Some(mem) = options.code_memory {
+            page.runtime.set_code_memory(mem);
+        }
+        let config = options.config.clone();
         if let Some(url) = &options.url {
             page.runtime.set_url(url);
         }
@@ -129,7 +132,7 @@ impl Page {
             .enumerate()
             .filter_map(|(id, node)| (node.tag() == Some("script")).then_some(id))
             .collect();
-        page.scripts.skipped += scripts.len().saturating_sub(MAX_SCRIPTS);
+        page.scripts.skipped += scripts.len().saturating_sub(config.max_scripts);
         // import maps apply to every module regardless of position
         for &id in &scripts {
             let n = &page.document.nodes[id];
@@ -139,7 +142,7 @@ impl Page {
             }
         }
         let mut modules: Vec<(usize, String, String)> = Vec::new();
-        for id in scripts.into_iter().take(MAX_SCRIPTS) {
+        for id in scripts.into_iter().take(config.max_scripts) {
             if !page.document.is_connected(id) {
                 continue;
             }
@@ -163,7 +166,7 @@ impl Page {
             } else {
                 page.document.text_content(id).unwrap_or_default()
             };
-            if source.len() > MAX_SCRIPT_BYTES {
+            if source.len() > config.max_script_bytes {
                 page.scripts.errors.push(format!("script node {id}: size limit exceeded"));
                 continue;
             }
@@ -192,7 +195,7 @@ impl Page {
             }
         }
         page.runtime.dom_content_loaded(&mut page.document);
-        page.runtime.advance(&mut page.document, SETTLE_MS, SETTLE_FIRES);
+        page.runtime.advance(&mut page.document, config.settle_ms, config.settle_fires);
         page.runtime.load(&mut page.document);
         page.runtime.advance(&mut page.document, 100.0, 500);
         page.absorb_sheets();
@@ -235,6 +238,11 @@ impl Page {
     /// The current document URL as seen by scripts (`location.href`).
     pub fn url(&self) -> &str {
         self.runtime.url()
+    }
+
+    /// Bytecode/native tier counters (compiled functions, AST fallbacks, native compilations).
+    pub fn vm_stats(&self) -> crate::js::vm::VmStats {
+        self.runtime.vm_stats()
     }
 
     /// Console output and uncaught errors collected so far.

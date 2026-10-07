@@ -18,6 +18,17 @@ impl Host for FileHost {
 }
 
 fn main() {
+    // run on a large stack so deep native re-entry is bounded by the engine's limits, not the OS
+    let h = std::thread::Builder::new().stack_size(256 << 20).spawn(real_main).unwrap();
+    h.join().unwrap();
+}
+
+fn real_main() {
+    let mut config = castilia::EngineConfig::default();
+    if let Some(m) = std::env::var("CASTILIA_JS_MODE").ok().and_then(|m| castilia::ExecMode::parse(&m)) {
+        config.exec_mode = m;
+    }
+    config.max_native_depth = 1000;
     let mut html = String::from("<!doctype html><html><head></head><body></body></html>");
     let mut scripts = Vec::new();
     let mut expr = None;
@@ -28,6 +39,7 @@ fn main() {
             "--html" => html = fs::read_to_string(args.next().unwrap()).unwrap(),
             "-e" => expr = args.next(),
             "--root" => root = args.next().unwrap(),
+            "--mode" => config.exec_mode = castilia::ExecMode::parse(&args.next().unwrap()).expect("mode: interp|jit|ast"),
             path => scripts.push(path.to_string()),
         }
     }
@@ -41,8 +53,9 @@ fn main() {
         let _ = path;
     }
     let started = std::time::Instant::now();
-    let mut page = Page::load(doc, "", PageOptions { url: Some("http://localhost/".into()), host: Some(Box::new(FileHost(root))), ..Default::default() }, |_| Err("no loader".into()));
+    let mut page = Page::load(doc, "", PageOptions { url: Some("http://localhost/".into()), host: Some(Box::new(FileHost(root))), config, ..Default::default() }, |_| Err("no loader".into()));
     eprintln!("scripts: executed={} errors={:?} ({:?})", page.scripts.executed, page.scripts.errors, started.elapsed());
+    eprintln!("vm: {:?}", page.vm_stats());
     if let Some(e) = expr {
         match page.evaluate(&e) {
             Ok(v) => println!("=> {v}"),

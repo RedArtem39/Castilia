@@ -7,6 +7,8 @@ pub mod dom_setup;
 pub mod events;
 pub mod window;
 pub mod interp;
+#[cfg(feature = "jit")]
+pub mod jit;
 pub mod lexer;
 pub mod modules;
 pub mod ops;
@@ -14,6 +16,7 @@ pub mod parser;
 pub mod regex;
 pub mod url;
 pub mod value;
+pub mod vm;
 
 use crate::dom::{Document, NodeId};
 use alloc::{boxed::Box, collections::BTreeMap, string::String, vec::Vec};
@@ -40,7 +43,41 @@ impl Default for Runtime {
 
 impl Runtime {
     pub fn new() -> Self {
-        Runtime { interp: builtins::new_interp() }
+        Self::with_config(&crate::config::EngineConfig::default())
+    }
+
+    pub fn with_config(config: &crate::config::EngineConfig) -> Self {
+        let mut rt = Runtime { interp: builtins::new_interp() };
+        rt.configure(config);
+        rt
+    }
+
+    /// Apply execution mode and limits (may be called again before scripts run).
+    pub fn configure(&mut self, config: &crate::config::EngineConfig) {
+        let it = &mut self.interp;
+        it.tier = config.tier();
+        it.max_depth = config.max_native_depth;
+        it.tick_limit = config.task_budget;
+        it.max_frames = config.max_frames;
+        #[cfg(feature = "jit")]
+        {
+            it.jit.threshold = config.jit_threshold;
+        }
+    }
+
+    /// Executable memory for the native tier; without it `ExecMode::Jit` runs interpreted.
+    pub fn set_code_memory(&mut self, mem: Box<dyn crate::platform::CodeMemory>) {
+        #[cfg(feature = "jit")]
+        {
+            self.interp.jit.memory = Some(mem);
+        }
+        #[cfg(not(feature = "jit"))]
+        drop(mem);
+    }
+
+    /// Bytecode/native tier counters.
+    pub fn vm_stats(&self) -> vm::VmStats {
+        self.interp.vm_stats.clone()
     }
 
     fn with<R>(&mut self, doc: &mut Document, f: impl FnOnce(&mut interp::Interp) -> R) -> R {

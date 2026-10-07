@@ -884,6 +884,7 @@ impl<'i> Parser<'i> {
             source: self.src.clone(),
             span: (start, end),
             length,
+            code: Default::default(),
         }))
     }
 
@@ -944,6 +945,7 @@ impl<'i> Parser<'i> {
             source: self.src.clone(),
             span: (start, self.prev_end),
             length,
+            code: Default::default(),
         }))
     }
 

@@ -13,6 +13,9 @@ fontdb = "0.24"
 fontdue = "0.9"
 
 [features]
+default = ["jit"]
+# Native code tier for hot JS functions. Builds without it are interpreter-only.
+jit = []
 host-net = ["dep:ureq", "dep:url", "dep:base64"]
 
 [[example]]
@@ -21,4 +24,8 @@ required-features = ["host-net"]
 
 [[example]]
 name = "bench"
+required-features = ["host-net"]
+
+[[example]]
+name = "sitecheck"
 required-features = ["host-net"]

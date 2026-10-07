@@ -344,6 +344,8 @@ pub struct GenData {
     pub started: bool,
     pub ret: Value,
     pub pending: Option<(Rc<FuncDef>, Env)>,
+    /// Suspended bytecode frame (generators and async functions run on the VM).
+    pub co: Option<Box<super::vm::CoState>>,
 }
 
 pub enum Class {

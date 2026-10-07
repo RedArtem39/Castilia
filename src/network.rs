@@ -208,7 +208,26 @@ pub fn load_page(
     width: f32,
     fonts: &impl FontMetrics,
 ) -> Result<LoadedPage, String> {
-    load_page_mode(fetcher, url, width, fonts, false)
+    load_page_mode(fetcher, url, width, fonts, false, LoadOptions::default())
+}
+
+/// Engine settings for [`load_page_with`].
+#[derive(Default)]
+pub struct LoadOptions {
+    pub config: crate::config::EngineConfig,
+    /// Executable memory for `ExecMode::Jit`.
+    pub code_memory: Option<Box<dyn crate::platform::CodeMemory>>,
+}
+
+/// [`load_page`] with an explicit execution mode and limits.
+pub fn load_page_with(
+    fetcher: &mut impl Fetcher,
+    url: &str,
+    width: f32,
+    fonts: &impl FontMetrics,
+    options: LoadOptions,
+) -> Result<LoadedPage, String> {
+    load_page_mode(fetcher, url, width, fonts, false, options)
 }
 
 /// A simplified reading view for pages whose layout exceeds the MVP CSS engine.
@@ -218,7 +237,7 @@ pub fn load_reader_page(
     width: f32,
     fonts: &impl FontMetrics,
 ) -> Result<LoadedPage, String> {
-    load_page_mode(fetcher, url, width, fonts, true)
+    load_page_mode(fetcher, url, width, fonts, true, LoadOptions::default())
 }
 
 fn fetch_css_text<F: Fetcher>(fetcher: &mut F, url: &str) -> Option<String> {
@@ -258,6 +277,7 @@ fn load_page_mode<F: Fetcher>(
     width: f32,
     fonts: &impl FontMetrics,
     reader: bool,
+    load_options: LoadOptions,
 ) -> Result<LoadedPage, String> {
     let response = fetcher.get(url, MAX_HTML_BYTES)?;
     if response.body.len() > MAX_HTML_BYTES {
@@ -358,6 +378,8 @@ fn load_page_mode<F: Fetcher>(
             viewport: Some((width, 768.0)),
             document_base: Some(base.clone()),
             link_css: link_css.clone(),
+            config: load_options.config,
+            code_memory: load_options.code_memory,
         };
         let base_for_scripts = base.clone();
         let mut page = Page::load(document, &external_css, options, |src| {

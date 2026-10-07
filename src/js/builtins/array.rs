@@ -69,6 +69,9 @@ pub fn setup(it: &mut Interp) {
     it.def_method(&gp, "next", 1, gen_next);
     it.def_method(&gp, "return", 1, |it, c| {
         if let Value::Obj(o) = &c.this {
+            if it.vm_gen_state(o).is_some() {
+                return it.vm_gen_resume(o, crate::js::vm::Resume::Return, c.arg(0));
+            }
             if let Class::Generator(d) = &mut o.borrow_mut().class {
                 d.started = true;
                 d.pending = None;
@@ -77,8 +80,31 @@ pub fn setup(it: &mut Interp) {
         }
         Ok(it.make_iter_result(c.arg(0), true))
     });
-    it.def_method(&gp, "throw", 1, |_, c| Err(Ctl::Throw(c.arg(0))));
+    it.def_method(&gp, "throw", 1, |it, c| {
+        if let Value::Obj(o) = &c.this {
+            if it.vm_gen_state(o).is_some() {
+                return it.vm_gen_resume(o, crate::js::vm::Resume::Throw, c.arg(0));
+            }
+        }
+        Err(Ctl::Throw(c.arg(0)))
+    });
     it.define_data(&gp, Key::Y(tag.0.id), Value::str("Generator"), CONFIGURABLE);
+    // %AsyncGeneratorPrototype% and %AsyncIteratorPrototype%
+    let op = it.protos().object.clone();
+    let aip = Obj::new(Object::new(Some(op), Class::Plain));
+    let async_iter = it.wk().async_iterator.clone();
+    it.def_sym_method(&aip, &async_iter, "[Symbol.asyncIterator]", 0, |_, c| Ok(c.this.clone()));
+    let agp = Obj::new(Object::new(Some(aip), Class::Plain));
+    for (name, mode) in [("next", 0u8), ("return", 1), ("throw", 2)] {
+        let f: NativeFn = match mode {
+            0 => |it, c| async_gen_method(it, c, crate::js::vm::Resume::Next),
+            1 => |it, c| async_gen_method(it, c, crate::js::vm::Resume::Return),
+            _ => |it, c| async_gen_method(it, c, crate::js::vm::Resume::Throw),
+        };
+        it.def_method(&agp, name, 1, f);
+    }
+    it.define_data(&agp, Key::Y(tag.0.id), Value::str("AsyncGenerator"), CONFIGURABLE);
+    it.protos.as_mut().expect("realm").extra.insert("async_generator", agp);
 }
 
 fn array_ctor(it: &mut Interp, c: &Call) -> Res {
@@ -756,8 +782,23 @@ fn array_iter_next(it: &mut Interp, c: &Call) -> Res {
     Ok(it.make_iter_result(v, false))
 }
 
+fn async_gen_method(it: &mut Interp, c: &Call, mode: crate::js::vm::Resume) -> Res {
+    match &c.this {
+        Value::Obj(o) if it.vm_gen_state(o).is_some() => it.vm_async_gen_request(o, mode, c.arg(0)),
+        _ => {
+            let p = it.new_promise();
+            let e = it.make_error("TypeError", "not an async generator");
+            it.reject_promise(&p, e);
+            Ok(Value::Obj(p))
+        }
+    }
+}
+
 fn gen_next(it: &mut Interp, c: &Call) -> Res {
     let Value::Obj(o) = &c.this else { return it.type_error("next method called on incompatible receiver") };
+    if it.vm_gen_state(o).is_some() {
+        return it.vm_gen_resume(o, crate::js::vm::Resume::Next, c.arg(0));
+    }
     it.gen_fill(o)?;
     let (v, done) = {
         let mut b = o.borrow_mut();
