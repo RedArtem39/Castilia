@@ -532,8 +532,14 @@ impl Interp {
         if url.starts_with("data:") {
             return Some(data_url_response(url));
         }
-        let h = self.host.host.as_mut()?;
-        h.fetch(method, url, headers, body)
+        if let Some(i) = self.interrupt.as_mut() {
+            i.io_begin();
+        }
+        let r = self.host.host.as_mut().and_then(|h| h.fetch(method, url, headers, body));
+        if let Some(i) = self.interrupt.as_mut() {
+            i.io_end();
+        }
+        r
     }
 }
 

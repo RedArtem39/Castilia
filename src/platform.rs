@@ -34,6 +34,9 @@ pub trait Interrupt {
     fn should_stop(&mut self) -> bool;
     /// A new task (script, event, timer callback) starts: per-task deadlines restart here.
     fn task_started(&mut self) {}
+    /// The engine waits for the host (network) between these calls; that time is not script work.
+    fn io_begin(&mut self) {}
+    fn io_end(&mut self) {}
 }
 
 /// The CPU architecture the native tier would generate code for, if any.

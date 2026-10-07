@@ -279,4 +279,6 @@ pub struct Program {
     pub body: Block,
     pub var_names: Vec<Name>,
     pub is_module: bool,
+    /// The source text shared by every function of the program (identifies its module).
+    pub source: Rc<str>,
 }

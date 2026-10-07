@@ -208,6 +208,8 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Module URL of each module's source text (keyed by the `Rc<str>` address).
+    pub source_urls: BTreeMap<usize, String>,
     /// Host-provided stop signal, polled every `next_poll` ticks.
     pub interrupt: Option<alloc::boxed::Box<dyn crate::platform::Interrupt>>,
     pub next_poll: u64,

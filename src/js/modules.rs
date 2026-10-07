@@ -63,6 +63,7 @@ impl Interp {
             Ok(p) => p,
             Err(e) => return Err(self.error_ctl("SyntaxError", &format!("{url}: {}", e.trim_start_matches("SyntaxError: ")))),
         };
+        self.source_urls.insert(Rc::as_ptr(&prog.source) as *const u8 as usize, url.to_string());
         // namespace first (cycles see the partially populated object)
         let ns = self.alloc(Object::new(None, Class::Plain));
         let tag = Key::Y(self.wk().to_string_tag.0.id);
@@ -196,8 +197,18 @@ impl Interp {
     }
 
     pub fn dynamic_import_value(&mut self, spec: &Value) -> Res {
+        self.dynamic_import_from(spec, None)
+    }
+
+    /// The module that contains a function, if its source was loaded as a module.
+    pub fn module_url_of(&self, source: &Rc<str>) -> Option<String> {
+        self.source_urls.get(&(Rc::as_ptr(source) as *const u8 as usize)).cloned()
+    }
+
+    /// `import(spec)` written in the module `referrer` (None: the running module or the document).
+    pub fn dynamic_import_from(&mut self, spec: &Value, referrer: Option<String>) -> Res {
         let p = self.new_promise();
-        let referrer = self.module_urls.last().cloned().unwrap_or_else(|| self.dom.base_url.clone());
+        let referrer = referrer.or_else(|| self.module_urls.last().cloned()).unwrap_or_else(|| self.dom.base_url.clone());
         let r = (|| -> Res<Obj> {
             let s = self.to_str(spec)?;
             let url = self.resolve_specifier(&s, &referrer)?;

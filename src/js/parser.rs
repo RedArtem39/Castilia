@@ -69,6 +69,7 @@ const MAX_DEPTH: usize = 700;
 
 pub fn parse_program(src: &str, interner: &mut Interner, is_module: bool) -> PResult<Program> {
     let src: Rc<str> = Rc::from(src);
+    let program_src = src.clone();
     let mut p = Parser {
         lex: Lexer::new(src.clone()),
         tok: Token { tok: Tok::Eof, nl: false, start: 0, end: 0 },
@@ -89,7 +90,7 @@ pub fn parse_program(src: &str, interner: &mut Interner, is_module: bool) -> PRe
     }
     let b = p.blocks.pop().expect("block");
     let f = p.fns.pop().expect("fn");
-    Ok(Program { body: Block { stmts, lets: b.lets, funcs: b.funcs }, var_names: f.vars, is_module })
+    Ok(Program { body: Block { stmts, lets: b.lets, funcs: b.funcs }, var_names: f.vars, is_module, source: program_src })
 }
 
 /// Parse a function body or expression text used by `new Function` and attribute handlers.

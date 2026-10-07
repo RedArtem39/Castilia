@@ -585,7 +585,7 @@ impl Interp {
                 }
                 Op::ImportMeta => {
                     let o = self.new_object();
-                    let url = self.current_module_url();
+                    let url = code.source.as_ref().and_then(|(src, _)| self.module_url_of(src)).unwrap_or_else(|| self.current_module_url());
                     self.define_data(&o, Key::str("url"), Value::string(url), ALL);
                     f.stack.push(Value::Obj(o));
                 }
@@ -1291,7 +1291,8 @@ impl Interp {
                 }
                 Op::ImportCall => {
                     let s = Self::pop(f);
-                    let v = self.dynamic_import_value(&s)?;
+                    let referrer = code.source.as_ref().and_then(|(src, _)| self.module_url_of(src));
+                    let v = self.dynamic_import_from(&s, referrer)?;
                     f.stack.push(v);
                 }
                 Op::RequireObjectCoercible => {
