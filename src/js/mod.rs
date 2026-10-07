@@ -148,8 +148,7 @@ impl Runtime {
     /// Run a classic script. `node` is the `<script>` element (for `document.currentScript`).
     pub fn run_script(&mut self, source: &str, node: Option<NodeId>, document: &mut Document) -> Result<(), String> {
         self.with(document, |it| {
-            it.ticks = 0;
-            it.next_poll = 0;
+            it.begin_task();
             let prev = it.current_script;
             it.current_script = node;
             if let Some(n) = node {
@@ -165,8 +164,7 @@ impl Runtime {
     /// Run an ES module entry point (dependencies are fetched through the host or preloaded).
     pub fn run_module(&mut self, url: &str, source: Option<&str>, document: &mut Document) -> Result<(), String> {
         self.with(document, |it| {
-            it.ticks = 0;
-            it.next_poll = 0;
+            it.begin_task();
             let r = match source {
                 Some(src) => {
                     it.module_sources.insert(String::from(url), String::from(src));
@@ -206,8 +204,7 @@ impl Runtime {
     /// Dispatch a synthesized event; returns how many listeners ran.
     pub fn dispatch_event(&mut self, document: &mut Document, target: NodeId, ty: &str, class: &str, bubbles: bool, cancelable: bool, props: &[(&str, Prop)]) -> Result<usize, String> {
         self.with(document, |it| {
-            it.ticks = 0;
-            it.next_poll = 0;
+            it.begin_task();
             let before = it.dispatch_count;
             let mut vals = Vec::new();
             for (k, p) in props {
@@ -239,8 +236,7 @@ impl Runtime {
     /// Run timers and microtasks until `ms` of virtual time have elapsed.
     pub fn advance(&mut self, document: &mut Document, ms: f64, max_fires: usize) {
         self.with(document, |it| {
-            it.ticks = 0;
-            it.next_poll = 0;
+            it.begin_task();
             let until = it.now + ms;
             it.run_timers_until(until, max_fires);
         });

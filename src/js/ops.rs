@@ -1000,7 +1000,14 @@ impl Interp {
         let Value::Obj(o) = v else { return Ok(false) };
         let proto = self.get_obj(c, &self.names.prototype.clone(), &Value::Obj(c.clone()))?;
         let Value::Obj(p) = proto else {
-            return Err(self.error_ctl("TypeError", "Function has non-object prototype in instanceof check"));
+            let name = self.get_obj(c, &self.names.name.clone(), &Value::Obj(c.clone())).ok().map(|n| self.to_string_lossy(&n)).unwrap_or_default();
+            let kind = match &c.borrow().class {
+                Class::Function(Func::Closure(cl)) => alloc::format!("{:?}{}{}", cl.def.kind, if cl.def.is_arrow { " arrow" } else { "" }, if cl.def.is_async { " async" } else { "" }),
+                Class::Function(Func::Native { .. }) => "native".to_string(),
+                _ => "other".to_string(),
+            };
+            let d = self.describe(&proto);
+            return Err(self.error_ctl("TypeError", &format!("Function has non-object prototype '{d}' in instanceof check ({name}, {kind})")));
         };
         let mut cur = o.borrow().proto.clone();
         while let Some(x) = cur {
@@ -1237,6 +1244,8 @@ impl Interp {
         };
         let _ = id;
         let args = if raf { vec![Value::Num(self.now)] } else { args };
+        // each timer callback is its own task with its own budget
+        self.begin_task();
         if let Err(Ctl::Throw(e)) = self.call(&callback, Value::Undefined, &args) {
             self.report_error(&e);
         }

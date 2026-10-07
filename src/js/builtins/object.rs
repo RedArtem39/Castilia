@@ -46,6 +46,10 @@ pub fn define_from_descriptor(it: &mut Interp, o: &Obj, key: Key, desc: &Value) 
     let Value::Obj(d) = desc else {
         return it.type_error("Property description must be an object");
     };
+    // functions create `prototype`/`name`/`length` lazily: make them real before redefining
+    if matches!(o.borrow().class, Class::Function(_)) {
+        let _ = it.get_obj(o, &key, &Value::Obj(o.clone()));
+    }
     let get = |it: &mut Interp, n: &str| -> Res<Option<Value>> {
         let k = Key::str(n);
         if it.has_property(d, &k)? { Ok(Some(it.get_obj(d, &k, desc)?)) } else { Ok(None) }

@@ -49,7 +49,15 @@ pub fn setup(it: &mut Interp) {
 }
 
 fn number_ctor(it: &mut Interp, c: &Call) -> Res {
-    let n = if c.args.is_empty() { 0.0 } else { it.to_number(&c.args[0])? };
+    let n = if c.args.is_empty() {
+        0.0
+    } else {
+        // Number(1n) converts (ToNumeric), unlike arithmetic on BigInts
+        match it.to_primitive(&c.args[0], "number")? {
+            Value::BigInt(b) => b.to_f64(),
+            p => it.to_number(&p)?,
+        }
+    };
     if c.new_target.is_none() {
         return Ok(Value::Num(n));
     }

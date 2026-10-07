@@ -265,6 +265,15 @@ impl Interp {
         self.wk.as_ref().expect("realm initialised")
     }
 
+    /// Reset the work budget and tell the host a new task starts.
+    pub fn begin_task(&mut self) {
+        self.ticks = 0;
+        self.next_poll = 0;
+        if let Some(i) = self.interrupt.as_mut() {
+            i.task_started();
+        }
+    }
+
     pub fn tick(&mut self) -> Res<()> {
         self.ticks += 1;
         if self.ticks >= self.next_poll {

@@ -42,7 +42,7 @@ fn one_inner(url: &str) {
         config.exec_mode = m;
     }
     config.max_native_depth = 1000;
-    let options = castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)), interrupt: Some(Box::new(deadline::Deadline::after(std::time::Duration::from_secs(20)))) };
+    let options = castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)), interrupt: Some(Box::new(deadline::Deadline::per_task(std::time::Duration::from_secs(5)))) };
     match castilia::network::load_page_with(&mut fetcher, url, 1024.0, &fonts, options) {
         Ok(page) => {
             let r = &page.report;

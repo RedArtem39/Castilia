@@ -701,7 +701,7 @@
   const iface = (name, proto, base) => {
     const C = { [name]: function () { throw new TypeError('Illegal constructor'); } }[name];
     const p = proto || Object.create(base ? base.prototype : Object.prototype);
-    def(C, 'prototype', p); def(p, 'constructor', C);
+    Object.defineProperty(C, 'prototype', { value: p, writable: false }); def(p, 'constructor', C);
     Object.defineProperty(p, Symbol.toStringTag, { value: name, configurable: true });
     if (base) Object.setPrototypeOf(C, base);
     expose(name, C);

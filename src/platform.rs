@@ -32,6 +32,8 @@ pub trait CodeMemory {
 /// `Error` ("script interrupted"), after which the page continues with the next task.
 pub trait Interrupt {
     fn should_stop(&mut self) -> bool;
+    /// A new task (script, event, timer callback) starts: per-task deadlines restart here.
+    fn task_started(&mut self) {}
 }
 
 /// The CPU architecture the native tier would generate code for, if any.
