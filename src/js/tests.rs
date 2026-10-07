@@ -462,3 +462,13 @@ fn bigint() {
     check("try { 1n + 1 } catch (e) { console.log(e instanceof TypeError) } try { JSON.stringify({a: 1n}) } catch (e) { console.log(e.message) }", &["true", "Do not know how to serialize a BigInt"]);
     check_vm("function f(){ let x = 0n; for (let i = 0n; i < 10n; i++) x += i * i; return x } console.log(f(), typeof f())", &["285n bigint"]);
 }
+
+#[test]
+fn iframe_context() {
+    check(
+        "const f = document.createElement('iframe'); console.log(f.contentWindow); document.body.appendChild(f); const w = f.contentWindow; const d = f.contentDocument;
+         d.open(); d.write('<p id=x>hi</p>'); d.close();
+         console.log(typeof w.Array, w.parent === window, d.getElementById('x').textContent, document.getElementById('x'), w.document === d)",
+        &["null", "function true hi null true"],
+    );
+}

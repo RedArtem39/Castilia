@@ -767,6 +767,38 @@
     if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
   }
   if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
+  // ---- iframes: a child browsing context approximated by a window that inherits the page's
+  // globals and a private, detached document (writes into it never touch the page) ----
+  if (G.HTMLElement) {
+    const frames = new WeakMap();
+    const frameOf = (el) => {
+      let f = frames.get(el);
+      if (f) return f;
+      const doc = G.document;
+      const html = doc.createElement('html'), head = doc.createElement('head'), body = doc.createElement('body');
+      html.appendChild(head); html.appendChild(body);
+      const win = Object.create(G);
+      const fdoc = {
+        nodeType: 9, readyState: 'complete', contentType: 'text/html', compatMode: 'CSS1Compat', characterSet: 'UTF-8', title: '', cookie: '', referrer: '',
+        documentElement: html, head, body, defaultView: win, location: { href: 'about:blank', protocol: 'about:', host: '', hostname: '', pathname: 'blank', search: '', hash: '', origin: 'null' },
+        open() { return this; }, close() {}, write(s) { try { body.insertAdjacentHTML('beforeend', String(s)); } catch (e) {} }, writeln(s) { this.write(String(s) + String.fromCharCode(10)); },
+        createElement: (t) => doc.createElement(t), createElementNS: (n, t) => doc.createElementNS(n, t), createTextNode: (t) => doc.createTextNode(t), createComment: (t) => doc.createComment(t), createDocumentFragment: () => doc.createDocumentFragment(),
+        getElementById: (id) => html.querySelector('#' + CSS.escape(id)), querySelector: (s) => html.querySelector(s), querySelectorAll: (s) => html.querySelectorAll(s), getElementsByTagName: (t) => html.getElementsByTagName(t),
+        addEventListener() {}, removeEventListener() {}, dispatchEvent() { return true; }, hasFocus() { return false; },
+      };
+      const own = { document: fdoc, parent: G, top: G.top || G, frameElement: el, opener: null, name: el.getAttribute('name') || '', length: 0, closed: false, location: fdoc.location };
+      for (const k of Object.keys(own)) Object.defineProperty(win, k, { value: own[k], writable: true, configurable: true });
+      for (const k of ['window', 'self', 'frames']) Object.defineProperty(win, k, { value: win, writable: true, configurable: true });
+      Object.defineProperty(win, 'postMessage', { configurable: true, writable: true, value: (data, origin) => setTimeout(() => { const ev = new MessageEvent('message', { data, origin: G.location.origin, source: G }); G.dispatchEvent && null; win.onmessage && win.onmessage(ev); }, 0) });
+      for (const k of ['addEventListener', 'removeEventListener']) Object.defineProperty(win, k, { value: () => {}, writable: true, configurable: true });
+      f = { win, doc: fdoc };
+      frames.set(el, f);
+      return f;
+    };
+    const isFrame = (el) => el && (el.tagName === 'IFRAME' || el.tagName === 'FRAME');
+    Object.defineProperty(G.HTMLElement.prototype, 'contentWindow', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).win : null; } });
+    Object.defineProperty(G.HTMLElement.prototype, 'contentDocument', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).doc : null; } });
+  }
   if (G.performance && !G.performance.mark) {
     const marks = [];
     def(G.performance, 'mark', (name, o = {}) => { const e = { name: String(name), entryType: 'mark', startTime: o.startTime !== undefined ? o.startTime : G.performance.now(), duration: 0, detail: o.detail === undefined ? null : o.detail }; marks.push(e); return e; });
