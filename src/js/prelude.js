@@ -441,28 +441,131 @@
   const NodeFilter = { FILTER_ACCEPT: 1, FILTER_REJECT: 2, FILTER_SKIP: 3, SHOW_ALL: 0xFFFFFFFF, SHOW_ELEMENT: 1, SHOW_ATTRIBUTE: 2, SHOW_TEXT: 4, SHOW_CDATA_SECTION: 8, SHOW_COMMENT: 128, SHOW_DOCUMENT: 256, SHOW_DOCUMENT_TYPE: 512, SHOW_DOCUMENT_FRAGMENT: 1024 };
   expose('NodeFilter', NodeFilter);
   function* walk(root) { for (const c of Array.from(root.childNodes)) { yield c; yield* walk(c); } }
-  function makeWalker(root, what, filter) {
-    what = what === undefined ? 0xFFFFFFFF : what >>> 0;
-    const all = [];
-    for (const n of walk(root)) {
-      if (!(what & (1 << (n.nodeType - 1)))) continue;
-      let r = 1;
-      if (filter) r = typeof filter === 'function' ? filter(n) : filter.acceptNode(n);
-      if (r === 1) all.push(n);
-    }
-    let i = -1;
-    return {
-      root, whatToShow: what, filter, currentNode: root,
-      nextNode() { i++; if (i < all.length) { this.currentNode = all[i]; return all[i]; } return null; },
-      previousNode() { if (i > 0) { i--; this.currentNode = all[i]; return all[i]; } return null; },
-      firstChild() { return root.firstChild; },
-      parentNode() { return this.currentNode.parentNode; },
-      nextSibling() { return this.currentNode.nextSibling; },
-      previousSibling() { return this.currentNode.previousSibling; },
-    };
+  // ---- TreeWalker / NodeIterator (live, per the DOM standard) -------------------------
+  const FILTER_ACCEPT = 1, FILTER_REJECT = 2, FILTER_SKIP = 3;
+  function acceptNode(w, n) {
+    if (!(w.whatToShow & (1 << (n.nodeType - 1)))) return FILTER_SKIP;
+    const f = w.filter;
+    if (!f) return FILTER_ACCEPT;
+    return typeof f === 'function' ? f(n) : f.acceptNode(n);
   }
-  hide(Document.prototype, 'createTreeWalker', function (root, what, filter) { return makeWalker(root, what, filter); });
-  hide(Document.prototype, 'createNodeIterator', function (root, what, filter) { const w = makeWalker(root, what, filter); w.nextNode = w.nextNode; return w; });
+  class TreeWalker {
+    constructor(root, what, filter) { this.root = root; this.whatToShow = what === undefined ? 0xFFFFFFFF : what >>> 0; this.filter = filter || null; this.currentNode = root; }
+    parentNode() {
+      let n = this.currentNode;
+      while (n && n !== this.root) { n = n.parentNode; if (n && acceptNode(this, n) === FILTER_ACCEPT) { this.currentNode = n; return n; } }
+      return null;
+    }
+    _children(first) {
+      let n = first ? this.currentNode.firstChild : this.currentNode.lastChild;
+      while (n) {
+        const r = acceptNode(this, n);
+        if (r === FILTER_ACCEPT) { this.currentNode = n; return n; }
+        if (r === FILTER_SKIP) { const c = first ? n.firstChild : n.lastChild; if (c) { n = c; continue; } }
+        while (n) {
+          const sib = first ? n.nextSibling : n.previousSibling;
+          if (sib) { n = sib; break; }
+          const parent = n.parentNode;
+          if (!parent || parent === this.root || parent === this.currentNode) return null;
+          n = parent;
+        }
+      }
+      return null;
+    }
+    firstChild() { return this._children(true); }
+    lastChild() { return this._children(false); }
+    _siblings(next) {
+      let node = this.currentNode;
+      if (node === this.root) return null;
+      for (;;) {
+        let sib = next ? node.nextSibling : node.previousSibling;
+        while (sib) {
+          node = sib;
+          const r = acceptNode(this, node);
+          if (r === FILTER_ACCEPT) { this.currentNode = node; return node; }
+          sib = next ? node.firstChild : node.lastChild;
+          if (r === FILTER_REJECT || !sib) sib = next ? node.nextSibling : node.previousSibling;
+        }
+        node = node.parentNode;
+        if (!node || node === this.root) return null;
+        if (acceptNode(this, node) === FILTER_ACCEPT) return null;
+      }
+    }
+    nextSibling() { return this._siblings(true); }
+    previousSibling() { return this._siblings(false); }
+    previousNode() {
+      let node = this.currentNode;
+      while (node !== this.root) {
+        let sib = node.previousSibling;
+        while (sib) {
+          node = sib;
+          let r = acceptNode(this, node);
+          while (r !== FILTER_REJECT && node.lastChild) { node = node.lastChild; r = acceptNode(this, node); }
+          if (r === FILTER_ACCEPT) { this.currentNode = node; return node; }
+          sib = node.previousSibling;
+        }
+        if (node === this.root || !node.parentNode) return null;
+        node = node.parentNode;
+        if (acceptNode(this, node) === FILTER_ACCEPT) { this.currentNode = node; return node; }
+      }
+      return null;
+    }
+    nextNode() {
+      let node = this.currentNode, r = FILTER_ACCEPT;
+      for (;;) {
+        while (r !== FILTER_REJECT && node.firstChild) {
+          node = node.firstChild;
+          r = acceptNode(this, node);
+          if (r === FILTER_ACCEPT) { this.currentNode = node; return node; }
+        }
+        let following = null, t = node;
+        while (t) {
+          if (t === this.root) return null;
+          if (t.nextSibling) { following = t.nextSibling; break; }
+          t = t.parentNode;
+        }
+        if (!following) return null;
+        node = following;
+        r = acceptNode(this, node);
+        if (r === FILTER_ACCEPT) { this.currentNode = node; return node; }
+      }
+    }
+  }
+  class NodeIterator {
+    constructor(root, what, filter) { this.root = root; this.whatToShow = what === undefined ? 0xFFFFFFFF : what >>> 0; this.filter = filter || null; this.referenceNode = root; this.pointerBeforeReferenceNode = true; }
+    _following(n) {
+      if (n.firstChild) return n.firstChild;
+      while (n) { if (n === this.root) return null; if (n.nextSibling) return n.nextSibling; n = n.parentNode; }
+      return null;
+    }
+    _preceding(n) {
+      if (n === this.root) return null;
+      let p = n.previousSibling;
+      if (!p) return n.parentNode;
+      while (p.lastChild) p = p.lastChild;
+      return p;
+    }
+    nextNode() {
+      let n = this.referenceNode, before = this.pointerBeforeReferenceNode;
+      for (;;) {
+        if (before) before = false; else { n = this._following(n); if (!n) return null; }
+        if (acceptNode(this, n) === FILTER_ACCEPT) { this.referenceNode = n; this.pointerBeforeReferenceNode = false; return n; }
+      }
+    }
+    previousNode() {
+      let n = this.referenceNode, before = this.pointerBeforeReferenceNode;
+      for (;;) {
+        if (!before) before = true; else { n = this._preceding(n); if (!n) return null; }
+        if (acceptNode(this, n) === FILTER_ACCEPT) { this.referenceNode = n; this.pointerBeforeReferenceNode = true; return n; }
+      }
+    }
+    detach() {}
+  }
+  expose('TreeWalker', TreeWalker);
+  expose('NodeIterator', NodeIterator);
+  expose('NodeFilter', Object.assign(G.NodeFilter || {}, { FILTER_ACCEPT, FILTER_REJECT, FILTER_SKIP, SHOW_ALL: 0xFFFFFFFF, SHOW_ELEMENT: 1, SHOW_ATTRIBUTE: 2, SHOW_TEXT: 4, SHOW_CDATA_SECTION: 8, SHOW_PROCESSING_INSTRUCTION: 64, SHOW_COMMENT: 128, SHOW_DOCUMENT: 256, SHOW_DOCUMENT_TYPE: 512, SHOW_DOCUMENT_FRAGMENT: 1024 }));
+  hide(Document.prototype, 'createTreeWalker', function (root, what, filter) { return new TreeWalker(root, what, filter); });
+  hide(Document.prototype, 'createNodeIterator', function (root, what, filter) { return new NodeIterator(root, what, filter); });
   class CSSStyleSheetImpl { constructor() { this.cssRules = []; this.rules = this.cssRules; this.disabled = false; } replaceSync(t) { this._t = t; } replace(t) { this._t = t; return Promise.resolve(this); } insertRule(r, i = 0) { this.cssRules.splice(i, 0, { cssText: r }); return i; } deleteRule(i) { this.cssRules.splice(i, 1); } }
   expose('CSSStyleSheet', CSSStyleSheetImpl);
   {
@@ -802,6 +905,14 @@
     if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
   }
   if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
+  if (G.Element) {
+    const EP = G.Element.prototype;
+    if (!EP.removeAttributeNode) def(EP, 'removeAttributeNode', function (a) { const v = this.getAttributeNode(a.name); this.removeAttribute(a.name); return v || a; });
+    if (!EP.setAttributeNode) def(EP, 'setAttributeNode', function (a) { const old = this.getAttributeNode(a.name); this.setAttribute(a.name, a.value); return old; });
+    if (!EP.setAttributeNodeNS) def(EP, 'setAttributeNodeNS', function (a) { return this.setAttributeNode(a); });
+    if (!EP.getAttributeNodeNS) def(EP, 'getAttributeNodeNS', function (ns, n) { return this.getAttributeNode(n); });
+  }
+  if (!Document.prototype.createAttribute) def(Document.prototype, 'createAttribute', function (n) { return { name: String(n).toLowerCase(), localName: String(n).toLowerCase(), value: '', nodeType: 2, specified: true, ownerElement: null }; });
   // SVG elements share style/dataset/focus with HTML elements (both are HTMLOrSVGElement)
   if (G.SVGElement && G.HTMLElement) {
     for (const k of ['style', 'dataset', 'tabIndex', 'focus', 'blur', 'nonce', 'autofocus']) {

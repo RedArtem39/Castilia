@@ -1009,6 +1009,13 @@ impl<'a> Builder<'a> {
                 let end = rest.find('>').map_or(rest.len(), |e| e + 1);
                 if rest.len() >= 9 && rest[2..9].eq_ignore_ascii_case("doctype") {
                     self.doctype(&rest[..end]);
+                } else {
+                    // bogus comment: `<?x>` keeps the `?`, `<!x>` drops the `!` (Lit's `<?lit$..$>` markers)
+                    let start = if rest.starts_with("<?") { 1 } else { 2 };
+                    let stop = if end > 0 && rest[..end].ends_with('>') { end - 1 } else { end };
+                    if stop >= start {
+                        self.insert_comment(&rest[start..stop]);
+                    }
                 }
                 pos += end;
                 text_start = pos;

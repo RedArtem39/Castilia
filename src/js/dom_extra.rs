@@ -1961,7 +1961,7 @@ fn setup_custom_elements(it: &mut Interp) {
             return Err(it.error_ctl("NotSupportedError", &format!("the name \"{name}\" has already been used with this registry")));
         }
         it.custom_elements.push((name.clone(), ctor.clone()));
-        // upgrade existing elements
+        // upgrade existing elements of the document, shadow trees included
         if let Ok(d) = it.dom() {
             let mut found = Vec::new();
             let mut st = vec![d.root];
@@ -1970,21 +1970,40 @@ fn setup_custom_elements(it: &mut Interp) {
                     found.push(n);
                 }
                 st.extend(d.nodes[n].children.iter().rev().copied());
+                if let Some(&sr) = d.shadow_roots.get(&n) {
+                    st.push(sr);
+                }
             }
-            let proto = it.get_obj(&ctor, &it.names.prototype.clone(), &Value::Obj(ctor.clone()))?;
-            let _ = proto;
             for n in found {
-                // run the constructor against the existing element
-                it.upgrade_target = Some(n);
-                if let Err(Ctl::Throw(e)) = it.construct(&Value::Obj(ctor.clone()), &[], None) {
-                    it.report_error(&e);
+                if it.upgraded.contains(&n) {
+                    continue;
                 }
-                it.upgrade_target = None;
-                let connected = it.dom()?.is_connected(n);
-                if connected {
-                    it.custom_element_callbacks(n, "connectedCallback");
+                it.upgrade_element(n, &ctor);
+                let w = it.wrap(n);
+                if let Ok(cb) = it.get_str(&w, "connectedCallback") {
+                    if cb.as_obj().is_some_and(|o| o.is_callable()) {
+                        if let Err(Ctl::Throw(e)) = it.call(&cb, w, &[]) {
+                            it.report_error(&e);
+                        }
+                    }
                 }
             }
+        }
+        // settle whenDefined promises
+        let waiting: Vec<Obj> = {
+            let mut out = Vec::new();
+            it.when_defined.retain(|(n, p)| {
+                if *n == name {
+                    out.push(p.clone());
+                    false
+                } else {
+                    true
+                }
+            });
+            out
+        };
+        for p in waiting {
+            it.resolve_promise(&p, Value::Obj(ctor.clone()))?;
         }
         Ok(Value::Undefined)
     });
@@ -1992,7 +2011,15 @@ fn setup_custom_elements(it: &mut Interp) {
         let name = it.arg_str(c, 0)?.to_ascii_lowercase();
         Ok(it.custom_elements.iter().find(|(n, _)| *n == name).map_or(Value::Undefined, |(_, o)| Value::Obj(o.clone())))
     });
-    it.def_method(&ce, "whenDefined", 1, |it, _| Ok(Value::Obj(it.promise_resolved(Value::Undefined)?)));
+    it.def_method(&ce, "whenDefined", 1, |it, c| {
+        let name = it.arg_str(c, 0)?.to_ascii_lowercase();
+        if let Some(ctor) = it.custom_elements.iter().find(|(n, _)| *n == name).map(|(_, o)| o.clone()) {
+            return Ok(Value::Obj(it.promise_resolved(Value::Obj(ctor))?));
+        }
+        let p = it.new_promise();
+        it.when_defined.push((name, p.clone()));
+        Ok(Value::Obj(p))
+    });
     it.def_method(&ce, "upgrade", 1, |_, _| Ok(Value::Undefined));
 }
 

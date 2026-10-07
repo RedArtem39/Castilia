@@ -148,6 +148,7 @@ fn html_element_ctor(it: &mut Interp, c: &Call) -> Res {
         Some(id) => id,
         None => it.dom()?.create_element(&tag),
     };
+    it.upgraded.insert(id);
     let w = it.wrap(id);
     if let Value::Obj(o) = &w {
         let p = it.get_obj(&nt, &it.names.prototype.clone(), &Value::Obj(nt.clone()))?;
@@ -1023,6 +1024,14 @@ fn inner_html_set(it: &mut Interp, c: &Call) -> Res {
     let id = it.this_node(c)?;
     let s = if c.arg(0).is_nullish() { Rc::from("") } else { it.arg_str(c, 0)? };
     let target = content_target(it, id)?;
+    // fragment parsing with a raw-text / RCDATA context element yields a single text node
+    let tag = it.tag_name(target);
+    if matches!(tag.as_str(), "script" | "style" | "xmp" | "iframe" | "noembed" | "noframes" | "plaintext" | "textarea" | "title") {
+        let text = if matches!(tag.as_str(), "textarea" | "title") { crate::html::decode_entities(&s, false) } else { s.to_string() };
+        let args = [Value::string(text)];
+        let call = Call { this: c.this.clone(), args: &args, callee: c.callee, new_target: None };
+        return text_content_set(it, &call);
+    }
     let prev = core::mem::replace(&mut it.parsing_html_scripts, true);
     let r = it.dom_set_inner_html(target, &s);
     it.parsing_html_scripts = prev;
@@ -1466,6 +1475,34 @@ impl Interp {
         Ok(())
     }
 
+    /// Run a custom element constructor against an existing node.
+    pub fn upgrade_element(&mut self, n: NodeId, ctor: &Obj) {
+        self.upgraded.insert(n);
+        self.upgrade_target = Some(n);
+        if let Err(Ctl::Throw(e)) = self.construct(&Value::Obj(ctor.clone()), &[], None) {
+            self.report_error(&e);
+        }
+        self.upgrade_target = None;
+        // attributeChangedCallback for attributes present at upgrade time
+        let w = self.wrap(n);
+        let observed = self.get_str(&Value::Obj(ctor.clone()), "observedAttributes").ok();
+        let cb = self.get_str(&w, "attributeChangedCallback").ok();
+        if let (Some(obs), Some(cb)) = (observed, cb) {
+            if cb.as_obj().is_some_and(|o| o.is_callable()) {
+                let names = self.iter_to_vec(&obs).unwrap_or_default();
+                for nm in names {
+                    let nm = self.to_string_lossy(&nm);
+                    let val = self.doc().and_then(|d| d.nodes[n].attribute(&nm).map(String::from));
+                    if let Some(v) = val {
+                        if let Err(Ctl::Throw(e)) = self.call(&cb, w.clone(), &[Value::string(nm), Value::Null, Value::string(v)]) {
+                            self.report_error(&e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /// Run `connectedCallback`/`disconnectedCallback` for custom elements in the subtree of `id`.
     pub fn custom_element_callbacks(&mut self, id: NodeId, name: &str) {
         if self.custom_elements.is_empty() {
@@ -1485,8 +1522,12 @@ impl Interp {
         }
         for n in found {
             let tag = self.tag_name(n);
-            if !self.custom_elements.iter().any(|(t, _)| *t == tag) {
+            let Some(ctor) = self.custom_elements.iter().find(|(t, _)| *t == tag).map(|(_, c)| c.clone()) else {
                 continue;
+            };
+            // elements parsed or cloned before (or without) construction upgrade when they connect
+            if name == "connectedCallback" && !self.upgraded.contains(&n) {
+                self.upgrade_element(n, &ctor);
             }
             let w = self.wrap(n);
             if let Ok(cb) = self.get_str(&w, name) {

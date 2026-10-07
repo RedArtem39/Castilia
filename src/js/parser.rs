@@ -137,7 +137,7 @@ impl<'i> Parser<'i> {
         let line = self.lex.line_of(self.tok.start);
         // a little source context makes minified-bundle failures diagnosable
         let src = &self.lex.src;
-        let mut a = self.tok.start.saturating_sub(40).min(src.len());
+        let mut a = self.tok.start.saturating_sub(160).min(src.len());
         while a > 0 && !src.is_char_boundary(a) {
             a -= 1;
         }

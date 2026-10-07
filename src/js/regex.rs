@@ -645,6 +645,19 @@ fn prop_matches(name: &str, c: char) -> bool {
         "Emoji" | "Emoji_Presentation" | "Extended_Pictographic" => matches!(c as u32, 0x1f300..=0x1faff | 0x2600..=0x27bf | 0x1f000..=0x1f2ff | 0x2b00..=0x2bff | 0x2190..=0x21ff),
         "ASCII" => c.is_ascii(),
         "Any" => true,
+        "Pattern_Syntax" => matches!(c as u32,
+            0x21..=0x2f | 0x3a..=0x40 | 0x5b..=0x5e | 0x60 | 0x7b..=0x7e | 0xa1..=0xa7 | 0xa9 | 0xab | 0xac | 0xae | 0xb0 | 0xb1 | 0xb6 | 0xbb | 0xbf | 0xd7 | 0xf7
+            | 0x2010..=0x2027 | 0x2030..=0x203e | 0x2041..=0x2053 | 0x2055..=0x205e | 0x2190..=0x245f | 0x2500..=0x2775 | 0x2794..=0x2bff
+            | 0x2e00..=0x2e7f | 0x3001..=0x3003 | 0x3008..=0x3020 | 0x3030 | 0xfd3e | 0xfd3f | 0xfe45 | 0xfe46),
+        "Pattern_White_Space" => matches!(c as u32, 0x9..=0xd | 0x20 | 0x85 | 0x200e | 0x200f | 0x2028 | 0x2029),
+        "ID_Start" | "IDS" | "XID_Start" | "XIDS" => c.is_alphabetic(),
+        "ID_Continue" | "IDC" | "XID_Continue" | "XIDC" => c.is_alphanumeric() || c == '_' || matches!(c as u32, 0x300..=0x36f | 0x200c | 0x200d),
+        "M" | "Mark" | "Combining_Mark" | "Mn" | "Nonspacing_Mark" | "Mc" | "Spacing_Mark" | "Me" | "Enclosing_Mark" => matches!(c as u32, 0x300..=0x36f | 0x483..=0x489 | 0x591..=0x5bd | 0x610..=0x61a | 0x64b..=0x65f | 0x900..=0x903 | 0x93a..=0x94f | 0x951..=0x957 | 0x1ab0..=0x1aff | 0x1dc0..=0x1dff | 0x20d0..=0x20ff | 0xfe00..=0xfe0f | 0xfe20..=0xfe2f),
+        "Cc" | "Control" | "cntrl" => c.is_control(),
+        "Cf" | "Format" => matches!(c as u32, 0xad | 0x600..=0x605 | 0x200b..=0x200f | 0x202a..=0x202e | 0x2060..=0x2064 | 0xfeff),
+        "Lo" | "Other_Letter" => c.is_alphabetic() && !c.is_uppercase() && !c.is_lowercase(),
+        "Sc" | "Currency_Symbol" => matches!(c, '$' | '¢' | '£' | '¤' | '¥') || matches!(c as u32, 0x20a0..=0x20cf),
+        "Sm" | "Math_Symbol" => matches!(c, '+' | '<' | '=' | '>' | '|' | '~' | '¬' | '±' | '×' | '÷') || matches!(c as u32, 0x2200..=0x22ff),
         s if s.starts_with("Script=") || s.starts_with("sc=") || s.starts_with("Script_Extensions=") => {
             let script = s.split('=').nth(1).unwrap_or("");
             match script {

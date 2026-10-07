@@ -200,6 +200,10 @@ pub struct Interp {
     pub template_content: BTreeMap<usize, usize>,
     pub shadow_closed: Vec<usize>,
     pub upgrade_target: Option<usize>,
+    /// Custom elements whose constructor has run.
+    pub upgraded: alloc::collections::BTreeSet<usize>,
+    /// `customElements.whenDefined` promises waiting for a name.
+    pub when_defined: Vec<(String, Obj)>,
     pub counters: BTreeMap<String, u32>,
     pub dom_symbols: BTreeMap<u32, Sym>,
     /// Execution tier for closures (see [`crate::config::ExecMode`]).

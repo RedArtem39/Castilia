@@ -480,3 +480,29 @@ fn intl_callable_without_new() {
         &["function true true -1 US function"],
     );
 }
+
+#[test]
+fn bogus_comments_and_live_tree_walker() {
+    check(
+        "const t = document.createElement('template'); t.innerHTML = '<p>a<?m$1$>b<!x>c</p><i></i>';
+         const w = document.createTreeWalker(document, 129); const frag = document.importNode(t.content, true); w.currentNode = frag;
+         const seen = []; let n; while ((n = w.nextNode())) seen.push(n.nodeType === 8 ? 'c:' + n.data : n.tagName);
+         const it = document.createNodeIterator(frag, NodeFilter.SHOW_TEXT); const txt = []; while ((n = it.nextNode())) txt.push(n.data);
+         console.log(seen.join(','), txt.join(''))",
+        &["P,c:?m$1$,c:x,I abc"],
+    );
+}
+
+#[test]
+fn custom_elements_upgrade_in_shadow_and_when_defined() {
+    check(
+        "customElements.whenDefined('x-inner').then(c => console.log('defined', c.name));
+         class Outer extends HTMLElement { connectedCallback() { const r = this.attachShadow({mode: 'open'}); const t = document.createElement('template'); t.innerHTML = '<x-inner a=1></x-inner>'; r.appendChild(document.importNode(t.content, true)); } }
+         customElements.define('x-outer', Outer); document.body.appendChild(document.createElement('x-outer'));
+         class Inner extends HTMLElement { static observedAttributes = ['a']; attributeChangedCallback(n, o, v) { console.log('attr', n, v) } connectedCallback() { console.log('inner connected', typeof this.hello) } hello() {} }
+         customElements.define('x-inner', Inner);
+         const later = document.createElement('x-late'); document.body.appendChild(later);
+         customElements.define('x-late', class XLate extends HTMLElement { connectedCallback() { console.log('late', this instanceof XLate) } });",
+        &["attr a 1", "inner connected function", "late true", "defined Inner"],
+    );
+}

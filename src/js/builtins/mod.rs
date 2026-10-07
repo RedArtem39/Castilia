@@ -157,6 +157,8 @@ pub fn new_interp() -> Interp {
         template_content: BTreeMap::new(),
         shadow_closed: Vec::new(),
         upgrade_target: None,
+        upgraded: Default::default(),
+        when_defined: Vec::new(),
         counters: BTreeMap::new(),
         dom_symbols: BTreeMap::new(),
         tier: super::vm::Tier::Bytecode,
