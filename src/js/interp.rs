@@ -208,6 +208,9 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Host-provided stop signal, polled every `next_poll` ticks.
+    pub interrupt: Option<alloc::boxed::Box<dyn crate::platform::Interrupt>>,
+    pub next_poll: u64,
     /// Log the functions an exception unwinds through (debugging aid).
     pub trace_errors: bool,
     /// Cycle collector registry.
@@ -264,8 +267,18 @@ impl Interp {
 
     pub fn tick(&mut self) -> Res<()> {
         self.ticks += 1;
-        if self.ticks > self.tick_limit {
-            return Err(self.error_ctl("Error", "script execution limit reached"));
+        if self.ticks >= self.next_poll {
+            if self.ticks > self.tick_limit {
+                return Err(self.error_ctl("Error", "script execution limit reached"));
+            }
+            self.next_poll = self.ticks + 65_536;
+            if let Some(i) = self.interrupt.as_mut() {
+                if i.should_stop() {
+                    // keep failing until the host lets scripts run again
+                    self.next_poll = self.ticks;
+                    return Err(self.error_ctl("Error", "script interrupted"));
+                }
+            }
         }
         Ok(())
     }

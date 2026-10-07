@@ -42,6 +42,8 @@ pub struct PageOptions {
     pub config: crate::config::EngineConfig,
     /// Executable memory for the native tier (only used in `ExecMode::Jit`).
     pub code_memory: Option<Box<dyn crate::platform::CodeMemory>>,
+    /// Host stop signal for runaway scripts.
+    pub interrupt: Option<Box<dyn crate::platform::Interrupt>>,
 }
 
 /// Document and JS state live together so DOM changes can be rendered again.
@@ -110,6 +112,9 @@ impl Page {
         };
         if let Some(mem) = options.code_memory {
             page.runtime.set_code_memory(mem);
+        }
+        if let Some(i) = options.interrupt {
+            page.runtime.set_interrupt(i);
         }
         let config = options.config.clone();
         if let Some(url) = &options.url {

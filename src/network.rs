@@ -216,6 +216,8 @@ pub struct LoadOptions {
     pub config: crate::config::EngineConfig,
     /// Executable memory for `ExecMode::Jit`.
     pub code_memory: Option<Box<dyn crate::platform::CodeMemory>>,
+    /// Host stop signal for runaway scripts.
+    pub interrupt: Option<Box<dyn crate::platform::Interrupt>>,
 }
 
 /// [`load_page`] with an explicit execution mode and limits.
@@ -332,6 +334,15 @@ fn load_page_mode<F: Fetcher>(
                 }
                 continue;
             }
+            if href.trim_start().get(..5).is_some_and(|p| p.eq_ignore_ascii_case("data:")) {
+                if let Some(bytes) = crate::image::decode_data_url(href.trim()) {
+                    let text = crate::encoding::decode_resource(&bytes, None);
+                    css_bytes += text.len();
+                    link_css.insert(node_id, text);
+                    loaded_stylesheets += 1;
+                }
+                continue;
+            }
             let Ok(css_url) = fetcher.resolve(&base, href) else {
                 warnings.push(alloc::format!("invalid stylesheet URL: {href}"));
                 continue;
@@ -385,11 +396,16 @@ fn load_page_mode<F: Fetcher>(
             link_css: link_css.clone(),
             config: load_options.config,
             code_memory: load_options.code_memory,
+            interrupt: load_options.interrupt,
         };
         let base_for_scripts = base.clone();
         let mut page = Page::load(document, &external_css, options, |src| {
             // SAFETY: see `BorrowedHost`; scripts run synchronously inside `Page::load`.
             let fetcher = unsafe { &mut *fetcher_ptr };
+            if src.trim_start().get(..5).is_some_and(|p| p.eq_ignore_ascii_case("data:")) {
+                let bytes = crate::image::decode_data_url(src.trim()).ok_or_else(|| String::from("invalid data: URL"))?;
+                return Ok(crate::encoding::decode_resource(&bytes, None));
+            }
             let url = fetcher.resolve(&base_for_scripts, src)?;
             // one byte over the limit so oversized scripts are rejected instead of run truncated
             let response = fetcher.get(&url, max_js + 1)?;

@@ -163,6 +163,8 @@ pub fn new_interp() -> Interp {
         vm_stats: Default::default(),
         vm_frames: 0,
         max_frames: 10_000,
+        interrupt: None,
+        next_poll: 0,
         trace_errors: false,
         heap: Default::default(),
         eval_fn: None,

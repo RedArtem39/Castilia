@@ -1,3 +1,5 @@
+#[path = "common/deadline.rs"]
+mod deadline;
 #[path = "common/codemem.rs"]
 mod codemem;
 #[path = "common/memlimit.rs"]
@@ -47,7 +49,7 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     let mut page = if reader {
         load_reader_page(&mut fetcher, &args[url_index], width, &fonts)?
     } else {
-        castilia::network::load_page_with(&mut fetcher, &args[url_index], width, &fonts, castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)) })?
+        castilia::network::load_page_with(&mut fetcher, &args[url_index], width, &fonts, castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)), interrupt: Some(Box::new(deadline::Deadline::after(std::time::Duration::from_secs(20)))) })?
     };
     let images = fetch_images(&mut fetcher, &page.display, 16);
     let resources: Vec<svg::Resource> = images.resources.iter().map(|r| svg::Resource { url: &r.url, mime: r.mime, bytes: &r.bytes }).collect();

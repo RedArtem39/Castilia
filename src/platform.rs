@@ -8,6 +8,7 @@
 //! | HTTP(S), URL resolution | [`Fetcher`](crate::network::Fetcher) | for networked pages |
 //! | `fetch`/XHR, dialogs, navigation | [`Host`](crate::js::Host) | for interactive pages |
 //! | Executable memory for the JIT | [`CodeMemory`] | only for [`ExecMode::Jit`](crate::config::ExecMode) |
+//! | Stopping runaway scripts | [`Interrupt`] | optional |
 //!
 //! Painting consumes the platform-independent [`DisplayList`](crate::layout::DisplayList).
 //! Time is virtual (the engine advances it when the host calls `Page::advance_time`), so no clock
@@ -22,6 +23,15 @@ use core::ptr::NonNull;
 /// must stay valid and unchanged for as long as the runtime that installed it is alive.
 pub trait CodeMemory {
     fn install(&mut self, code: &[u8]) -> Option<NonNull<u8>>;
+}
+
+/// Lets the host stop runaway scripts (wall-clock deadlines, user pressed "stop", low battery).
+///
+/// The engine has no clock; it polls `should_stop` every few tens of thousands of script steps
+/// (and inside native code at loop back-edges). Returning `true` makes the running task throw an
+/// `Error` ("script interrupted"), after which the page continues with the next task.
+pub trait Interrupt {
+    fn should_stop(&mut self) -> bool;
 }
 
 /// The CPU architecture the native tier would generate code for, if any.

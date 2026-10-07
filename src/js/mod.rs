@@ -68,6 +68,11 @@ impl Runtime {
         }
     }
 
+    /// Host stop signal for runaway scripts.
+    pub fn set_interrupt(&mut self, i: Box<dyn crate::platform::Interrupt>) {
+        self.interp.interrupt = Some(i);
+    }
+
     /// Executable memory for the native tier; without it `ExecMode::Jit` runs interpreted.
     pub fn set_code_memory(&mut self, mem: Box<dyn crate::platform::CodeMemory>) {
         #[cfg(feature = "jit")]
@@ -143,6 +148,7 @@ impl Runtime {
     pub fn run_script(&mut self, source: &str, node: Option<NodeId>, document: &mut Document) -> Result<(), String> {
         self.with(document, |it| {
             it.ticks = 0;
+            it.next_poll = 0;
             let prev = it.current_script;
             it.current_script = node;
             if let Some(n) = node {
@@ -159,6 +165,7 @@ impl Runtime {
     pub fn run_module(&mut self, url: &str, source: Option<&str>, document: &mut Document) -> Result<(), String> {
         self.with(document, |it| {
             it.ticks = 0;
+            it.next_poll = 0;
             let r = match source {
                 Some(src) => {
                     it.module_sources.insert(String::from(url), String::from(src));
@@ -199,6 +206,7 @@ impl Runtime {
     pub fn dispatch_event(&mut self, document: &mut Document, target: NodeId, ty: &str, class: &str, bubbles: bool, cancelable: bool, props: &[(&str, Prop)]) -> Result<usize, String> {
         self.with(document, |it| {
             it.ticks = 0;
+            it.next_poll = 0;
             let before = it.dispatch_count;
             let mut vals = Vec::new();
             for (k, p) in props {
@@ -231,6 +239,7 @@ impl Runtime {
     pub fn advance(&mut self, document: &mut Document, ms: f64, max_fires: usize) {
         self.with(document, |it| {
             it.ticks = 0;
+            it.next_poll = 0;
             let until = it.now + ms;
             it.run_timers_until(until, max_fires);
         });

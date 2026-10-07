@@ -3,6 +3,8 @@
 //! `sitecheck [LIST] [--jobs N] [--timeout S] [--mode interp|jit]` loads every URL of LIST (default
 //! `tools/sites.txt`) in its own child process (a crash or hang never takes the run down), then prints a
 //! summary. `sitecheck --one URL` loads a single page and prints one `RESULT` line.
+#[path = "common/deadline.rs"]
+mod deadline;
 #[path = "common/codemem.rs"]
 mod codemem;
 #[path = "common/memlimit.rs"]
@@ -40,7 +42,7 @@ fn one_inner(url: &str) {
         config.exec_mode = m;
     }
     config.max_native_depth = 1000;
-    let options = castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)) };
+    let options = castilia::network::LoadOptions { config, code_memory: Some(Box::new(codemem::HostCodeMemory)), interrupt: Some(Box::new(deadline::Deadline::after(std::time::Duration::from_secs(20)))) };
     match castilia::network::load_page_with(&mut fetcher, url, 1024.0, &fonts, options) {
         Ok(page) => {
             let r = &page.report;
