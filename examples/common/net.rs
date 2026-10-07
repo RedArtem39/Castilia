@@ -11,7 +11,9 @@ impl HostFetcher {
     pub fn new() -> Self {
         let config = Agent::config_builder()
             .timeout_global(Some(Duration::from_secs(20)))
-            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Castilia/0.1")
+            // like a browser: error statuses still carry a page to render
+            .http_status_as_error(false)
+            .user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36")
             .build();
         Self {
             agent: Agent::new_with_config(config),
@@ -40,7 +42,13 @@ impl Fetcher for HostFetcher {
         if !matches!(parsed.scheme(), "http" | "https") {
             return Err(String::from("only HTTP and HTTPS URLs are supported"));
         }
-        let response = self.agent.get(url).call().map_err(|error| error.to_string())?;
+        let response = self
+            .agent
+            .get(url)
+            .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8")
+            .header("Accept-Language", "en-US,en;q=0.9")
+            .call()
+            .map_err(|error| error.to_string())?;
         self.read(response, max_bytes)
     }
 

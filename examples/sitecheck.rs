@@ -55,10 +55,15 @@ fn one_inner(url: &str) {
                 println!("VM compiled={} fallbacks={} native={}", st.compiled, st.fallbacks, st.native_compiled);
             }
             let text_cmds = page.display.commands.iter().filter(|c| matches!(c, castilia::Command::Text { .. })).count();
+            // visible characters (transparent text excluded), for comparison with a reference browser
+            let chars: usize = page.display.commands.iter().map(|c| match c {
+                castilia::Command::Text { text, color, .. } if color >> 24 != 0 => text.chars().filter(|ch| !ch.is_whitespace()).count(),
+                _ => 0,
+            }).sum();
             // an (almost) empty document means the server refused us (bot protection), not a rendering failure
-            let status = if r.html_bytes < 1024 { "blocked" } else { "ok" };
+            let status = if r.html_bytes < 1024 && chars < 50 { "blocked" } else { "ok" };
             println!(
-                "RESULT {status} ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={} html={}",
+                "RESULT {status} ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={} html={} chars={chars}",
                 start.elapsed().as_millis(),
                 r.dom_nodes,
                 r.commands,
