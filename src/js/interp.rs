@@ -658,6 +658,13 @@ impl Interp {
         for (i, p) in def.params.iter().enumerate() {
             if p.rest {
                 let rest = self.new_array(args.get(i..).map(|s| s.to_vec()).unwrap_or_default());
+                let mut names = Vec::new();
+                super::parser::pat_names(&p.pat, &mut names);
+                for n in names {
+                    if !scope.vars.borrow().contains_key(&n) {
+                        self.declare(scope, n, 0, Value::Undefined, true);
+                    }
+                }
                 self.bind_pattern(&p.pat, rest, scope, Some(VarKind::Var))?;
                 continue;
             }

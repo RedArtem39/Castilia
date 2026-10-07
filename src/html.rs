@@ -289,6 +289,18 @@ impl<'a> Builder<'a> {
         id
     }
 
+    /// Keep comments inside the body / fragments (templating libraries use them as markers).
+    fn insert_comment(&mut self, text: &str) {
+        if (!self.body_started && !self.fragment) || self.in_table_context() {
+            return;
+        }
+        let cur = self.current();
+        if matches!(self.tag_of(cur), "script" | "style" | "textarea" | "title") {
+            return;
+        }
+        self.doc.push(NodeKind::Comment(text.to_string()), Some(cur));
+    }
+
     fn insert_text(&mut self, text: &str) {
         if text.is_empty() {
             return;
@@ -974,7 +986,10 @@ impl<'a> Builder<'a> {
             let rest = &input[pos..];
             if rest.starts_with("<!--") {
                 flush_text!(pos);
-                pos += rest[4..].find("-->").map_or(rest.len(), |e| 4 + e + 3);
+                let close = rest[4..].find("-->");
+                let body = &rest[4..close.map_or(rest.len(), |e| 4 + e)];
+                self.insert_comment(body);
+                pos += close.map_or(rest.len(), |e| 4 + e + 3);
                 text_start = pos;
                 continue;
             }
