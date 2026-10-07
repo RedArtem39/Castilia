@@ -1,0 +1,25 @@
+<!doctype html>
+<style>
+body { margin: 10px; font: 14px/1.4 sans-serif; }
+.box { width: 100px; height: 80px; background: #6a9; margin: 0 10px 10px 0; }
+.l { float: left; } .r { float: right; margin: 0 0 10px 10px; }
+.clear { clear: both; }
+.clearfix::after { content: ""; display: table; clear: both; }
+.wrap { border: 2px solid #333; padding: 5px; margin-bottom: 20px; }
+.col { float: left; width: 30%; background: #fc6; margin-right: 3%; padding: 5px; box-sizing: border-box; }
+.img { float: left; width: 60px; height: 60px; background: #369; margin: 3px 12px 6px 0; }
+</style>
+<div class="wrap clearfix">
+  <div class="box l"></div>
+  <div class="box r"></div>
+  <p>Text flows between a left and a right float. Text flows between a left and a right float. Text flows between a left and a right float. Text flows between a left and a right float. Text flows between a left and a right float. More text more text more text.</p>
+</div>
+<div class="wrap clearfix">
+  <div class="col">one</div><div class="col">two</div><div class="col">three</div>
+</div>
+<div class="wrap">
+  <div class="img"></div>
+  <p>A paragraph next to a floated thumbnail. The paragraph continues below the thumbnail once it is taller than the image. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</p>
+  <div class="clear"></div>
+</div>
+<div style="overflow:hidden; border:2px dashed #c33"><div class="box l"></div><p>BFC container with overflow hidden contains its float.</p></div>

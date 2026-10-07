@@ -1,0 +1,38 @@
+<!doctype html>
+<style>
+body { margin: 10px; font: 14px sans-serif; }
+.row { display: flex; background: #eee; margin-bottom: 10px; }
+.row > div { background: #8ac; padding: 8px 12px; margin: 4px; }
+.jc-c { justify-content: center; } .jc-sb { justify-content: space-between; } .jc-sa { justify-content: space-around; } .jc-e { justify-content: flex-end; } .jc-se { justify-content: space-evenly; }
+.ai-c { align-items: center; height: 70px; } .ai-e { align-items: flex-end; height: 70px; } .ai-s { align-items: stretch; height: 70px; } .ai-b { align-items: baseline; }
+.grow > div:nth-child(1) { flex: 1; } .grow > div:nth-child(2) { flex: 2; }
+.wrap { flex-wrap: wrap; width: 300px; }
+.gap { gap: 10px 20px; }
+.col { flex-direction: column; height: 200px; width: 200px; }
+.rev { flex-direction: row-reverse; }
+.ml-auto > div:last-child { margin-left: auto; }
+.shrink > div { width: 300px; flex-shrink: 1; }
+.order > div:nth-child(1) { order: 3; } .order > div:nth-child(3) { order: 1; }
+.nav { display:flex; align-items:center; background:#222; color:#fff; padding: 0 20px; height: 50px; }
+.nav a { color:#fff; margin-right: 20px; } .nav .sp { flex: 1; }
+</style>
+<div class="row"><div>One</div><div>Two two</div><div>Three</div></div>
+<div class="row jc-c"><div>One</div><div>Two</div></div>
+<div class="row jc-sb"><div>One</div><div>Two</div><div>Three</div></div>
+<div class="row jc-sa"><div>One</div><div>Two</div><div>Three</div></div>
+<div class="row jc-se"><div>One</div><div>Two</div><div>Three</div></div>
+<div class="row jc-e"><div>One</div><div>Two</div></div>
+<div class="row ai-c"><div>Center</div><div style="padding:20px">Tall</div></div>
+<div class="row ai-e"><div>End</div><div style="padding:20px">Tall</div></div>
+<div class="row ai-s"><div>Stretch</div><div>Two</div></div>
+<div class="row ai-b"><div style="font-size:24px">Big</div><div>Small</div></div>
+<div class="row grow"><div>a</div><div>b</div><div>c</div></div>
+<div class="row wrap gap"><div>aaaa</div><div>bbbbbb</div><div>cccccc</div><div>dddd</div><div>eeeee</div></div>
+<div style="display:flex; gap:20px">
+<div class="row col"><div>1</div><div style="flex:1">2 grow</div><div>3</div></div>
+<div class="row rev"><div>r1</div><div>r2</div><div>r3</div></div>
+</div>
+<div class="row ml-auto"><div>Left</div><div>Auto-right</div></div>
+<div class="row shrink"><div>S1</div><div>S2</div><div>S3</div></div>
+<div class="row order"><div>1st(3)</div><div>2nd</div><div>3rd(1)</div></div>
+<div class="nav"><a>Home</a><a>About</a><a>Blog</a><span class="sp"></span><a>Login</a></div>

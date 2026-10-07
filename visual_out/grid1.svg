@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="897" viewBox="0 0 800 897">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="10" y="10" width="780" height="102" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="20" width="247" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="43" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">1</text>
+<rect x="277" y="20" width="246" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="286.6667" y="43" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2</text>
+<rect x="533" y="20" width="247" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="543.3334" y="43" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">3</text>
+<rect x="20" y="66" width="247" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="89" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">4</text>
+<rect x="277" y="66" width="246" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="286.6667" y="89" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">5</text>
+<rect x="10" y="127" width="780" height="56" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="137" width="100" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="160" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">fixed</text>
+<rect x="130" y="137" width="213" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="140" y="160" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">1fr</text>
+<rect x="353" y="137" width="427" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="363.3333" y="160" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2fr with more text inside to be wider</text>
+<rect x="10" y="198" width="780" height="102" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="208" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="231" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">a</text>
+<rect x="174" y="208" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="184" y="231" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">b</text>
+<rect x="328" y="208" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="338" y="231" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">c</text>
+<rect x="482" y="208" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="492" y="231" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">d</text>
+<rect x="636" y="208" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="646" y="231" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">e</text>
+<rect x="20" y="254" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="277" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">f</text>
+<rect x="174" y="254" width="144" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="184" y="277" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">g</text>
+<rect x="10" y="315" width="780" height="148" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="325" width="760" height="36" rx="0" fill="#cc9966" fill-opacity="1"/>
+<text x="30" y="348" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">header</text>
+<rect x="20" y="371" width="150" height="36" rx="0" fill="#99cc66" fill-opacity="1"/>
+<text x="30" y="394" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">sidebar</text>
+<rect x="180" y="371" width="600" height="36" rx="0" fill="#6699cc" fill-opacity="1"/>
+<text x="190" y="394" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">main</text>
+<rect x="20" y="417" width="760" height="36" rx="0" fill="#cc6699" fill-opacity="1"/>
+<text x="30" y="440" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">footer</text>
+<rect x="10" y="478" width="780" height="112" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="488" width="503" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="511" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">span 2</text>
+<rect x="533" y="488" width="247" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="543.3334" y="511" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">x</text>
+<rect x="20" y="534" width="247" height="46" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="557" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">row span 2</text>
+<rect x="277" y="534" width="246" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="286.6667" y="557" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">y</text>
+<rect x="533" y="534" width="247" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="543.3334" y="557" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">z</text>
+<rect x="10" y="605" width="780" height="142" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="20" y="615" width="375" height="60" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="638" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">r1c1</text>
+<rect x="405" y="615" width="375" height="60" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="415" y="638" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">r1c2</text>
+<rect x="20" y="685" width="375" height="52" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="30" y="708" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">auto row with</text>
+<text x="30" y="724" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">two lines</text>
+<rect x="405" y="685" width="375" height="52" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="415" y="708" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">r2c2</text>
+<rect x="10" y="762" width="780" height="120" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<rect x="178" y="804" width="59" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="188.04492" y="827" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">center</text>
+<rect x="563" y="804" width="59" height="36" rx="0" fill="#88aacc" fill-opacity="1"/>
+<text x="573.0449" y="827" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">center</text>
+</svg>

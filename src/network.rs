@@ -1,5 +1,5 @@
 use crate::{
-    css,
+    css::{self, Viewport},
     dom::{Document, NodeKind},
     embedded_css, html,
     layout::{Command, DisplayList, FontMetrics},
@@ -175,10 +175,11 @@ fn load_page_mode(
         .and_then(|href| fetcher.resolve(&response.final_url, href).ok())
         .unwrap_or_else(|| response.final_url.clone());
     let mut external_css = String::new();
+    let mut link_css: alloc::collections::BTreeMap<usize, String> = alloc::collections::BTreeMap::new();
     let mut css_bytes = 0;
     let mut linked_stylesheets = 0;
     let mut loaded_stylesheets = 0;
-    for node in &document.nodes {
+    for (node_id, node) in document.nodes.iter().enumerate() {
         if node.tag() == Some("style") {
             for &child in &node.children {
                 if let NodeKind::Text(text) = &document.nodes[child].kind {
@@ -211,8 +212,7 @@ fn load_page_mode(
                         warnings.push(alloc::format!("stylesheet is not valid UTF-8: {css_url}"));
                     }
                     css_bytes += sheet.body.len();
-                    external_css.push_str(&text);
-                    external_css.push('\n');
+                    link_css.insert(node_id, text.into_owned());
                     loaded_stylesheets += 1;
                 }
                 Ok(_) => warnings.push(alloc::format!("stylesheet too large: {css_url}")),
@@ -222,7 +222,7 @@ fn load_page_mode(
             }
         }
     }
-    let css_audit = css::audit(&embedded_css(&document, &external_css));
+    let css_audit = css::audit(&embedded_css(&document, &link_css, &external_css));
     let count = |tag| {
         document
             .nodes
@@ -237,7 +237,7 @@ fn load_page_mode(
     let tables = count("table");
     let (mut display, page) = if reader {
         let reading_document = reader_document(&document);
-        (render_document(&reading_document, "", width, fonts), None)
+        (render_document(&reading_document, &css::parse(""), Viewport::new(width, 768.0), fonts), None)
     } else {
         let page = Page::from_document_with_loader(document, &external_css, |src| {
             let url = fetcher.resolve(&base, src)?;
@@ -247,6 +247,10 @@ fn load_page_mode(
             }
             String::from_utf8(response.body).map_err(|_| String::from("script is not valid UTF-8"))
         });
+        let mut page = page;
+        for (id, text) in &link_css {
+            page.set_link_stylesheet(*id, text.clone());
+        }
         let display = page.render(width, fonts);
         (display, Some(page))
     };
@@ -424,7 +428,7 @@ mod tests {
         assert!(page.display.commands.iter().any(|command| matches!(
             command,
             Command::Text {
-                color: 0xff0000,
+                color: 0xffff0000,
                 ..
             }
         )));
@@ -472,7 +476,7 @@ mod tests {
             page.display
                 .commands
                 .iter()
-                .any(|command| matches!(command, Command::Text { text, .. } if text == "from"))
+                .any(|command| matches!(command, Command::Text { text, .. } if text == "from external"))
         );
     }
 }

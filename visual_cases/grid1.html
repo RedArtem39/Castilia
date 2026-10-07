@@ -1,0 +1,21 @@
+<!doctype html>
+<style>
+body { margin: 10px; font: 14px sans-serif; }
+.g { display: grid; gap: 10px; background: #eee; padding: 10px; margin-bottom: 15px; }
+.g > div { background: #8ac; padding: 10px; }
+.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.mix { grid-template-columns: 100px 1fr 2fr; }
+.rep { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+.areas { grid-template-columns: 150px 1fr; grid-template-areas: "h h" "s m" "f f"; }
+.areas .h { grid-area: h; background:#c96 } .areas .s { grid-area: s; background:#9c6 } .areas .m { grid-area: m; background:#69c } .areas .f { grid-area: f; background:#c69 }
+.span .a { grid-column: span 2; } .span .b { grid-row: span 2; }
+.rows { grid-template-columns: 1fr 1fr; grid-template-rows: 60px auto; }
+.ac { align-items: center; justify-items: center; grid-template-columns: 1fr 1fr; height: 100px; }
+</style>
+<div class="g c3"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div></div>
+<div class="g mix"><div>fixed</div><div>1fr</div><div>2fr with more text inside to be wider</div></div>
+<div class="g rep"><div>a</div><div>b</div><div>c</div><div>d</div><div>e</div><div>f</div><div>g</div></div>
+<div class="g areas"><div class="h">header</div><div class="s">sidebar</div><div class="m">main</div><div class="f">footer</div></div>
+<div class="g c3 span"><div class="a">span 2</div><div>x</div><div class="b">row span 2</div><div>y</div><div>z</div></div>
+<div class="g rows"><div>r1c1</div><div>r1c2</div><div>auto row with<br>two lines</div><div>r2c2</div></div>
+<div class="g ac"><div>center</div><div>center</div></div>

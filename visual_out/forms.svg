@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+<rect width="100%" height="100%" fill="white"/>
+<text x="10" y="31" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Name</text>
+<rect x="90" y="10" width="185" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="91" y="11" width="183" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c1"><rect x="94" y="13" width="177" height="15" rx="0"/></clipPath><g clip-path="url(#c1)">
+<text x="94" y="25" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">John</text>
+</g>
+<text x="10" y="61" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Email</text>
+<rect x="90" y="40" width="185" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="91" y="41" width="183" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c2"><rect x="94" y="43" width="177" height="15" rx="0"/></clipPath><g clip-path="url(#c2)">
+<text x="94" y="55" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">you@example.com</text>
+</g>
+<text x="10" y="91" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Pass</text>
+<rect x="90" y="70" width="185" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="91" y="71" width="183" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c3"><rect x="94" y="73" width="177" height="15" rx="0"/></clipPath><g clip-path="url(#c3)">
+<text x="94" y="85" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">••••••</text>
+</g>
+<text x="10" y="121" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Size</text>
+<rect x="90" y="100" width="70" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="91" y="101" width="68" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c4"><rect x="94" y="103" width="62" height="15" rx="0"/></clipPath><g clip-path="url(#c4)">
+<text x="94" y="115" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">abc</text>
+</g>
+<rect x="164" y="100" width="68" height="21" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="165" y="101" width="66" height="19" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c5"><rect x="167.88965" y="103" width="60" height="15" rx="0"/></clipPath><g clip-path="url(#c5)">
+<text x="167.88965" y="115" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">42</text>
+</g>
+<text x="10" y="149" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Color</text>
+<rect x="90" y="130" width="63" height="19" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="90.5" y="130.5" width="62" height="18" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c6"><rect x="91" y="131" width="61.057198" height="17" rx="0"/></clipPath><g clip-path="url(#c6)">
+<text x="93" y="144" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Green</text>
+</g>
+<text x="138.05719" y="144" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">▾</text>
+<text x="10" y="209" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Notes</text>
+<rect x="90" y="158" width="262" height="51" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="90.5" y="158.5" width="261" height="50" rx="0" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c7"><rect x="91" y="159" width="259.8197" height="49" rx="0"/></clipPath><g clip-path="url(#c7)">
+<clipPath id="c8"><rect x="93" y="161" width="255.8197" height="45" rx="0"/></clipPath><g clip-path="url(#c8)">
+<text x="93" y="173" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Some text</text>
+<text x="93" y="188" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">second line</text>
+</g>
+</g>
+<text x="33.88965" y="234" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Checked</text>
+<text x="116.92383" y="234" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Unchecked</text>
+<text x="214.74414" y="234" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Radio</text>
+<text x="279.10254" y="234" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Radio2</text>
+<rect x="14" y="221" width="13" height="13" rx="2" fill="#0075ff" fill-opacity="1"/>
+<rect x="14.5" y="221.5" width="12" height="12" rx="1.5" fill="none" stroke="#0075ff" stroke-opacity="1" stroke-width="1"/>
+<text x="16.6" y="232" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="11.9999695" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">✓</text>
+<rect x="97" y="221" width="13" height="13" rx="2" fill="#ffffff" fill-opacity="1"/>
+<rect x="97.5" y="221.5" width="12" height="12" rx="1.5" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="1"/>
+<rect x="195" y="221" width="13" height="13" rx="6.5" fill="#0075ff" fill-opacity="1"/>
+<rect x="195.5" y="221.5" width="12" height="12" rx="6" fill="none" stroke="#0075ff" stroke-opacity="1" stroke-width="1"/>
+<rect x="199" y="225" width="5" height="5" rx="2.5" fill="#ffffff" fill-opacity="1"/>
+<rect x="259" y="221" width="13" height="13" rx="6.5" fill="#ffffff" fill-opacity="1"/>
+<rect x="259.5" y="221.5" width="12" height="12" rx="6" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="1"/>
+<rect x="10" y="250" width="55" height="21" rx="3" fill="#efefef" fill-opacity="1"/>
+<rect x="11" y="251" width="53" height="19" rx="2" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<text x="18" y="265" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Button</text>
+<rect x="68" y="244" width="58" height="21" rx="3" fill="#efefef" fill-opacity="1"/>
+<rect x="69" y="245" width="56" height="19" rx="2" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c9"><rect x="76.43773" y="247" width="41.49729" height="15" rx="0"/></clipPath><g clip-path="url(#c9)">
+<text x="76.43773" y="259" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Submit</text>
+</g>
+<rect x="130" y="244" width="45" height="21" rx="3" fill="#efefef" fill-opacity="1"/>
+<rect x="131" y="245" width="43" height="19" rx="2" fill="none" stroke="#767676" stroke-opacity="1" stroke-width="2"/>
+<clipPath id="c10"><rect x="137.82468" y="247" width="29.648361" height="15" rx="0"/></clipPath><g clip-path="url(#c10)">
+<text x="137.82468" y="259" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Plain</text>
+</g>
+<rect x="179" y="243" width="77" height="35" rx="4" fill="#0066cc" fill-opacity="1"/>
+<text x="199.36267" y="265" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.3333" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Styled</text>
+<rect x="13" y="285" width="774" height="60" rx="0" fill="none" stroke="#c0c0c0" stroke-opacity="1" stroke-width="2"/>
+<text x="26.5" y="304" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Group</text>
+<text x="24.5" y="326" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">inside fieldset</text>
+</svg>

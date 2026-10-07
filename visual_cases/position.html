@@ -1,0 +1,17 @@
+<!doctype html>
+<style>
+body { margin: 10px; font: 14px sans-serif; }
+.rel { position: relative; width: 300px; height: 150px; background: #eee; margin-bottom: 20px; border: 2px solid #333; }
+.abs { position: absolute; background: #c66; padding: 4px; }
+.tl { top: 10px; left: 10px; } .br { bottom: 10px; right: 10px; } .stretch { top: 40px; left: 10px; right: 10px; background:#6c6; }
+.center { top: 50%; left: 50%; transform: translate(-50%, -50%); background:#69c; }
+.z1 { z-index: 1; background: rgba(255,0,0,.6); top: 60px; left: 120px; width: 80px; height: 50px; }
+.z2 { z-index: 2; background: rgba(0,0,255,.6); top: 80px; left: 150px; width: 80px; height: 50px; }
+.relshift { position: relative; top: 10px; left: 20px; background: #fc6; display: inline-block; }
+.fixed { position: fixed; bottom: 5px; right: 5px; background: #333; color: #fff; padding: 4px 8px; }
+</style>
+<div class="rel"><div class="abs tl">top-left</div><div class="abs br">bottom-right</div><div class="abs stretch">stretch</div></div>
+<div class="rel"><div class="abs center">centered</div></div>
+<div class="rel"><div class="abs z1"></div><div class="abs z2"></div></div>
+<p>Text with a <span class="relshift">relative shifted</span> span inside the line.</p>
+<div class="fixed">fixed badge</div>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+<rect width="100%" height="100%" fill="white"/>
+<defs><linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="15" y1="44.999996" x2="155" y2="45.000004"><stop offset="0" stop-color="#ff0000" stop-opacity="1"/><stop offset="1" stop-color="#0000ff" stop-opacity="1"/></linearGradient></defs>
+<rect x="15" y="15" width="140" height="60" rx="0" fill="url(#g1)"/>
+<text x="21" y="34" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">to right</text>
+<defs><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="185" y1="95" x2="285" y2="-5"><stop offset="0" stop-color="#ffcc00" stop-opacity="1"/><stop offset="1" stop-color="#cc00ff" stop-opacity="1"/></linearGradient></defs>
+<rect x="165" y="15" width="140" height="60" rx="0" fill="url(#g2)"/>
+<text x="171" y="34" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">45deg</text>
+<defs><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="385" y1="14.999994" x2="385" y2="75.00001"><stop offset="0" stop-color="#000000" stop-opacity="1"/><stop offset="0.5" stop-color="#ffffff" stop-opacity="1"/><stop offset="1" stop-color="#ff0000" stop-opacity="1"/></linearGradient></defs>
+<rect x="315" y="15" width="140" height="60" rx="0" fill="url(#g3)"/>
+<text x="321" y="34" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">3 stops</text>
+<rect x="469" y="15" width="140" height="60" rx="12" fill="#336699" fill-opacity="1"/>
+<text x="474.88965" y="34" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">radius 12</text>
+<rect x="619" y="15" width="140" height="60" rx="30" fill="#336699" fill-opacity="1"/>
+<text x="624.88965" y="34" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">50%</text>
+<defs><filter id="s4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter></defs><rect x="19" y="89" width="140" height="60" rx="0" fill="#000000" fill-opacity="0.5019608" filter="url(#s4)"/>
+<rect x="15" y="85" width="140" height="60" rx="0" fill="#336699" fill-opacity="1"/>
+<text x="21" y="104" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">shadow</text>
+<rect x="169" y="85" width="140" height="60" rx="0" fill="#336699" fill-opacity="0.4"/>
+<text x="174.88965" y="104" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.4" xml:space="preserve">opacity .4</text>
+<rect x="319" y="85" width="140" height="60" rx="0" fill="#336699" fill-opacity="1"/>
+<rect x="321" y="87" width="136" height="56" rx="0" fill="none" stroke="#ffcc00" stroke-opacity="1" stroke-width="4"/>
+<text x="328.88965" y="108" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">border 4</text>
+<rect x="469" y="85" width="140" height="60" rx="0" fill="#336699" fill-opacity="1"/>
+<rect x="470.5" y="86.5" width="137" height="57" rx="0" fill="none" stroke="#ffcc00" stroke-opacity="1" stroke-width="3" stroke-dasharray="9 9"/>
+<text x="477.88965" y="107" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">dashed</text>
+<rect x="623" y="85" width="140" height="60" rx="0" fill="#336699" fill-opacity="1"/>
+<polygon points="623,85 763,85 753,90 633,90" fill="#ff0000" fill-opacity="1"/>
+<polygon points="763,85 763,145 753,140 753,90" fill="#008000" fill-opacity="1"/>
+<polygon points="623,145 763,145 753,140 633,140" fill="#0000ff" fill-opacity="1"/>
+<polygon points="623,85 623,145 633,140 633,90" fill="#ffa500" fill-opacity="1"/>
+<text x="638.7793" y="109" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">sides</text>
+<rect x="15" y="155" width="140" height="60" rx="10" fill="#dddddd" fill-opacity="1"/>
+<rect x="16" y="156" width="138" height="58" rx="9" fill="none" stroke="#000000" stroke-opacity="1" stroke-width="2"/>
+<text x="23" y="176" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">r+border</text>
+</svg>

@@ -1,0 +1,74 @@
+html { display: block; color: #000; background-color: transparent }
+head, link, meta, script, style, title, base, template, noscript, datalist, area, param, source, track,
+[hidden], dialog:not([open]), slot { display: none }
+body { display: block; margin: 8px }
+address, blockquote, center, dialog, div, figure, figcaption, footer, form, header, hr, legend, listing, main,
+p, plaintext, pre, search, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, details, summary,
+dd, dl, dt, menu, dir, ul, ol, fieldset, optgroup { display: block }
+li { display: list-item }
+summary { display: block }
+
+h1 { font-size: 2em; margin: 0.67em 0; font-weight: bold }
+h2 { font-size: 1.5em; margin: 0.83em 0; font-weight: bold }
+h3 { font-size: 1.17em; margin: 1em 0; font-weight: bold }
+h4 { font-size: 1em; margin: 1.33em 0; font-weight: bold }
+h5 { font-size: 0.83em; margin: 1.67em 0; font-weight: bold }
+h6 { font-size: 0.67em; margin: 2.33em 0; font-weight: bold }
+p, dl, menu, pre, listing, plaintext, xmp, ul, ol { margin: 1em 0 }
+blockquote { margin: 1em 40px }
+figure { margin: 1em 40px }
+dd { margin-left: 40px }
+ul, ol, menu, dir { padding-left: 40px }
+ul { list-style-type: disc }
+ol { list-style-type: decimal }
+ul ul, ol ul { list-style-type: circle }
+ul ul ul, ol ul ul, ul ol ul, ol ol ul { list-style-type: square }
+ul ul, ul ol, ol ul, ol ol { margin-top: 0; margin-bottom: 0 }
+pre, listing, plaintext, xmp, code, kbd, samp, tt { font-family: monospace }
+pre, listing, plaintext, xmp { white-space: pre }
+textarea { white-space: pre-wrap }
+b, strong, th { font-weight: bold }
+i, em, cite, dfn, var, address { font-style: italic }
+u, ins { text-decoration: underline }
+s, strike, del { text-decoration: line-through }
+small { font-size: smaller }
+big { font-size: larger }
+sub { vertical-align: sub; font-size: smaller }
+sup { vertical-align: super; font-size: smaller }
+mark { background-color: #ff0; color: #000 }
+a:any-link { color: #0000ee; text-decoration: underline }
+abbr[title], acronym[title] { text-decoration: underline dotted }
+center { text-align: center }
+q::before { content: open-quote }
+q::after { content: close-quote }
+hr { margin: 8px auto; border-top: 1px solid #9a9a9a; border-bottom: 1px solid #eeeeee; height: 0; overflow: hidden; color: #808080 }
+
+table { display: table; border-collapse: separate; border-spacing: 2px; box-sizing: border-box; text-indent: 0 }
+thead, tbody, tfoot { display: table-row-group; vertical-align: middle }
+tr { display: table-row; vertical-align: inherit }
+td, th { display: table-cell; padding: 1px; vertical-align: inherit }
+th { text-align: center }
+caption { display: table-caption; text-align: center }
+col, colgroup { display: table-column }
+
+img { display: inline-block }
+video, canvas, embed, object, iframe, svg { display: inline-block }
+audio { display: none }
+audio[controls] { display: inline-block }
+iframe { border: 2px inset #767676 }
+img:not([src]), img[src=""] { display: none }
+
+input, textarea, select, button { display: inline-block; font-size: 13.3333px; font-family: sans-serif; margin: 0; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; color: #000; line-height: normal }
+input[type=hidden] { display: none }
+input { padding: 1px 2px; border: 2px inset #767676; background-color: #fff; box-sizing: content-box }
+input[type=checkbox], input[type=radio] { padding: 0; border: 0; background-color: transparent; margin: 3px 3px 3px 4px; box-sizing: border-box; width: 13px; height: 13px }
+input[type=submit], input[type=button], input[type=reset], input[type=image], button { padding: 1px 6px; border: 2px outset #767676; background-color: #efefef; text-align: center; box-sizing: border-box; border-radius: 3px }
+input[type=range], input[type=color], input[type=file] { border: 0; background-color: transparent }
+textarea { padding: 2px; border: 1px solid #767676; background-color: #fff; font-family: monospace; box-sizing: content-box; overflow: auto }
+select { border: 1px solid #767676; background-color: #fff; box-sizing: border-box; border-radius: 0; padding: 0 }
+option { display: block; min-height: 1.2em; padding: 0 2px 1px }
+fieldset { margin: 0 2px; padding: 0.35em 0.75em 0.625em; border: 2px groove #c0c0c0; min-width: min-content }
+legend { padding: 0 2px }
+details > summary:first-of-type { display: list-item }
+progress, meter { display: inline-block; width: 160px; height: 16px; background-color: #e6e6e6 }
+label { cursor: default }

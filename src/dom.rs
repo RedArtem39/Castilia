@@ -47,6 +47,8 @@ pub struct Document {
     pub root: NodeId,
     pub head: NodeId,
     pub body: NodeId,
+    /// True when the document has no (or a legacy) doctype: quirks mode.
+    pub quirks: bool,
 }
 
 impl Document {
@@ -172,6 +174,7 @@ impl Document {
             root: 0,
             head: 0,
             body: 0,
+            quirks: true,
         };
         document.root = document.push(NodeKind::Document, None);
         let html = document.push(

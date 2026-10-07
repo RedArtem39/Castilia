@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 800 600">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="11" y="11" width="778" height="102" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="2"/>
+<text x="127" y="46" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Text flows between a left and a right float. Text flows between a left and a right float.</text>
+<text x="127" y="65" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Text flows between a left and a right float. Text flows between a left and a right float.</text>
+<text x="127" y="85" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Text flows between a left and a right float. More text more text more text.</text>
+<rect x="17" y="17" width="100" height="80" rx="0" fill="#66aa99" fill-opacity="1"/>
+<rect x="683" y="17" width="100" height="80" rx="0" fill="#66aa99" fill-opacity="1"/>
+<rect x="11" y="135" width="778" height="42" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="2"/>
+<rect x="17" y="141" width="230" height="30" rx="0" fill="#ffcc66" fill-opacity="1"/>
+<text x="22" y="161" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">one</text>
+<rect x="270" y="141" width="230" height="30" rx="0" fill="#ffcc66" fill-opacity="1"/>
+<text x="274.78" y="161" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">two</text>
+<rect x="523" y="141" width="229" height="30" rx="0" fill="#ffcc66" fill-opacity="1"/>
+<text x="527.56" y="161" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">three</text>
+<rect x="11" y="199" width="778" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="2"/>
+<text x="89" y="233" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">A paragraph next to a floated thumbnail. The paragraph continues below the thumbnail once it is taller than the</text>
+<text x="89" y="253" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">image. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.</text>
+<rect x="17" y="208" width="60" height="60" rx="0" fill="#336699" fill-opacity="1"/>
+<rect x="11" y="302" width="778" height="92" rx="0" fill="none" stroke="#cc3333" stroke-opacity="1" stroke-width="2" stroke-dasharray="6 6"/>
+<clipPath id="c1"><rect x="12" y="302.6" width="776" height="90" rx="0"/></clipPath><g clip-path="url(#c1)">
+<text x="122" y="331" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">BFC container with overflow hidden contains its float.</text>
+<rect x="12" y="303" width="100" height="80" rx="0" fill="#66aa99" fill-opacity="1"/>
+</g>
+</svg>
