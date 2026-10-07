@@ -56,7 +56,7 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let images = fetch_images(&mut fetcher, &page.display, 16);
     let resources: Vec<svg::Resource> = images.resources.iter().map(|r| svg::Resource { url: &r.url, mime: r.mime, bytes: &r.bytes }).collect();
-    fs::write(&args[output_index], svg::to_svg(&page.display, &fonts, &resources, 800.0))?;
+    fs::write(&args[output_index], svg::to_svg(&page.display, &fonts, &resources, 800.0, &fonts.svg_font_css()))?;
     println!("URL: {}", page.url);
     println!(
         "HTML: {} bytes, CSS: {} bytes ({} of {} linked sheets loaded)",

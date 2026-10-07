@@ -8,6 +8,10 @@ fn snap(r: &Rect) -> Rect {
     Rect { x: x0, y: y0, width: x1 - x0, height: y1 - y0 }
 }
 
+fn escape_css(input: &str) -> String {
+    input.replace('&', "&amp;").replace('<', "&lt;")
+}
+
 fn escape(input: &str) -> String {
     input.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;").replace('\'', "&apos;")
 }
@@ -26,7 +30,8 @@ pub struct Resource<'a> {
     pub bytes: &'a [u8],
 }
 
-pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource], viewport_h: f32) -> String {
+/// `font_css`: `@font-face` rules (with embedded data) for the web fonts the page used.
+pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource], viewport_h: f32, font_css: &str) -> String {
     let height = list.height.max(viewport_h).max(1.0);
     let mut out = String::new();
     let _ = writeln!(
@@ -36,6 +41,9 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
     );
     let bg = if list.background >> 24 > 0 { rgb(list.background) } else { "white".into() };
     let _ = writeln!(out, "<rect width=\"100%\" height=\"100%\" fill=\"{bg}\"/>");
+    if !font_css.is_empty() {
+        let _ = writeln!(out, "<style>{}</style>", escape_css(font_css));
+    }
     let mut defs = 0usize;
     let mut clip_depth = 0usize;
     for command in &list.commands {
@@ -50,15 +58,28 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
                 );
             }
             Command::Border { rect, widths, colors, styles, radius } => border(&mut out, &snap(rect), &widths.map(|w| if w > 0.0 { w.round().max(1.0) } else { 0.0 }), colors, styles, *radius),
-            Command::Text { x, y, text, size, color, link, weight, italic, family, decoration, width, letter_spacing, blur } => {
-                let font = Font { size: *size, weight: *weight, italic: *italic, family: *family };
+            Command::Text { x, y, text, size, color, link, weight, italic, family, family_names, decoration, width, letter_spacing, blur } => {
+                let font = Font { size: *size, weight: *weight, italic: *italic, family: *family, names: family_names.clone() };
                 let asc = fonts.ascent(&font);
-                let fam = match family {
-                    FontFamily::Serif => "Liberation Serif, serif",
-                    FontFamily::Sans => "Liberation Sans, sans-serif",
-                    FontFamily::System => "Inter, sans-serif",
-                    FontFamily::Monospace => "DejaVu Sans Mono, monospace",
+                let generic = match family {
+                    FontFamily::Serif => "Liberation Serif, Times New Roman, serif",
+                    FontFamily::Sans => "Liberation Sans, Arial, sans-serif",
+                    FontFamily::System => "Segoe UI, Inter, sans-serif",
+                    FontFamily::Monospace => "DejaVu Sans Mono, Consolas, monospace",
                 };
+                let mut fam = String::new();
+                for name in family_names.as_deref().unwrap_or("").split(',').filter(|n| !n.is_empty()) {
+                    if matches!(name, "serif" | "sans-serif" | "monospace" | "system-ui" | "cursive" | "fantasy") {
+                        fam.push_str(name);
+                    } else {
+                        fam.push('\'');
+                        fam.push_str(&name.replace('\'', ""));
+                        fam.push('\'');
+                    }
+                    fam.push_str(", ");
+                }
+                fam.push_str(generic);
+                let fam = escape(&fam);
                 if let Some(l) = link {
                     let _ = write!(out, "<a href=\"{}\">", escape(l));
                 }

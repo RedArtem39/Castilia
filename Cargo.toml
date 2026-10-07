@@ -11,6 +11,7 @@ base64 = { version = "0.23", optional = true }
 [dev-dependencies]
 fontdb = "0.24"
 fontdue = "0.9"
+wuff = "0.2"
 
 [features]
 default = ["jit"]

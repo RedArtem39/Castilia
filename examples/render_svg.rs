@@ -67,7 +67,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         page.set_image_sizes(sizes);
         list = page.render_viewport(Viewport::new(width, height), &fonts);
     }
-    fs::write(&args[2], svg::to_svg(&list, &fonts, &[], height))?;
+    fs::write(&args[2], svg::to_svg(&list, &fonts, &[], height, &fonts.svg_font_css()))?;
     println!("wrote {} drawing commands to {}", list.commands.len(), args[2]);
     Ok(())
 }

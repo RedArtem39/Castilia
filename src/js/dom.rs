@@ -96,6 +96,14 @@ pub struct DomState {
     pub dirty: bool,
     pub doc_base: Option<String>,
     pub new_sheets: Vec<(NodeId, String)>,
+    /// Bumped on every DOM mutation (invalidates `style_cache`).
+    pub version: u64,
+    /// Loaded `<link>` stylesheets and the legacy external CSS, for `getComputedStyle`.
+    pub style_sources: Option<Rc<(BTreeMap<NodeId, String>, String)>>,
+    pub style_sheet: Option<(String, Rc<crate::css::StyleSheet>)>,
+    pub style_cache: Option<(u64, Rc<crate::css::Styles>)>,
+    /// Cascade recomputations in this task and in total (both capped; stale styles are used beyond).
+    pub style_recomputes: (u32, u32),
 }
 
 impl Default for DomState {
@@ -125,6 +133,11 @@ impl Default for DomState {
             dirty: false,
             doc_base: None,
             new_sheets: Vec::new(),
+            version: 0,
+            style_sources: None,
+            style_sheet: None,
+            style_cache: None,
+            style_recomputes: (0, 0),
         }
     }
 }
@@ -348,6 +361,7 @@ impl Interp {
             return Err(self.error_ctl("HierarchyRequestError", "The new child element contains the parent."));
         }
         self.dom.dirty = true;
+        self.dom.version += 1;
         self.note_children(parent, vec![child], Vec::new());
         self.after_insert(child)?;
         if self.dom()?.is_connected(child) {
@@ -361,6 +375,7 @@ impl Interp {
         if let Some(p) = doc.nodes[child].parent {
             doc.remove(child);
             self.dom.dirty = true;
+        self.dom.version += 1;
             self.custom_element_callbacks(child, "disconnectedCallback");
             self.note_children(p, Vec::new(), vec![child]);
         }
@@ -376,6 +391,7 @@ impl Interp {
         }
         doc.set_attribute(id, &name, value);
         self.dom.dirty = true;
+        self.dom.version += 1;
         self.note_attr(id, &name, old);
         if name == "src" && self.tag_name(id) == "script" {
             self.maybe_run_script(id)?;
@@ -390,6 +406,7 @@ impl Interp {
             if let Some(pos) = attributes.iter().position(|(k, _)| *k == name) {
                 let (_, old) = attributes.remove(pos);
                 self.dom.dirty = true;
+        self.dom.version += 1;
                 self.note_attr(id, &name, Some(old));
             }
         }
@@ -402,6 +419,7 @@ impl Interp {
         let removed = doc.nodes[id].children.clone();
         doc.set_text_content(id, text);
         self.dom.dirty = true;
+        self.dom.version += 1;
         if is_char {
             self.note_char(id);
         } else {
@@ -422,6 +440,7 @@ impl Interp {
         let added = doc.nodes[id].children.clone();
         let connected = doc.is_connected(id);
         self.dom.dirty = true;
+        self.dom.version += 1;
         if connected {
             for &r in &removed {
                 self.custom_element_callbacks(r, "disconnectedCallback");
@@ -490,6 +509,7 @@ impl Interp {
         };
         self.dom.new_sheets.push((id, css));
         self.dom.dirty = true;
+        self.dom.version += 1;
     }
 
     pub fn maybe_run_script(&mut self, id: NodeId) -> Res<()> {

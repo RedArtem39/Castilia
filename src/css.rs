@@ -423,6 +423,11 @@ pub struct Style {
     pub caption_bottom: bool,
 
     pub content: Option<Vec<ContentItem>>,
+    /// The `font-family` list as written (lowercase, unquoted, comma separated), for hosts that
+    /// can resolve named and web fonts. `None`: the initial value.
+    pub font_names: Option<Rc<str>>,
+    /// `text-wrap: balance` (inherited).
+    pub text_balance: bool,
     /// Color of `::placeholder` text (with its opacity folded into alpha), if styled.
     pub placeholder_color: Option<Color>,
     pub translate: (Dim, Dim),
@@ -535,6 +540,8 @@ impl Style {
             table_fixed: false,
             caption_bottom: false,
             content: None,
+            font_names: None,
+            text_balance: false,
             placeholder_color: None,
             translate: (Dim::ZERO, Dim::ZERO),
             transform_scale: 1.0,
@@ -557,6 +564,7 @@ impl Style {
         s.font_weight = parent.font_weight;
         s.font_italic = parent.font_italic;
         s.font_family = parent.font_family;
+        s.font_names = parent.font_names.clone();
         s.line_height_number = parent.line_height_number;
         s.line_height_px = parent.line_height_px;
         s.text_align = parent.text_align;
@@ -567,6 +575,7 @@ impl Style {
         s.letter_spacing = parent.letter_spacing;
         s.word_spacing = parent.word_spacing;
         s.white_space = parent.white_space;
+        s.text_balance = parent.text_balance;
         s.word_break_all = parent.word_break_all;
         s.overflow_wrap_break = parent.overflow_wrap_break;
         s.visibility_visible = parent.visibility_visible;
@@ -682,9 +691,33 @@ pub struct Rule {
     pub has_container: bool,
 }
 
+/// A downloadable font declared with `@font-face`.
+#[derive(Debug, Clone, PartialEq)]
+pub struct FontFace {
+    /// Family name, lowercase and unquoted.
+    pub family: String,
+    /// `url()` sources with their `format()` hint, in preference order.
+    pub sources: Vec<(String, Option<String>)>,
+    /// Weight range (a single weight is `(w, w)`).
+    pub weight: (u16, u16),
+    pub italic: bool,
+    /// `unicode-range` as inclusive code point ranges; empty means every character.
+    pub unicode_range: Vec<(u32, u32)>,
+}
+
+impl FontFace {
+    /// The face can draw Latin or Cyrillic letters (subsets for other scripts are skipped when
+    /// fonts have to be rationed).
+    pub fn covers_common_text(&self) -> bool {
+        self.unicode_range.is_empty() || self.unicode_range.iter().any(|&(a, b)| (a <= 0x61 && b >= 0x61) || (a <= 0x430 && b >= 0x430))
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct StyleSheet {
     pub rules: Vec<Rule>,
+    /// `@font-face` declarations, in document order.
+    pub font_faces: Vec<FontFace>,
     /// The sheet contains `@container` rules (layout must run twice to learn container sizes).
     pub has_container: bool,
     /// `@import` targets: (url, media query).
@@ -891,6 +924,11 @@ fn parse_rules(source: &str, sheet: &mut StyleSheet, origin: u8, layer: u16, med
                 "document" | "-moz-document" | "scope" => {
                     sheet.audit.at_rules += 1;
                 }
+                "font-face" => {
+                    if let Some(face) = parse_font_face(body) {
+                        sheet.font_faces.push(face);
+                    }
+                }
                 _ => sheet.audit.at_rules += 1,
             }
             continue;
@@ -1094,6 +1132,70 @@ fn parse_style_rule(prelude: &str, body: &str, sheet: &mut StyleSheet, origin: u
             .collect();
         parse_style_rule(&combined.join(", "), &b, sheet, origin, layer, media);
     }
+}
+
+// ---- @font-face ----------------------------------------------------------
+
+fn parse_font_face(body: &str) -> Option<FontFace> {
+    let mut family = None;
+    let mut sources = Vec::new();
+    let mut weight = (400, 400);
+    let mut italic = false;
+    let mut unicode_range = Vec::new();
+    for d in parse_declarations(body) {
+        let v = d.value.trim();
+        match d.name.as_str() {
+            "font-family" => family = Some(v.trim_matches(|c| c == '"' || c == '\'').trim().to_ascii_lowercase()),
+            "src" => {
+                for part in split_commas(v) {
+                    let part = part.trim();
+                    let Some(start) = part.find("url(") else { continue };
+                    let rest = &part[start + 4..];
+                    let Some(end) = rest.find(')') else { continue };
+                    let url = rest[..end].trim().trim_matches(|c| c == '"' || c == '\'').to_string();
+                    let format = part.find("format(").map(|f| {
+                        let r = &part[f + 7..];
+                        r[..r.find(')').unwrap_or(r.len())].trim().trim_matches(|c| c == '"' || c == '\'').to_ascii_lowercase()
+                    });
+                    if !url.is_empty() {
+                        sources.push((url, format));
+                    }
+                }
+            }
+            "font-weight" => {
+                let nums: Vec<u16> = v.split_whitespace().filter_map(|t| match t {
+                    "normal" => Some(400),
+                    "bold" => Some(700),
+                    n => n.parse::<f32>().ok().map(|f| f as u16),
+                }).collect();
+                weight = match nums.as_slice() {
+                    [a] => (*a, *a),
+                    [a, b, ..] => (*a.min(b), *a.max(b)),
+                    _ => weight,
+                };
+            }
+            "font-style" => italic = v.starts_with("italic") || v.starts_with("oblique"),
+            "unicode-range" => {
+                for r in split_commas(v) {
+                    let r = r.trim().trim_start_matches(['U', 'u']).trim_start_matches('+');
+                    let (a, b) = match r.split_once('-') {
+                        Some((a, b)) => (u32::from_str_radix(a, 16).ok(), u32::from_str_radix(b, 16).ok()),
+                        None if r.contains('?') => (u32::from_str_radix(&r.replace('?', "0"), 16).ok(), u32::from_str_radix(&r.replace('?', "F"), 16).ok()),
+                        None => (u32::from_str_radix(r, 16).ok(), u32::from_str_radix(r, 16).ok()),
+                    };
+                    if let (Some(a), Some(b)) = (a, b) {
+                        unicode_range.push((a, b));
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+    let family = family.filter(|f| !f.is_empty())?;
+    if sources.is_empty() {
+        return None;
+    }
+    Some(FontFace { family, sources, weight, italic, unicode_range })
 }
 
 // ---- @supports -----------------------------------------------------------
@@ -1936,6 +2038,16 @@ fn parse_grid_pair(v: &str) -> (GridLine, GridLine) {
         GridLine::Auto
     };
     (start, end)
+}
+
+/// `"Mona Sans", -apple-system, sans-serif` → `mona sans,-apple-system,sans-serif`.
+fn normalize_family_list(v: &str) -> Option<Rc<str>> {
+    let parts: Vec<String> = split_commas(v)
+        .into_iter()
+        .map(|p| p.trim().trim_matches(|c| c == '"' || c == '\'').trim().to_ascii_lowercase())
+        .filter(|p| !p.is_empty())
+        .collect();
+    if parts.is_empty() { None } else { Some(Rc::from(parts.join(","))) }
 }
 
 fn parse_font_family(v: &str) -> FontFamily {
@@ -2882,7 +2994,9 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
                 style.line_height_number = None;
                 style.line_height_px = None;
             }
-            style.font_family = parse_font_family(&toks[family_start.min(toks.len())..].join(" "));
+            let list = toks[family_start.min(toks.len())..].join(" ");
+            style.font_family = parse_font_family(&list);
+            style.font_names = normalize_family_list(&list);
         }
         "font-size" => {
             let size_ctx = LenCtx { font_size: parent_font, ..ctx };
@@ -2918,6 +3032,7 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
                 }
             }
             style.font_family = family;
+            style.font_names = normalize_family_list(value);
         }
         "line-height" => apply_line_height(style, value, &ctx),
         "text-align" | "text-align-last" => {
@@ -2968,6 +3083,16 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
         }
         "word-spacing" => {
             style.word_spacing = if lv == "normal" { 0.0 } else { parse_px(value, &ctx).unwrap_or(style.word_spacing) }
+        }
+        "text-wrap" | "text-wrap-style" => {
+            if lv.contains("balance") {
+                style.text_balance = true;
+            } else if lv.contains("wrap") || lv.contains("pretty") || lv.contains("stable") || lv.contains("auto") || lv == "initial" || lv == "unset" {
+                style.text_balance = false;
+            }
+            if name == "text-wrap" && lv.contains("nowrap") {
+                style.white_space = WhiteSpace::Nowrap;
+            }
         }
         "white-space" => {
             style.white_space = match lv {

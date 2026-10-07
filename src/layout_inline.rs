@@ -72,6 +72,7 @@ pub(crate) struct InlineOut {
     pub abs: Vec<Pending>,
     pub first_baseline: Option<f32>,
     pub last_baseline: Option<f32>,
+    pub lines: usize,
 }
 
 fn is_cjk(c: char) -> bool {
@@ -610,8 +611,46 @@ impl<'a> Ctx<'a> {
 
     #[allow(clippy::too_many_arguments)]
     pub fn layout_inline_run(&mut self, items: Vec<Item>, block: &'a Style, cw: f32, cb_h: Option<f32>, y_bfc: f32, fl: &mut Floats, fox: f32) -> InlineOut {
+        if block.text_balance && block.white_space.wraps() && fl.list.is_empty() && !items.iter().any(|i| matches!(i, Item::Float(_))) {
+            return self.layout_balanced(items, block, cw, cb_h, y_bfc, fl, fox);
+        }
+        self.layout_inline_run_at(items, block, cw, cb_h, y_bfc, fl, fox, f32::INFINITY)
+    }
+
+    /// `text-wrap: balance` (Blink: at most 6 lines): the narrowest wrap width that keeps the line
+    /// count, found by bisection. Lines are still aligned within the full content width.
+    #[allow(clippy::too_many_arguments)]
+    fn layout_balanced(&mut self, items: Vec<Item>, block: &'a Style, cw: f32, cb_h: Option<f32>, y_bfc: f32, fl: &mut Floats, fox: f32) -> InlineOut {
+        let full = self.layout_inline_run_at(items.clone(), block, cw, cb_h, y_bfc, fl, fox, f32::INFINITY);
+        let lines = full.lines;
+        if !(2..=6).contains(&lines) {
+            return full;
+        }
+        let (mut lo, mut hi) = (cw / lines as f32, cw);
+        for _ in 0..10 {
+            if hi - lo < 1.0 {
+                break;
+            }
+            let mid = (lo + hi) / 2.0;
+            let mut scratch = Floats::default();
+            let probe = self.layout_inline_run_at(items.clone(), block, cw, cb_h, y_bfc, &mut scratch, fox, mid);
+            if probe.lines <= lines {
+                hi = mid;
+            } else {
+                lo = mid;
+            }
+        }
+        if hi >= cw - 0.5 {
+            return full;
+        }
+        self.layout_inline_run_at(items, block, cw, cb_h, y_bfc, fl, fox, math::ceil32(hi))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn layout_inline_run_at(&mut self, items: Vec<Item>, block: &'a Style, cw: f32, cb_h: Option<f32>, y_bfc: f32, fl: &mut Floats, fox: f32, wrap_limit: f32) -> InlineOut {
         let atoms = self.make_atoms(&items, block);
         let mut run = Run::new(block, cw, cb_h, y_bfc, fox);
+        run.wrap_limit = wrap_limit;
         let (sa, sd, lh) = self.vmetrics(block);
         run.strut_content = sa + sd;
         run.strut_asc = sa;
@@ -708,6 +747,7 @@ impl<'a> Ctx<'a> {
             abs: run.abs,
             first_baseline: run.first_baseline,
             last_baseline: run.last_baseline,
+            lines: run.lines,
         }
     }
 
@@ -721,6 +761,8 @@ impl<'a> Ctx<'a> {
             run.line_avail -= indent;
         }
         run.narrowed = (r - l) < run.cw - 0.01;
+        run.balance_cut = (run.line_avail - run.wrap_limit).max(0.0);
+        run.line_avail -= run.balance_cut;
     }
 
     fn begin_line(&mut self, run: &mut Run<'a>, fl: &mut Floats) {
@@ -942,7 +984,7 @@ impl<'a> Ctx<'a> {
 
         // alignment
         let trimmed_w: f32 = frags.iter().map(|f| f.w).sum();
-        let avail = run.line_avail;
+        let avail = run.line_avail + run.balance_cut;
         let mut offset = 0.0;
         let mut extra_per_space = 0.0;
         let free = (avail - trimmed_w).max(0.0);
@@ -1161,6 +1203,7 @@ impl<'a> Ctx<'a> {
                     weight: s.font_weight,
                     italic: s.font_italic,
                     family: s.font_family,
+                    family_names: s.font_names.clone(),
                     decoration: 0,
                     width: t.w,
                     letter_spacing: s.letter_spacing,
@@ -1177,6 +1220,7 @@ impl<'a> Ctx<'a> {
                 weight: s.font_weight,
                 italic: s.font_italic,
                 family: s.font_family,
+                    family_names: s.font_names.clone(),
                 decoration: s.text_decoration,
                 width: t.w,
                 letter_spacing: s.letter_spacing,
@@ -1279,6 +1323,9 @@ struct Run<'a> {
     /// `-webkit-line-clamp`: lines kept; the last one ends with an ellipsis when content was dropped.
     max_lines: Option<usize>,
     stopped: bool,
+    /// Wrap width for `text-wrap: balance` (infinite otherwise) and how much it narrowed the line.
+    wrap_limit: f32,
+    balance_cut: f32,
 }
 
 impl<'a> Run<'a> {
@@ -1313,6 +1360,8 @@ impl<'a> Run<'a> {
             strut_below: 0.0,
             max_lines: None,
             stopped: false,
+            wrap_limit: f32::INFINITY,
+            balance_cut: 0.0,
         }
     }
 }

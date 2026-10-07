@@ -130,6 +130,7 @@ impl Page {
             page.runtime.set_document_base(b);
         }
         page.link_css = options.link_css;
+        page.runtime.set_style_sources(&page.link_css, &page.external_css);
         let scripts: Vec<usize> = page
             .document
             .nodes
@@ -231,8 +232,12 @@ impl Page {
     }
 
     fn absorb_sheets(&mut self) {
-        for (id, css) in self.runtime.take_new_sheets() {
-            self.link_css.insert(id, css);
+        let new = self.runtime.take_new_sheets();
+        if !new.is_empty() {
+            for (id, css) in new {
+                self.link_css.insert(id, css);
+            }
+            self.runtime.set_style_sources(&self.link_css, &self.external_css);
         }
     }
 
@@ -290,6 +295,16 @@ impl Page {
         if let Some(r) = self.layout_rects.borrow().as_ref() {
             self.runtime.set_layout(r.clone());
         }
+    }
+
+    /// The post-layout step of a frame: resize observers see the new boxes, then due timers and
+    /// animation frames run. Returns whether scripts changed the DOM (the page needs a new layout).
+    pub fn after_layout(&mut self) -> bool {
+        self.sync_layout();
+        let _ = self.runtime.eval_in_page(&mut self.document, "typeof __afterLayout === 'function' && __afterLayout()");
+        self.runtime.advance(&mut self.document, 50.0, 200);
+        self.absorb_sheets();
+        self.runtime.take_dirty()
     }
 
     /// Advance the virtual clock, running due timers/animation frames. Returns whether the DOM changed.
@@ -431,6 +446,11 @@ impl Page {
         let sheet = Rc::new(css::parse(&css));
         *cache = Some((css, sheet.clone()));
         sheet
+    }
+
+    /// `@font-face` rules of the current document styles.
+    pub fn font_faces(&self) -> Vec<crate::css::FontFace> {
+        self.stylesheet_with("").font_faces.clone()
     }
 
     /// Render with the given viewport width and a 768px tall viewport.

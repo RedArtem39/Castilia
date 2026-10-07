@@ -588,6 +588,9 @@ fn computed_value(it: &mut Interp, id: usize, name: &str) -> String {
             return v.clone();
         }
     }
+    if let Some(v) = cascaded_value(it, id, name) {
+        return v;
+    }
     // inline style (as declared) is the best approximation without a computed snapshot
     let inline = it.attr(id, "style").map(|s| parse_decls(&s)).unwrap_or_default();
     if let Some((_, v, _)) = inline.into_iter().find(|(k, _, _)| k == name) {
@@ -616,6 +619,195 @@ fn computed_value(it: &mut Interp, id: usize, name: &str) -> String {
         "box-sizing" => "content-box".into(),
         _ => String::new(),
     }
+}
+
+/// Per-task and per-page limits on full cascade runs for `getComputedStyle`.
+const STYLE_RECOMPUTES_PER_TASK: u32 = 6;
+const STYLE_RECOMPUTES_TOTAL: u32 = 80;
+
+/// Styles of the whole document, recomputed after DOM mutations (within the limits above; past
+/// them a stale snapshot is used as long as it covers every node).
+fn document_styles(it: &mut Interp) -> Option<Rc<crate::css::Styles>> {
+    let version = it.dom.version;
+    let doc = it.dom().ok()?;
+    let stale = match &it.dom.style_cache {
+        Some((v, s)) if *v == version => return Some(s.clone()),
+        Some((_, s)) => Some(s.clone()),
+        None => None,
+    };
+    let (task, total) = it.dom.style_recomputes;
+    if stale.as_ref().is_some_and(|s| s.nodes.len() == doc.nodes.len()) && (task >= STYLE_RECOMPUTES_PER_TASK || total >= STYLE_RECOMPUTES_TOTAL) {
+        return stale;
+    }
+    let sources = it.dom.style_sources.clone()?;
+    it.dom.style_recomputes = (task + 1, total + 1);
+    let mut css = crate::embedded_css(doc, &sources.0, &sources.1);
+    if let Some(text) = doc.adopted_css.get(&doc.root) {
+        css.push_str(text);
+        css.push('\n');
+    }
+    let sheet = match &it.dom.style_sheet {
+        Some((text, sheet)) if *text == css => sheet.clone(),
+        _ => {
+            let sheet = Rc::new(crate::css::parse(&css));
+            it.dom.style_sheet = Some((css, sheet.clone()));
+            sheet
+        }
+    };
+    let (w, h) = it.dom.viewport;
+    let styles = Rc::new(crate::css::compute_styles(doc, &sheet, crate::css::Viewport::new(w, h)));
+    it.dom.style_cache = Some((version, styles.clone()));
+    Some(styles)
+}
+
+fn px(v: f32) -> String {
+    format!("{}px", num_to_string(v as f64))
+}
+
+fn dim_str(d: &crate::css_values::Dim) -> String {
+    use crate::css_values::Dim;
+    match d {
+        Dim::Len(p, pct) if *pct == 0.0 => px(*p),
+        Dim::Len(p, pct) if *p == 0.0 => format!("{}%", num_to_string(*pct as f64)),
+        Dim::Len(p, pct) => format!("calc({}% + {})", num_to_string(*pct as f64), px(*p)),
+        Dim::MinContent => "min-content".into(),
+        Dim::MaxContent => "max-content".into(),
+        Dim::FitContent => "fit-content".into(),
+        _ => "auto".into(),
+    }
+}
+
+fn color_str(c: u32) -> String {
+    let (a, r, g, b) = (c >> 24, (c >> 16) & 255, (c >> 8) & 255, c & 255);
+    if a == 255 {
+        format!("rgb({r}, {g}, {b})")
+    } else {
+        format!("rgba({r}, {g}, {b}, {})", num_to_string(crate::math::round(a as f64 / 255.0 * 1000.0) / 1000.0))
+    }
+}
+
+fn side_index(n: &str) -> usize {
+    match n {
+        "top" => 0,
+        "right" => 1,
+        "bottom" => 2,
+        _ => 3,
+    }
+}
+
+/// `getComputedStyle` value from the real cascade (None: property not modelled here).
+fn cascaded_value(it: &mut Interp, id: usize, name: &str) -> Option<String> {
+    use crate::css::*;
+    use crate::css_values::Dim;
+    let styles = document_styles(it)?;
+    let s = styles.nodes.get(id)?;
+    let rect = it.dom.rects.get(&id).copied();
+    Some(match name {
+        n if n.starts_with("--") => s.vars.get(n).cloned().unwrap_or_default(),
+        "display" => match s.display {
+            Display::None => "none",
+            Display::Contents => "contents",
+            Display::Block => "block",
+            Display::FlowRoot => "flow-root",
+            Display::Inline => "inline",
+            Display::InlineBlock => "inline-block",
+            Display::Flex => "flex",
+            Display::InlineFlex => "inline-flex",
+            Display::Grid => "grid",
+            Display::InlineGrid => "inline-grid",
+            Display::ListItem => "list-item",
+            Display::Table => "table",
+            Display::InlineTable => "inline-table",
+            Display::TableRowGroup => "table-row-group",
+            Display::TableRow => "table-row",
+            Display::TableCell => "table-cell",
+            Display::TableCaption => "table-caption",
+            Display::TableColumn => "table-column",
+        }
+        .into(),
+        "position" => match s.position {
+            Position::Static => "static",
+            Position::Relative => "relative",
+            Position::Absolute => "absolute",
+            Position::Fixed => "fixed",
+            Position::Sticky => "sticky",
+        }
+        .into(),
+        "float" => match s.float {
+            Float::None => "none",
+            Float::Left => "left",
+            Float::Right => "right",
+        }
+        .into(),
+        "visibility" => if s.visibility_visible { "visible" } else { "hidden" }.into(),
+        "opacity" => num_to_string(s.opacity as f64),
+        "pointer-events" => if s.pointer_events { "auto" } else { "none" }.into(),
+        "z-index" => s.z_index.map_or("auto".into(), |z| z.to_string()),
+        "overflow" | "overflow-x" | "overflow-y" => {
+            let o = if name == "overflow-y" { s.overflow_y } else { s.overflow_x };
+            match o {
+                Overflow::Visible => "visible",
+                Overflow::Hidden => "hidden",
+                Overflow::Scroll => "scroll",
+                Overflow::Auto => "auto",
+            }
+            .into()
+        }
+        "color" => color_str(s.color),
+        "background-color" => color_str(s.background_color),
+        "font-size" => px(s.font_size),
+        "font-weight" => s.font_weight.to_string(),
+        "font-style" => if s.font_italic { "italic" } else { "normal" }.into(),
+        "font-family" => s.font_names.as_deref().map_or("serif".into(), |n| n.replace(',', ", ")),
+        "line-height" => match (s.line_height_px, s.line_height_number) {
+            (Some(p), _) => px(p),
+            (_, Some(n)) => px(n * s.font_size),
+            _ => "normal".into(),
+        },
+        "letter-spacing" => if s.letter_spacing == 0.0 { "normal".into() } else { px(s.letter_spacing) },
+        "text-align" => match s.text_align {
+            TextAlign::Left => "start",
+            TextAlign::Right => "right",
+            TextAlign::Center => "center",
+            TextAlign::Justify => "justify",
+        }
+        .into(),
+        "white-space" => match s.white_space {
+            WhiteSpace::Normal => "normal",
+            WhiteSpace::Nowrap => "nowrap",
+            WhiteSpace::Pre => "pre",
+            WhiteSpace::PreWrap => "pre-wrap",
+            WhiteSpace::PreLine => "pre-line",
+        }
+        .into(),
+        "box-sizing" => if s.border_box { "border-box" } else { "content-box" }.into(),
+        "flex-direction" => match s.flex_direction {
+            FlexDirection::Row => "row",
+            FlexDirection::RowReverse => "row-reverse",
+            FlexDirection::Column => "column",
+            FlexDirection::ColumnReverse => "column-reverse",
+        }
+        .into(),
+        "flex-grow" => num_to_string(s.flex_grow as f64),
+        "flex-shrink" => num_to_string(s.flex_shrink as f64),
+        "top" => dim_str(&s.top),
+        "right" => dim_str(&s.right),
+        "bottom" => dim_str(&s.bottom),
+        "left" => dim_str(&s.left),
+        n if n.starts_with("margin-") => dim_str(&s.margin[side_index(&n[7..])]),
+        n if n.starts_with("padding-") => dim_str(&s.padding[side_index(&n[8..])]),
+        n if n.starts_with("border-") && n.ends_with("-width") && n.len() > 13 => px(s.border_width[side_index(&n[7..n.len() - 6])]),
+        "width" | "height" => match rect {
+            Some(r) => px(r[if name == "width" { 2 } else { 3 }]),
+            None => dim_str(if name == "width" { &s.width } else { &s.height }),
+        },
+        "max-width" => if matches!(s.max_width, Dim::Auto) { "none".into() } else { dim_str(&s.max_width) },
+        "max-height" => if matches!(s.max_height, Dim::Auto) { "none".into() } else { dim_str(&s.max_height) },
+        "min-width" => dim_str(&s.min_width),
+        "min-height" => dim_str(&s.min_height),
+        "transform" if s.transform.is_empty() && s.transform_scale == 1.0 => "none".into(),
+        _ => return None,
+    })
 }
 
 fn match_media(it: &mut Interp, c: &Call) -> Res {

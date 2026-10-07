@@ -21,7 +21,7 @@ pub mod value;
 pub mod vm;
 
 use crate::dom::{Document, NodeId};
-use alloc::{boxed::Box, collections::BTreeMap, string::String, vec::Vec};
+use alloc::{boxed::Box, collections::BTreeMap, rc::Rc, string::String, vec::Vec};
 
 pub use dom::{Host, HostResponse};
 
@@ -146,6 +146,12 @@ impl Runtime {
 
     pub fn set_layout(&mut self, rects: BTreeMap<usize, [f32; 4]>) {
         self.interp.dom.rects = rects;
+    }
+
+    /// Stylesheets outside the document tree (`<link>` contents, external CSS) for `getComputedStyle`.
+    pub fn set_style_sources(&mut self, link_css: &BTreeMap<NodeId, String>, external_css: &str) {
+        self.interp.dom.style_sources = Some(Rc::new((link_css.clone(), String::from(external_css))));
+        self.interp.dom.style_cache = None;
     }
 
     pub fn set_computed(&mut self, computed: BTreeMap<usize, Vec<(String, String)>>) {

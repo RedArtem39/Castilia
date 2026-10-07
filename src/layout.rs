@@ -11,6 +11,7 @@ use crate::{
 };
 use alloc::{
     collections::BTreeMap,
+    rc::Rc,
     string::{String, ToString},
     vec,
     vec::Vec,
@@ -37,17 +38,20 @@ impl Rect {
 }
 
 /// Font selection passed to the host for measuring and painting.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Font {
     pub size: f32,
     pub weight: u16,
     pub italic: bool,
+    /// Generic class the engine resolved (fallback when the host knows none of `names`).
     pub family: FontFamily,
+    /// The CSS `font-family` list (lowercase, comma separated), if the page set one.
+    pub names: Option<Rc<str>>,
 }
 
 impl Font {
     pub fn of(style: &Style) -> Font {
-        Font { size: style.font_size, weight: style.font_weight, italic: style.font_italic, family: style.font_family }
+        Font { size: style.font_size, weight: style.font_weight, italic: style.font_italic, family: style.font_family, names: style.font_names.clone() }
     }
     pub fn is_bold(&self) -> bool {
         self.weight >= 600
@@ -90,6 +94,11 @@ pub trait FontMetrics {
     /// Descent of the font (distance below the baseline to the bottom of the content area).
     fn descent(&self, font: &Font) -> f32 {
         (self.line_height_font(font) - self.ascent(font)).max(0.0)
+    }
+    /// A web font declared with `@font-face` was downloaded (raw TTF/OTF/WOFF/WOFF2 bytes).
+    /// Return `true` if the host will use it for `face.family` (lowercase) from now on.
+    fn add_font_face(&self, _face: &crate::css::FontFace, _data: &[u8]) -> bool {
+        false
     }
     /// Intrinsic pixel size of an image once the host has fetched and probed it.
     fn image_size(&self, _src: &str) -> Option<(f32, f32)> {
@@ -159,6 +168,8 @@ pub enum Command {
         weight: u16,
         italic: bool,
         family: FontFamily,
+        /// CSS `font-family` list for hosts that resolve named/web fonts.
+        family_names: Option<Rc<str>>,
         /// bit 0 underline, bit 1 line-through, bit 2 overline
         decoration: u8,
         width: f32,

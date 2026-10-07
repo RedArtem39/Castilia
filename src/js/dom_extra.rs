@@ -2019,6 +2019,7 @@ fn setup_custom_elements(it: &mut Interp) {
             d.adopted_css.insert(id, text.to_string());
         }
         it.dom.dirty = true;
+        it.dom.version += 1;
         Ok(Value::Undefined)
     });
     it.define_data(&g, Key::str("__setAdoptedCss"), Value::Obj(f), HIDDEN);

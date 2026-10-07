@@ -294,6 +294,7 @@ impl<'a> Ctx<'a> {
                 weight: s.font_weight,
                 italic: s.font_italic,
                 family: s.font_family,
+                    family_names: s.font_names.clone(),
                 decoration: 0,
                 width: w,
                 letter_spacing: 0.0,
@@ -386,6 +387,7 @@ impl<'a> Ctx<'a> {
                                 weight: 700,
                                 italic: false,
                                 family: s.font_family,
+                    family_names: s.font_names.clone(),
                                 decoration: 0,
                                 width: cw * 0.6,
                                 letter_spacing: 0.0, blur: 0.0, });
@@ -538,6 +540,7 @@ impl<'a> Ctx<'a> {
             weight: s.font_weight,
             italic: s.font_italic,
             family: s.font_family,
+                    family_names: s.font_names.clone(),
             decoration: 0,
             width: mw,
             letter_spacing: 0.0, blur: 0.0, });

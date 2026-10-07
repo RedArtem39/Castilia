@@ -239,6 +239,29 @@ fn size_tracks(defs: &[Track], items: &[Contribution], avail: Option<f32>, gap: 
                     st[i].base
                 };
             }
+            // Indefinite free space (§12.7.1): the flex fraction is the largest of each flexible
+            // track's base / flex and, for every item crossing flexible tracks, what one fr must be
+            // for the spanned tracks to hold the item's contribution.
+            let is_flex = |i: usize| st[i].flex > 0.0 && !collapsed.get(i).copied().unwrap_or(false);
+            if (0..n).any(is_flex) {
+                let mut fr: f32 = (0..n).filter(|&i| is_flex(i)).map(|i| st[i].base / st[i].flex.max(1.0)).fold(0.0, f32::max);
+                for it in items {
+                    let end = (it.start + it.span).min(n);
+                    let flex_sum: f32 = (it.start..end).filter(|&i| is_flex(i)).map(|i| st[i].flex).sum();
+                    if flex_sum <= 0.0 {
+                        continue;
+                    }
+                    let fixed: f32 = (it.start..end).filter(|&i| !is_flex(i)).map(|i| size[i]).sum();
+                    let gaps = gap * (end - it.start).saturating_sub(1) as f32;
+                    let want = if prefer_limit { it.max_c } else { it.min_c };
+                    fr = fr.max((want - fixed - gaps) / flex_sum.max(1.0));
+                }
+                for i in 0..n {
+                    if is_flex(i) {
+                        size[i] = size[i].max(fr * st[i].flex);
+                    }
+                }
+            }
         }
     }
     size

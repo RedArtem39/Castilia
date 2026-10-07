@@ -810,6 +810,7 @@ fn setup_element(it: &mut Interp, p: &Obj) {
             it.define_data(o, Key::str("host"), host, 0);
             it.define_data(o, Key::str("mode"), Value::string(if mode == "closed" { mode.clone() } else { "open".to_string() }), 0);
             it.dom.dirty = true;
+        it.dom.version += 1;
         }
         Ok(w)
     });

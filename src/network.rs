@@ -11,6 +11,10 @@ use alloc::{boxed::Box, string::String, vec::Vec};
 const MAX_HTML_BYTES: usize = 8 * 1024 * 1024;
 const MAX_CSS_BYTES: usize = 8 * 1024 * 1024;
 const MAX_STYLESHEETS: usize = 64;
+/// Web font downloads per page, bytes per font and in total.
+const MAX_FONT_FACES: usize = 24;
+const MAX_FONT_BYTES: usize = 2 * 1024 * 1024;
+const MAX_FONT_TOTAL: usize = 12 * 1024 * 1024;
 const MAX_FETCH_BYTES: usize = 16 * 1024 * 1024;
 const MAX_IMAGE_PROBE_BYTES: usize = 512 * 1024;
 const MAX_IMAGE_PROBES: usize = 64;
@@ -272,6 +276,47 @@ fn probe_images<F: Fetcher>(fetcher: &mut F, base: &str, sources: &[String]) -> 
     sizes
 }
 
+/// Download `@font-face` fonts and hand them to the host. Faces for Latin/Cyrillic text go first;
+/// WOFF2/WOFF/TrueType sources are preferred in that order.
+fn load_fonts<F: Fetcher>(fetcher: &mut F, base: &str, faces: &[css::FontFace], fonts: &impl FontMetrics) {
+    // `format("woff2 supports variations")`, `format("woff2-variations")`, `format("truetype")`, ...
+    let rank = |f: &Option<String>| match f.as_deref() {
+        Some(f) if f.starts_with("woff2") => 0,
+        Some(f) if f.starts_with("woff") => 1,
+        Some(f) if f.starts_with("truetype") || f.starts_with("opentype") => 2,
+        None => 2,
+        _ => 3,
+    };
+    let mut order: Vec<&css::FontFace> = faces.iter().filter(|f| f.covers_common_text()).collect();
+    order.extend(faces.iter().filter(|f| !f.covers_common_text()));
+    let mut seen = alloc::collections::BTreeSet::new();
+    let (mut count, mut total) = (0, 0);
+    for face in order {
+        if count >= MAX_FONT_FACES || total >= MAX_FONT_TOTAL {
+            break;
+        }
+        let mut sources: Vec<&(String, Option<String>)> = face.sources.iter().filter(|s| rank(&s.1) < 3).collect();
+        sources.sort_by_key(|s| rank(&s.1));
+        for (src, _) in sources {
+            let bytes = if src.starts_with("data:") {
+                crate::image::decode_data_url(src)
+            } else {
+                let Ok(url) = fetcher.resolve(base, src) else { continue };
+                if !seen.insert(url.clone()) {
+                    break;
+                }
+                count += 1;
+                fetcher.get(&url, MAX_FONT_BYTES).ok().filter(|r| r.body.len() < MAX_FONT_BYTES).map(|r| r.body)
+            };
+            let Some(bytes) = bytes else { continue };
+            total += bytes.len();
+            if fonts.add_font_face(face, &bytes) {
+                break;
+            }
+        }
+    }
+}
+
 fn load_page_mode<F: Fetcher>(
     fetcher: &mut F,
     url: &str,
@@ -413,7 +458,16 @@ fn load_page_mode<F: Fetcher>(
             Ok(crate::encoding::decode_resource(&response.body, cs))
         });
         page.clear_host();
+        load_fonts(fetcher, &base, &page.font_faces(), fonts);
         let mut display = page.render(width, fonts);
+        // scripts that measure the page (ResizeObserver, rAF reading clientHeight) react to the
+        // first layout; give them two frames
+        for _ in 0..2 {
+            if !page.after_layout() {
+                break;
+            }
+            display = page.render(width, fonts);
+        }
         // Probe image sizes so layout can use intrinsic dimensions, then lay out again.
         let sizes = probe_images(fetcher, &base, &Page::image_sources(&display));
         if !sizes.is_empty() {

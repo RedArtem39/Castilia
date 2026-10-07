@@ -282,6 +282,7 @@ impl Interp {
         self.ticks = 0;
         self.next_poll = 0;
         self.heap.task_allocs.set(0);
+        self.dom.style_recomputes.0 = 0;
         if let Some(i) = self.interrupt.as_mut() {
             i.task_started();
         }

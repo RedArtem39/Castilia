@@ -626,21 +626,43 @@
     takeRecords() { return []; }
   }
   expose('IntersectionObserver', IntersectionObserver);
+  // Sizes are reported once after observe() and again by __afterLayout() (called by the page after
+  // each layout) for elements whose box changed, like the browser's post-layout observation step.
+  const resizeObservers = new Set();
+  const resizeEntry = (el) => {
+    const r = el.getBoundingClientRect();
+    const size = [{ inlineSize: r.width, blockSize: r.height }];
+    return { target: el, contentRect: r, borderBoxSize: size, contentBoxSize: size, devicePixelContentBoxSize: size };
+  };
   class ResizeObserver {
-    constructor(cb) { this._cb = cb; this._t = new Set(); }
+    constructor(cb) { this._cb = cb; this._t = new Map(); }
     observe(el) {
-      this._t.add(el);
+      if (this._t.has(el)) return;
+      this._t.set(el, null);
+      resizeObservers.add(this);
       setTimeout(() => {
         if (!this._t.has(el)) return;
-        const r = el.getBoundingClientRect();
-        const size = [{ inlineSize: r.width, blockSize: r.height }];
-        this._cb([{ target: el, contentRect: r, borderBoxSize: size, contentBoxSize: size, devicePixelContentBoxSize: size }], this);
+        const e = resizeEntry(el);
+        this._t.set(el, e.contentRect.width + 'x' + e.contentRect.height);
+        this._cb([e], this);
       }, 0);
     }
     unobserve(el) { this._t.delete(el); }
-    disconnect() { this._t.clear(); }
+    disconnect() { this._t.clear(); resizeObservers.delete(this); }
+    _check() {
+      const changed = [];
+      for (const [el, last] of this._t) {
+        const e = resizeEntry(el);
+        const key = e.contentRect.width + 'x' + e.contentRect.height;
+        if (key !== last) { this._t.set(el, key); changed.push(e); }
+      }
+      if (changed.length) this._cb(changed, this);
+    }
   }
   expose('ResizeObserver', ResizeObserver);
+  hide(G, '__afterLayout', () => {
+    for (const o of Array.from(resizeObservers)) { try { o._check(); } catch (e) { reportError(e); } }
+  });
   expose('PerformanceObserver', class PerformanceObserver { constructor(cb) {} observe() {} disconnect() {} takeRecords() { return []; } static get supportedEntryTypes() { return []; } });
 
   // ---- Misc platform objects -------------------------------------------------------
