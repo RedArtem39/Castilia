@@ -122,7 +122,7 @@ pub struct Prop {
 #[derive(Default)]
 pub struct PropMap {
     list: Vec<Option<(Key, Prop)>>,
-    index: Option<BTreeMap<Key, usize>>,
+    index: Option<HashIndex>,
     live: usize,
 }
 
@@ -137,11 +137,71 @@ fn key_eq(a: &Key, b: &Key) -> bool {
     }
 }
 
+#[inline]
+fn key_hash(k: &Key) -> u64 {
+    match k {
+        Key::S(s) => {
+            // FNV-1a
+            let mut h: u64 = 0xcbf2_9ce4_8422_2325;
+            for &b in s.as_bytes() {
+                h = (h ^ b as u64).wrapping_mul(0x0100_0000_01b3);
+            }
+            h
+        }
+        Key::Y(id) => (*id as u64).wrapping_mul(0x9e37_79b9_7f4a_7c15) ^ 0x5555,
+    }
+}
+
+/// Open-addressing table of positions into `PropMap::list` (`0` = empty slot, else index + 1).
+struct HashIndex {
+    slots: Vec<u32>,
+}
+
+impl HashIndex {
+    fn build(list: &[Option<(Key, Prop)>]) -> HashIndex {
+        let mut cap = 16;
+        while cap < list.len() * 2 + 2 {
+            cap *= 2;
+        }
+        let mut ix = HashIndex { slots: alloc::vec![0; cap] };
+        for (i, e) in list.iter().enumerate() {
+            if let Some((k, _)) = e {
+                ix.put(k, i);
+            }
+        }
+        ix
+    }
+    fn put(&mut self, k: &Key, i: usize) {
+        let mask = self.slots.len() - 1;
+        let mut at = key_hash(k) as usize & mask;
+        while self.slots[at] != 0 {
+            at = (at + 1) & mask;
+        }
+        self.slots[at] = i as u32 + 1;
+    }
+    #[inline]
+    fn find(&self, k: &Key, list: &[Option<(Key, Prop)>]) -> Option<usize> {
+        let mask = self.slots.len() - 1;
+        let mut at = key_hash(k) as usize & mask;
+        loop {
+            let v = self.slots[at];
+            if v == 0 {
+                return None;
+            }
+            let i = v as usize - 1;
+            if matches!(&list[i], Some((key, _)) if key_eq(key, k)) {
+                return Some(i);
+            }
+            at = (at + 1) & mask;
+        }
+    }
+}
+
 impl PropMap {
     #[inline]
     fn find(&self, k: &Key) -> Option<usize> {
         match &self.index {
-            Some(ix) => ix.get(k).copied(),
+            Some(ix) => ix.find(k, &self.list),
             None => self.list.iter().position(|e| matches!(e, Some((key, _)) if key_eq(key, k))),
         }
     }
@@ -161,35 +221,33 @@ impl PropMap {
             }
             return;
         }
-        if let Some(ix) = self.index.as_mut() {
-            ix.insert(k.clone(), self.list.len());
-        }
+        let i = self.list.len();
         self.list.push(Some((k, p)));
         self.live += 1;
-        if self.index.is_none() && self.list.len() > INDEX_AT {
-            self.rebuild_index();
+        match self.index.as_mut() {
+            Some(ix) if (self.list.len() + 1) * 2 <= ix.slots.len() => {
+                let k = &self.list[i].as_ref().expect("just pushed").0;
+                ix.put(k, i);
+            }
+            Some(_) => self.rebuild_index(),
+            None if self.list.len() > INDEX_AT => self.rebuild_index(),
+            None => {}
         }
     }
     fn rebuild_index(&mut self) {
-        let mut ix = BTreeMap::new();
-        for (i, e) in self.list.iter().enumerate() {
-            if let Some((k, _)) = e {
-                ix.insert(k.clone(), i);
-            }
-        }
-        self.index = Some(ix);
+        self.index = Some(HashIndex::build(&self.list));
     }
     pub fn remove(&mut self, k: &Key) -> bool {
         let Some(i) = self.find(k) else { return false };
-        if let Some(ix) = self.index.as_mut() {
-            ix.remove(k);
-        }
         self.list[i] = None;
         self.live -= 1;
         if self.list.len() > 32 && self.live * 2 < self.list.len() {
             self.compact();
         } else if self.index.is_none() && self.list.len() > 2 * self.live + 4 {
             self.list.retain(|e| e.is_some());
+        } else if self.index.is_some() {
+            // tombstones are skipped by probing, but removed entries must not be found
+            self.rebuild_index();
         }
         true
     }

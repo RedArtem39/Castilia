@@ -22,8 +22,8 @@ enum Finish {
 }
 
 impl Interp {
-    pub fn vm_run(&mut self, frame: Frame) -> Outcome {
-        self.vm_loop(Box::new(frame))
+    pub fn vm_run(&mut self, frame: Box<Frame>) -> Outcome {
+        self.vm_loop(frame)
     }
 
     pub fn vm_run_resumed(&mut self, frame: Box<Frame>) -> Outcome {
@@ -74,6 +74,9 @@ impl Interp {
                     let f = frames.pop().expect("frame");
                     self.vm_frames -= 1;
                     let fin = self.finish_frame(&f, v);
+                    if f.kind == FrameKind::Normal || f.kind == FrameKind::Construct {
+                        self.recycle_frame(f);
+                    }
                     match (frames.last_mut(), fin) {
                         (None, Finish::Value(v)) => break Outcome::Return(v),
                         (None, Finish::Throw(e)) => break Outcome::Throw(e),
@@ -291,7 +294,7 @@ impl Interp {
         if frame.kind == FrameKind::Async {
             frame.promise = Some(self.new_promise());
         }
-        Ok(Ok(Box::new(frame)))
+        Ok(Ok(frame))
     }
 
     /// `new` of a plain (non-derived) closure as an in-loop frame.
@@ -310,7 +313,7 @@ impl Interp {
         let this = self.alloc(Object::new(Some(proto), Class::Plain));
         self.init_fields(&this, &fields)?;
         let frame = self.vm_frame(code, fo, &def, &env, home, Some(Value::Obj(this)), args, Some(fo.clone()));
-        Ok(Some(Box::new(frame)))
+        Ok(Some(frame))
     }
 
     fn array_values(&mut self, v: &Value) -> Vec<Value> {
@@ -419,6 +422,87 @@ impl Interp {
         loop {
             let op = ops[f.pc];
             f.pc += 1;
+            // the most frequent simple instructions are handled right here; the rest go through
+            // the out-of-line handler so this loop stays small
+            match op {
+                Op::GetReg(r) => {
+                    let v = f.regs[r as usize].clone();
+                    f.stack.push(v);
+                    continue;
+                }
+                Op::SetReg(r) => {
+                    if let Some(v) = f.stack.pop() {
+                        f.regs[r as usize] = v;
+                    }
+                    continue;
+                }
+                Op::Int(i) => {
+                    f.stack.push(Value::Num(i as f64));
+                    continue;
+                }
+                Op::Pop => {
+                    f.stack.pop();
+                    continue;
+                }
+                Op::IncReg(r) => {
+                    if let Value::Num(n) = &mut f.regs[r as usize] {
+                        *n += 1.0;
+                        continue;
+                    }
+                }
+                Op::Bin(b) => {
+                    let n = f.stack.len();
+                    if n >= 2 {
+                        if let (Value::Num(x), Value::Num(y)) = (&f.stack[n - 2], &f.stack[n - 1]) {
+                            let (x, y) = (*x, *y);
+                            let r = match b {
+                                BinOp::Add => Some(Value::Num(x + y)),
+                                BinOp::Sub => Some(Value::Num(x - y)),
+                                BinOp::Mul => Some(Value::Num(x * y)),
+                                BinOp::Lt => Some(Value::Bool(x < y)),
+                                BinOp::Le => Some(Value::Bool(x <= y)),
+                                BinOp::Gt => Some(Value::Bool(x > y)),
+                                BinOp::Ge => Some(Value::Bool(x >= y)),
+                                BinOp::StrictEq | BinOp::Eq => Some(Value::Bool(x == y)),
+                                BinOp::StrictNe | BinOp::Ne => Some(Value::Bool(x != y)),
+                                _ => None,
+                            };
+                            if let Some(r) = r {
+                                f.stack.truncate(n - 1);
+                                f.stack[n - 2] = r;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                Op::Jump(t) if (t as usize) >= f.pc || self.ticks + 1 < self.next_poll => {
+                    // forward jumps, or back-edges between budget polls
+                    if (t as usize) < f.pc {
+                        self.ticks += 1;
+                        #[cfg(feature = "jit")]
+                        if self.tier == super::Tier::Native {
+                            f.pc = t as usize;
+                            if let Some(r) = self.jit_enter(f) {
+                                return r;
+                            }
+                            continue;
+                        }
+                    }
+                    f.pc = t as usize;
+                    continue;
+                }
+                Op::JumpIfFalse(t) | Op::JumpIfTrue(t) => {
+                    if let Some(Value::Bool(c)) = f.stack.last() {
+                        let c = *c;
+                        f.stack.pop();
+                        if c == matches!(op, Op::JumpIfTrue(_)) {
+                            f.pc = t as usize;
+                        }
+                        continue;
+                    }
+                }
+                _ => {}
+            }
             #[cfg(feature = "jit")]
             let at = f.pc;
             if let Some(step) = self.exec_op(f, &code, op)? {
@@ -438,7 +522,7 @@ impl Interp {
 
     /// Execute one instruction (`f.pc` already points past it). `Some` when the frame must call,
     /// return or suspend. Shared by the interpreter loop and the native tier's slow paths.
-    #[inline(always)]
+    #[inline(never)]
     pub(crate) fn exec_op(&mut self, f: &mut Frame, code: &Code, op: Op) -> Result<Option<Step>, Ctl> {
             match op {
                 Op::Nop | Op::Debugger => {}

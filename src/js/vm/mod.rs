@@ -360,7 +360,7 @@ impl Interp {
 
     /// Build the frame for a closure call. `this` is `None` for derived constructors until `super()`.
     #[allow(clippy::too_many_arguments)]
-    pub fn vm_frame(&mut self, code: Rc<Code>, fo: &Obj, def: &Rc<FuncDef>, env: &Env, home: Option<Obj>, this: Option<Value>, args: &[Value], new_target: Option<Obj>) -> Frame {
+    pub fn vm_frame(&mut self, code: Rc<Code>, fo: &Obj, def: &Rc<FuncDef>, env: &Env, home: Option<Obj>, this: Option<Value>, args: &[Value], new_target: Option<Obj>) -> Box<Frame> {
         let mut own_this = None;
         if !code.needs_scope && (def.is_arrow || this.is_some()) {
             if !def.is_arrow {
@@ -376,26 +376,8 @@ impl Interp {
                 });
             }
             let kind = if new_target.is_some() && !def.is_arrow { FrameKind::Construct } else { FrameKind::Normal };
-            let nregs = code.nregs as usize;
             let _ = home;
-            return Frame {
-                code,
-                pc: 0,
-                stack: Vec::with_capacity(8),
-                regs: alloc::vec![Value::Undefined; nregs],
-                env: env.clone(),
-                scopes: Vec::new(),
-                fenv: env.clone(),
-                handlers: Vec::new(),
-                completions: Vec::new(),
-                args: args.to_vec(),
-                callee: Some(fo.clone()),
-                kind,
-                promise: None,
-                pending_resume: None,
-                yield_raw: false,
-                this: own_this,
-            };
+            return self.take_frame(code, env.clone(), env.clone(), args, Some(fo.clone()), kind, own_this);
         }
         let func_ctx = if def.is_arrow {
             None
@@ -419,29 +401,76 @@ impl Interp {
             _ if new_target.is_some() && !def.is_arrow => FrameKind::Construct,
             _ => FrameKind::Normal,
         };
+        self.take_frame(code, scope.clone(), scope, args, Some(fo.clone()), kind, own_this)
+    }
+
+    /// A frame from the pool (or a new one) initialised for `code`.
+    #[allow(clippy::too_many_arguments)]
+    pub fn take_frame(&mut self, code: Rc<Code>, env: Env, fenv: Env, args: &[Value], callee: Option<Obj>, kind: FrameKind, this: Option<Value>) -> Box<Frame> {
         let nregs = code.nregs as usize;
-        Frame {
-            code,
-            pc: 0,
-            stack: Vec::with_capacity(8),
-            regs: alloc::vec![Value::Undefined; nregs],
-            env: scope.clone(),
-            scopes: Vec::new(),
-            fenv: scope,
-            handlers: Vec::new(),
-            completions: Vec::new(),
-            args: args.to_vec(),
-            callee: Some(fo.clone()),
-            kind,
-            promise: None,
-            pending_resume: None,
-            yield_raw: false,
-            this: own_this,
+        match self.frame_pool.pop() {
+            Some(mut f) => {
+                f.code = code;
+                f.pc = 0;
+                f.regs.resize(nregs, Value::Undefined);
+                f.env = env;
+                f.fenv = fenv;
+                f.args.extend_from_slice(args);
+                f.callee = callee;
+                f.kind = kind;
+                f.this = this;
+                f
+            }
+            None => Box::new(Frame {
+                code,
+                pc: 0,
+                stack: Vec::with_capacity(16),
+                regs: alloc::vec![Value::Undefined; nregs],
+                env,
+                scopes: Vec::new(),
+                fenv,
+                handlers: Vec::new(),
+                completions: Vec::new(),
+                args: args.to_vec(),
+                callee,
+                kind,
+                promise: None,
+                pending_resume: None,
+                yield_raw: false,
+                this,
+            }),
         }
     }
 
+    /// Return a finished frame's buffers to the pool.
+    pub fn recycle_frame(&mut self, mut f: Box<Frame>) {
+        if self.frame_pool.len() >= 64 {
+            return;
+        }
+        f.stack.clear();
+        f.regs.clear();
+        f.args.clear();
+        f.scopes.clear();
+        f.handlers.clear();
+        f.completions.clear();
+        f.callee = None;
+        f.promise = None;
+        f.pending_resume = None;
+        f.yield_raw = false;
+        f.this = None;
+        f.env = self.global_env.clone();
+        f.fenv = self.global_env.clone();
+        if f.stack.capacity() > 1024 {
+            f.stack.shrink_to(64);
+        }
+        if f.regs.capacity() > 1024 {
+            f.regs.shrink_to(64);
+        }
+        self.frame_pool.push(f);
+    }
+
     /// Run a closure call on the VM (from native code or the AST walker).
-    pub fn vm_invoke(&mut self, mut frame: Frame) -> Res {
+    pub fn vm_invoke(&mut self, mut frame: Box<Frame>) -> Res {
         match frame.kind {
             FrameKind::Generator | FrameKind::AsyncGenerator => {
                 let kind = frame.kind;

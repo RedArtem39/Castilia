@@ -163,6 +163,7 @@ pub fn new_interp() -> Interp {
         vm_stats: Default::default(),
         vm_frames: 0,
         max_frames: 10_000,
+        frame_pool: Vec::new(),
         source_urls: BTreeMap::new(),
         interrupt: None,
         next_poll: 0,

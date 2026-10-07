@@ -55,8 +55,10 @@ fn one_inner(url: &str) {
                 println!("VM compiled={} fallbacks={} native={}", st.compiled, st.fallbacks, st.native_compiled);
             }
             let text_cmds = page.display.commands.iter().filter(|c| matches!(c, castilia::Command::Text { .. })).count();
+            // an (almost) empty document means the server refused us (bot protection), not a rendering failure
+            let status = if r.html_bytes < 1024 { "blocked" } else { "ok" };
             println!(
-                "RESULT ok ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={}",
+                "RESULT {status} ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={} html={}",
                 start.elapsed().as_millis(),
                 r.dom_nodes,
                 r.commands,
@@ -64,7 +66,8 @@ fn one_inner(url: &str) {
                 page.display.height as i64,
                 r.scripts,
                 r.scripts_executed,
-                r.script_errors
+                r.script_errors,
+                r.html_bytes
             );
         }
         Err(e) => println!("RESULT fetch-fail ms={} error={}", start.elapsed().as_millis(), e.replace('\n', " ")),
@@ -204,7 +207,7 @@ fn main() {
     for (idx, o) in &results {
         let key = if o.status.starts_with("crash") { "crash".to_string() } else { o.status.clone() };
         *counts.entry(key).or_default() += 1;
-        if o.status != "fetch-fail" {
+        if o.status != "fetch-fail" && o.status != "blocked" {
             reachable += 1;
         }
         let text = field(&o.line, "text").unwrap_or(0);

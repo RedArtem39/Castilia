@@ -208,6 +208,8 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Finished frames kept for reuse (their buffers keep their capacity).
+    pub frame_pool: Vec<alloc::boxed::Box<super::vm::Frame>>,
     /// Module URL of each module's source text (keyed by the `Rc<str>` address).
     pub source_urls: BTreeMap<usize, String>,
     /// Host-provided stop signal, polled every `next_poll` ticks.
@@ -493,25 +495,8 @@ impl Interp {
             }
         }
         self.hoist_block(&prog.body, &env, true)?;
-        let nregs = code.nregs as usize;
-        let frame = super::vm::Frame {
-            code,
-            pc: 0,
-            stack: Vec::with_capacity(8),
-            regs: alloc::vec![Value::Undefined; nregs],
-            env: env.clone(),
-            scopes: Vec::new(),
-            fenv: env,
-            handlers: Vec::new(),
-            completions: Vec::new(),
-            args: Vec::new(),
-            callee: None,
-            kind: super::vm::FrameKind::Normal,
-            promise: None,
-            pending_resume: None,
-            yield_raw: false,
-            this: Some(Value::Obj(self.global.clone())),
-        };
+        let this = Some(Value::Obj(self.global.clone()));
+        let frame = self.take_frame(code, env.clone(), env, &[], None, super::vm::FrameKind::Normal, this);
         match self.vm_run(frame) {
             super::vm::Outcome::Return(v) => Ok(v),
             super::vm::Outcome::Throw(e) => Err(Ctl::Throw(e)),
