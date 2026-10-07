@@ -77,7 +77,7 @@ pub fn new_interp() -> Interp {
     };
     let global = Obj::new(Object::new(Some(object.clone()), Class::Window));
     let global_env = Rc::new(Scope {
-        vars: RefCell::new(BTreeMap::new()),
+        vars: RefCell::new(VarMap::new()),
         parent: None,
         with_obj: None,
         func: Some(FuncCtx { this: RefCell::new(Some(Value::Obj(global.clone()))), callee: None, new_target: Value::Undefined, home: None, is_global: true, strict: false }),

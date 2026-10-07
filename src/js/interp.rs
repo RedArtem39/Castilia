@@ -27,8 +27,59 @@ pub struct FuncCtx {
     pub strict: bool,
 }
 
+/// Variable table: linear scan while small (most scopes), tree once it grows (global scope).
+pub enum VarMap {
+    Small(Vec<(Name, Var)>),
+    Big(BTreeMap<Name, Var>),
+}
+
+impl VarMap {
+    pub fn new() -> VarMap {
+        VarMap::Small(Vec::new())
+    }
+    pub fn get(&self, k: &Name) -> Option<&Var> {
+        match self {
+            VarMap::Small(v) => v.iter().find(|e| e.0 == *k).map(|e| &e.1),
+            VarMap::Big(m) => m.get(k),
+        }
+    }
+    pub fn get_mut(&mut self, k: &Name) -> Option<&mut Var> {
+        match self {
+            VarMap::Small(v) => v.iter_mut().find(|e| e.0 == *k).map(|e| &mut e.1),
+            VarMap::Big(m) => m.get_mut(k),
+        }
+    }
+    pub fn contains_key(&self, k: &Name) -> bool {
+        self.get(k).is_some()
+    }
+    pub fn insert(&mut self, k: Name, val: Var) {
+        match self {
+            VarMap::Small(v) => {
+                if let Some(e) = v.iter_mut().find(|e| e.0 == k) {
+                    e.1 = val;
+                } else if v.len() >= 16 {
+                    let mut m: BTreeMap<Name, Var> = core::mem::take(v).into_iter().collect();
+                    m.insert(k, val);
+                    *self = VarMap::Big(m);
+                } else {
+                    v.push((k, val));
+                }
+            }
+            VarMap::Big(m) => {
+                m.insert(k, val);
+            }
+        }
+    }
+    pub fn entries(&self) -> Vec<(Name, &Var)> {
+        match self {
+            VarMap::Small(v) => v.iter().map(|e| (e.0, &e.1)).collect(),
+            VarMap::Big(m) => m.iter().map(|(k, v)| (*k, v)).collect(),
+        }
+    }
+}
+
 pub struct Scope {
-    pub vars: RefCell<BTreeMap<Name, Var>>,
+    pub vars: RefCell<VarMap>,
     pub parent: Option<Env>,
     pub func: Option<FuncCtx>,
     /// Object environment record introduced by a `with` statement.
@@ -208,13 +259,14 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn new_scope(&self, parent: &Env, func: Option<FuncCtx>) -> Env {
-        Rc::new(Scope { vars: RefCell::new(BTreeMap::new()), parent: Some(parent.clone()), func, with_obj: None })
+        Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(parent.clone()), func, with_obj: None })
     }
 
     pub fn declare(&self, env: &Env, name: Name, kind: u8, v: Value, init: bool) {
         env.vars.borrow_mut().insert(name, Var { v, kind, init });
     }
 
+    #[inline]
     fn with_has(&mut self, cur: &Env, name: Name) -> Res<Option<Obj>> {
         if let Some(o) = &cur.with_obj {
             let key = Key::S(self.interner.get(name).clone());
@@ -859,7 +911,7 @@ impl Interp {
             Stmt::With(obj, body) => {
                 let v = self.eval(obj, env)?;
                 let o = self.to_object(&v)?;
-                let scope = Rc::new(Scope { vars: RefCell::new(BTreeMap::new()), parent: Some(env.clone()), func: None, with_obj: Some(o) });
+                let scope = Rc::new(Scope { vars: RefCell::new(VarMap::new()), parent: Some(env.clone()), func: None, with_obj: Some(o) });
                 self.exec(body, &scope, &mut Vec::new())
             }
             Stmt::Break(l) => Err(Ctl::Break(*l)),
@@ -1023,13 +1075,13 @@ impl Interp {
                         break;
                     }
                     // fresh per-iteration copy of the loop variables (closures capture each iteration)
-                    if !lets.is_empty() {
+                    if !lets.is_empty() && Rc::strong_count(&scope) > 1 {
                         let next = self.new_scope(env, None);
                         {
                             let old = scope.vars.borrow();
                             let mut nv = next.vars.borrow_mut();
-                            for (k, v) in old.iter() {
-                                nv.insert(*k, Var { v: v.v.clone(), kind: v.kind, init: v.init });
+                            for (k, v) in old.entries() {
+                                nv.insert(k, Var { v: v.v.clone(), kind: v.kind, init: v.init });
                             }
                         }
                         scope = next;

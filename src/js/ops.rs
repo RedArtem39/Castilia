@@ -757,6 +757,9 @@ impl Interp {
                             f64::NAN
                         } else if b.is_infinite() {
                             a
+                        } else if a >= 0.0 && b > 0.0 && a < 9.0e15 && b < 9.0e15 && a == (a as i64) as f64 && b == (b as i64) as f64 {
+                            // integer fast path (libm fmod is slow)
+                            ((a as i64) % (b as i64)) as f64
                         } else {
                             a % b
                         }

@@ -69,7 +69,7 @@ impl Interp {
         self.define_data(&ns, tag, Value::str("Module"), 0);
         self.modules.insert(url.to_string(), ns.clone());
         let env = Rc::new(Scope {
-            vars: RefCell::new(BTreeMap::new()),
+            vars: RefCell::new(VarMap::new()),
             parent: Some(self.global_env.clone()),
             func: Some(FuncCtx { this: RefCell::new(Some(Value::Undefined)), callee: None, new_target: Value::Undefined, home: None, is_global: false, strict: true }),
             with_obj: None,
