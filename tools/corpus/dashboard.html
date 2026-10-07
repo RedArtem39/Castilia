@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Dashboard</title><style>
+*{box-sizing:border-box}body{margin:0;font:14px/1.5 system-ui,sans-serif;background:#f4f6fb;color:#2d3748;height:100vh;display:flex}
+.sidebar{width:220px;background:#1a202c;color:#cbd5e0;padding:20px 0;flex-shrink:0}
+.sidebar h2{color:#fff;margin:0 20px 20px;font-size:18px}.sidebar a{display:block;padding:10px 20px;color:inherit;text-decoration:none}.sidebar a.active{background:#2d3748;color:#fff;border-left:3px solid #63b3ed}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:56px;background:#fff;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;padding:0 24px;justify-content:space-between}
+.top input{border:1px solid #e2e8f0;border-radius:6px;padding:6px 10px;width:240px}
+.content{padding:24px;overflow:auto;flex:1}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.stat .n{font-size:28px;font-weight:700}.stat .l{color:#718096;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+.up{color:#38a169}.down{color:#e53e3e}
+.panels{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.panel{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:160px;margin-top:12px}.bars div{flex:1;background:#63b3ed;border-radius:4px 4px 0 0}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:8px;border-bottom:1px solid #edf2f7}th{font-size:12px;color:#718096;text-transform:uppercase}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px}.ok{background:#c6f6d5;color:#22543d}.warn{background:#fefcbf;color:#744210}
+</style></head><body>
+<aside class="sidebar"><h2>Admin</h2><a class="active">Dashboard</a><a>Orders</a><a>Customers</a><a>Reports</a><a>Settings</a></aside>
+<div class="main"><div class="top"><input placeholder="Search..."><span>Hello, Sam</span></div>
+<div class="content"><div class="stats"><div class="stat"><div class="l">Revenue</div><div class="n">$48,290</div><div class="up">▲ 12.5%</div></div><div class="stat"><div class="l">Orders</div><div class="n">1,204</div><div class="up">▲ 3.2%</div></div><div class="stat"><div class="l">Visitors</div><div class="n">32.4k</div><div class="down">▼ 1.1%</div></div><div class="stat"><div class="l">Refunds</div><div class="n">18</div><div class="down">▼ 4.0%</div></div></div>
+<div class="panels"><div class="panel"><strong>Sales</strong><div class="bars"><div style="height:40%"></div><div style="height:65%"></div><div style="height:50%"></div><div style="height:85%"></div><div style="height:70%"></div><div style="height:95%"></div><div style="height:60%"></div></div></div>
+<div class="panel"><strong>Recent orders</strong><table><tr><th>ID</th><th>Status</th></tr><tr><td>#1001</td><td><span class="pill ok">Paid</span></td></tr><tr><td>#1002</td><td><span class="pill warn">Pending</span></td></tr><tr><td>#1003</td><td><span class="pill ok">Paid</span></td></tr></table></div></div></div></div>
+</body></html>

@@ -1,0 +1,48 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Blog</title><link rel="stylesheet" href="node_modules/normalize.css/normalize.css">
+<style>
+:root{--bg:#fff;--fg:#222;--muted:#666;--accent:#0a58ca;--max:720px}
+*,*::before,*::after{box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6;color:var(--fg);background:var(--bg);margin:0}
+header.site{position:sticky;top:0;background:#fff;border-bottom:1px solid #e5e5e5;z-index:10}
+header.site .inner{max-width:var(--max);margin:0 auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+header.site a{color:var(--fg);text-decoration:none;margin-left:16px}
+header.site .logo{font-weight:700;margin-left:0}
+main{max-width:var(--max);margin:32px auto;padding:0 16px}
+h1{font-size:2.25rem;line-height:1.2;margin:0 0 .5rem}
+.meta{color:var(--muted);font-size:.875rem;margin-bottom:2rem}
+.meta span+span::before{content:" · "}
+p{margin:0 0 1.25rem}
+a{color:var(--accent)}
+blockquote{margin:1.5rem 0;padding:.5rem 1rem;border-left:4px solid #ddd;color:#444;background:#fafafa}
+pre{background:#f6f8fa;padding:16px;overflow:auto;border-radius:6px;font-size:85%;line-height:1.45}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.9em;background:#f0f0f0;padding:.15em .35em;border-radius:4px}
+pre code{background:none;padding:0}
+figure{margin:2rem 0}
+figcaption{color:var(--muted);font-size:.85rem;text-align:center;margin-top:.5rem}
+.tags a{display:inline-block;background:#eef;padding:2px 10px;border-radius:999px;font-size:.8rem;text-decoration:none;margin:0 6px 6px 0}
+footer{border-top:1px solid #e5e5e5;margin-top:3rem;padding:2rem 16px;text-align:center;color:var(--muted);font-size:.9rem}
+.card{border:1px solid #e5e5e5;border-radius:8px;padding:16px;margin:2rem 0;display:grid;grid-template-columns:64px 1fr;gap:16px;align-items:center}
+.avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#f6d365,#fda085)}
+</style></head><body>
+<header class="site"><div class="inner"><a class="logo" href="#">My Blog</a><nav><a href="#">Posts</a><a href="#">About</a><a href="#">RSS</a></nav></div></header>
+<main><article>
+<h1>How the layout engine works</h1>
+<div class="meta"><span>Jane Doe</span><span>March 3, 2024</span><span>8 min read</span></div>
+<p>Lorem ipsum dolor sit amet, <a href="#">consectetur adipiscing elit</a>, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+<h2>A section heading</h2>
+<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<blockquote>Simplicity is prerequisite for reliability. — Edsger W. Dijkstra</blockquote>
+<pre><code>fn layout(node: &amp;Node) -&gt; Size {
+    let mut h = 0.0;
+    for child in &amp;node.children {
+        h += layout(child).height;
+    }
+    Size { width: 100.0, height: h }
+}</code></pre>
+<p>Inline <code>code samples</code> look like this, and lists are common too:</p>
+<ul><li>First item with some text</li><li>Second item<ol><li>Nested one</li><li>Nested two</li></ol></li><li>Third item</li></ul>
+<figure><div style="height:180px;background:linear-gradient(90deg,#74ebd5,#acb6e5);border-radius:6px"></div><figcaption>Figure 1. A colourful placeholder.</figcaption></figure>
+<div class="tags"><a href="#">layout</a><a href="#">css</a><a href="#">rust</a></div>
+<div class="card"><div class="avatar"></div><div><strong>Jane Doe</strong><br><span style="color:#666">Writes about engines and compilers.</span></div></div>
+</article></main>
+<footer>&copy; 2024 My Blog. All rights reserved.</footer></body></html>

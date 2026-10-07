@@ -56,6 +56,7 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
                 let fam = match family {
                     FontFamily::Serif => "Liberation Serif, serif",
                     FontFamily::Sans => "Liberation Sans, sans-serif",
+                    FontFamily::System => "Inter, sans-serif",
                     FontFamily::Monospace => "DejaVu Sans Mono, monospace",
                 };
                 if let Some(l) = link {

@@ -221,6 +221,8 @@ pub enum Align {
 pub enum FontFamily {
     Serif,
     Sans,
+    /// `system-ui` / `ui-sans-serif`: the platform UI font (hosts may map it to a different face).
+    System,
     Monospace,
 }
 
@@ -324,6 +326,7 @@ pub struct Style {
     pub visibility_visible: bool,
     pub opacity: f32,
     pub pointer_events: bool,
+    pub appearance_none: bool,
 
     pub width: Dim,
     pub height: Dim,
@@ -430,6 +433,7 @@ impl Style {
             visibility_visible: true,
             opacity: 1.0,
             pointer_events: true,
+            appearance_none: false,
             width: Dim::Auto,
             height: Dim::Auto,
             min_width: Dim::Auto,
@@ -1512,7 +1516,20 @@ fn build_style(parent: Option<&Style>, decls: &Cascaded, vp: Viewport, root_font
     for (_, d) in decls {
         if d.name.starts_with("--") {
             let v = vars.get_or_insert_with(|| (*style.vars).clone());
-            v.insert(d.name.clone(), d.value.clone());
+            match d.value.trim().to_ascii_lowercase().as_str() {
+                "initial" => {
+                    v.remove(&d.name);
+                }
+                "inherit" | "unset" => {
+                    match parent.and_then(|p| p.vars.get(&d.name)) {
+                        Some(pv) => v.insert(d.name.clone(), pv.clone()),
+                        None => v.remove(&d.name),
+                    };
+                }
+                _ => {
+                    v.insert(d.name.clone(), d.value.clone());
+                }
+            }
         }
     }
     if let Some(v) = vars {
@@ -1521,7 +1538,9 @@ fn build_style(parent: Option<&Style>, decls: &Cascaded, vp: Viewport, root_font
     let vars = style.vars.clone();
     let init = Style::initial();
     let resolve = |d: &Declaration| -> Option<String> {
-        substitute_vars(&d.value, &vars, 0)
+        let v = substitute_vars(&d.value, &vars, 0)?;
+        // an empty substitution is invalid at computed-value time: behaves like `unset`
+        if v.trim().is_empty() && d.value.contains("var(") { Some("unset".to_string()) } else { Some(v) }
     };
     // font-size and the `font` shorthand first so em units see the right size.
     let parent_font = parent.map_or(16.0, |p| p.font_size);
@@ -1731,7 +1750,8 @@ fn parse_font_family(v: &str) -> FontFamily {
             | "roboto mono" | "jetbrains mono" | "cascadia code" => return FontFamily::Monospace,
             "serif" | "ui-serif" | "times" | "times new roman" | "georgia" | "garamond" | "palatino" | "cambria"
             | "book antiqua" | "baskerville" | "liberation serif" | "dejavu serif" | "noto serif" => return FontFamily::Serif,
-            "sans-serif" | "system-ui" | "ui-sans-serif" | "-apple-system" | "blinkmacsystemfont" | "arial" | "helvetica"
+            "system-ui" | "ui-sans-serif" => return FontFamily::System,
+            "sans-serif" | "-apple-system" | "blinkmacsystemfont" | "arial" | "helvetica"
             | "helvetica neue" | "verdana" | "tahoma" | "trebuchet ms" | "segoe ui" | "roboto" | "open sans" | "lato"
             | "inter" | "ubuntu" | "liberation sans" | "dejavu sans" | "noto sans" | "calibri" | "sans" | "cantarell"
             | "oxygen" | "fira sans" | "source sans pro" | "montserrat" | "poppins" | "nunito" | "arimo" => {
@@ -1851,26 +1871,46 @@ struct BgParse {
 }
 
 fn parse_position(tokens: &[&str], ctx: &LenCtx) -> Option<(Dim, Dim)> {
-    let kw = |t: &str| -> Option<Dim> {
-        Some(match t {
-            "left" | "top" => Dim::pct(0.0),
-            "center" => Dim::pct(50.0),
-            "right" | "bottom" => Dim::pct(100.0),
-            _ => return None,
-        })
-    };
-    match tokens {
-        [a] => match *a {
-            "top" | "bottom" => Some((Dim::pct(50.0), kw(a)?)),
-            _ => Some((kw(a).or_else(|| parse_dim(a, ctx))?, Dim::pct(50.0))),
-        },
-        [a, b] => {
-            let vertical_first = matches!(*a, "top" | "bottom") || matches!(*b, "left" | "right");
-            let (x, y) = if vertical_first { (b, a) } else { (a, b) };
-            Some((kw(x).or_else(|| parse_dim(x, ctx))?, kw(y).or_else(|| parse_dim(y, ctx))?))
+    // Two-axis parser supporting `right 10px center` style offsets.
+    let mut x: Option<Dim> = None;
+    let mut y: Option<Dim> = None;
+    let mut lone: Vec<Dim> = Vec::new();
+    let mut i = 0;
+    while i < tokens.len() {
+        let t = tokens[i];
+        let is_kw = matches!(t, "left" | "right" | "top" | "bottom" | "center");
+        if is_kw {
+            let off = tokens.get(i + 1).filter(|n| !matches!(**n, "left" | "right" | "top" | "bottom" | "center")).and_then(|n| parse_dim(n, ctx));
+            let consumed = off.is_some();
+            let (px, pct) = match &off {
+                Some(Dim::Len(a, b)) => (*a, *b),
+                _ => (0.0, 0.0),
+            };
+            match t {
+                "left" => x = Some(Dim::Len(px, pct)),
+                "right" => x = Some(Dim::Len(-px, 100.0 - pct)),
+                "top" => y = Some(Dim::Len(px, pct)),
+                "bottom" => y = Some(Dim::Len(-px, 100.0 - pct)),
+                _ => lone.push(Dim::pct(50.0)),
+            }
+            i += 1 + consumed as usize;
+        } else {
+            lone.push(parse_dim(t, ctx)?);
+            i += 1;
         }
-        _ => None,
     }
+    // assign lone values (center / lengths) to the axes still unset, x first
+    for d in lone {
+        if x.is_none() {
+            x = Some(d);
+        } else if y.is_none() {
+            y = Some(d);
+        }
+    }
+    if x.is_none() && y.is_none() {
+        return None;
+    }
+    Some((x.unwrap_or(Dim::pct(50.0)), y.unwrap_or(Dim::pct(50.0))))
 }
 
 fn parse_background_layer(layer: &str, ctx: &LenCtx, current: Color) -> BgParse {
@@ -2226,6 +2266,7 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
             }
         }
         "pointer-events" => style.pointer_events = lv != "none",
+        "appearance" | "-webkit-appearance" | "-moz-appearance" => style.appearance_none = lv == "none",
         "width" | "inline-size" => {
             if let Some(d) = dim(value) {
                 style.width = d

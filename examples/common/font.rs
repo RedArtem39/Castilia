@@ -5,7 +5,7 @@ use std::{cell::RefCell, collections::BTreeMap};
 
 /// Host-only measurement using system fonts (sans-serif, serif and monospace, regular and bold).
 pub struct SystemFont {
-    fonts: [Option<FdFont>; 6],
+    fonts: [Option<FdFont>; 8],
     images: RefCell<BTreeMap<String, (f32, f32)>>,
 }
 
@@ -30,6 +30,7 @@ impl SystemFont {
         let sans = [Family::Name("Liberation Sans"), Family::Name("Arial"), Family::Name("Inter"), Family::Name("DejaVu Sans"), Family::SansSerif];
         let serif = [Family::Name("Liberation Serif"), Family::Name("Times New Roman"), Family::Name("DejaVu Serif"), Family::Serif];
         let mono = [Family::Name("DejaVu Sans Mono"), Family::Name("Liberation Mono"), Family::Name("Courier New"), Family::Monospace];
+        let system = [Family::Name("Inter"), Family::Name("Cantarell"), Family::Name("Liberation Sans"), Family::SansSerif];
         let fonts = [
             load(&database, &serif, false),
             load(&database, &serif, true),
@@ -37,6 +38,8 @@ impl SystemFont {
             load(&database, &sans, true),
             load(&database, &mono, false),
             load(&database, &mono, true),
+            load(&database, &system, false),
+            load(&database, &system, true),
         ];
         if fonts[2].is_none() && fonts.iter().all(|f| f.is_none()) {
             return Err("no system fonts found".into());
@@ -53,6 +56,7 @@ impl SystemFont {
             FontFamily::Serif => 0,
             FontFamily::Sans => 2,
             FontFamily::Monospace => 4,
+            FontFamily::System => 6,
         };
         let idx = base + (font.weight >= 600) as usize;
         self.fonts[idx]
@@ -70,6 +74,12 @@ fn width_with(font: &FdFont, text: &str, size: f32) -> f32 {
     for character in text.chars() {
         if let Some(left) = previous {
             width += font.horizontal_kern(left, character, size).unwrap_or(0.0);
+        }
+        if font.lookup_glyph_index(character) == 0 && !character.is_control() {
+            // Missing glyph: the browser falls back to another font (emoji are about 1.2em wide).
+            width += if character as u32 >= 0x2190 { size * 1.17 } else { size * 0.6 };
+            previous = None;
+            continue;
         }
         width += font.metrics(character, size).advance_width;
         previous = Some(character);

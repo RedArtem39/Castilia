@@ -544,6 +544,7 @@ impl<'a> Ctx<'a> {
             (w, w)
         } else if self.is_replaced(bx) {
             let a = Args::block(0.0, None);
+            let a = Args { shrink: true, ..a };
             let (w, _) = self.replaced_size(bx, s, &a, hpb, 0.0);
             (w + hpb, w + hpb)
         } else {

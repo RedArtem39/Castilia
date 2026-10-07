@@ -123,7 +123,7 @@ impl<'a> Ctx<'a> {
     pub fn replaced_size(&mut self, bx: Bx, s: &Style, a: &Args, hpb: f32, vpb: f32) -> (f32, f32) {
         let tag = self.tag(bx).unwrap_or("");
         let cb_h = a.cb_h;
-        let style_w = s.width.resolve(a.avail_w).map(|v| if s.border_box { (v - hpb).max(0.0) } else { v.max(0.0) });
+        let style_w = if a.shrink && s.width.has_percent() { None } else { s.width.resolve(a.avail_w) }.map(|v| if s.border_box { (v - hpb).max(0.0) } else { v.max(0.0) });
         let style_h = match &s.height {
             Dim::Len(_, pct) if *pct != 0.0 && cb_h.is_none() => None,
             d => d.resolve(cb_h.unwrap_or(0.0)).map(|v| if s.border_box { (v - vpb).max(0.0) } else { v.max(0.0) }),
@@ -163,7 +163,7 @@ impl<'a> Ctx<'a> {
             }
             "input" => {
                 let ty = self.attr(bx, "type").unwrap_or("text").to_ascii_lowercase();
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 let cw = self.char_width(s);
                 if TEXT_INPUTS.contains(&ty.as_str()) {
                     let size = self.attr(bx, "size").and_then(|v| v.parse::<f32>().ok()).filter(|v| *v > 0.0).unwrap_or(20.0);
@@ -187,7 +187,7 @@ impl<'a> Ctx<'a> {
                 default_box = natural.unwrap_or((0.0, lh));
             }
             "select" => {
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 let mut maxw = 0.0f32;
                 let doc = self.doc;
                 let mut stack: Vec<usize> = doc.nodes[bx.id].children.clone();
@@ -211,7 +211,7 @@ impl<'a> Ctx<'a> {
             "textarea" => {
                 let cols = self.attr(bx, "cols").and_then(|v| v.parse::<f32>().ok()).filter(|v| *v > 0.0).unwrap_or(20.0);
                 let rows = self.attr(bx, "rows").and_then(|v| v.parse::<f32>().ok()).filter(|v| *v > 0.0).unwrap_or(2.0);
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 natural = Some((cols * self.char_width(s) + 15.0, rows * lh));
                 default_box = natural.unwrap_or((0.0, 0.0));
             }
@@ -336,9 +336,10 @@ impl<'a> Ctx<'a> {
             }
             "input" => {
                 let ty = self.attr(bx, "type").unwrap_or("text").to_ascii_lowercase();
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 let ty = ty.as_str();
-                if ty == "checkbox" || ty == "radio" {
+                if (ty == "checkbox" || ty == "radio") && s.appearance_none {
+                } else if ty == "checkbox" || ty == "radio" {
                     let checked = self.attr(bx, "checked").is_some();
                     let round = if ty == "radio" { cw / 2.0 } else { 2.0 };
                     let (fill, edge) = if checked { (0xff0075ffu32, 0xff0075ffu32) } else { (0xffffffff, 0xff767676) };
@@ -391,7 +392,7 @@ impl<'a> Ctx<'a> {
             "textarea" => {
                 let content = doc.text_content(bx.id).unwrap_or_default();
                 let placeholder = self.attr(bx, "placeholder").unwrap_or("").to_string();
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
                 let (body, c) = if content.is_empty() { (placeholder, 0xff757575u32) } else { (content, s.color) };
                 for (i, line) in body.trim_start_matches('\n').split('\n').enumerate() {
@@ -402,14 +403,14 @@ impl<'a> Ctx<'a> {
                 out.paint.cmds.push(Command::PopClip);
             }
             "select" => {
-                let lh = self.normal_line_height(s);
+                let lh = self.used_line_height(s);
                 let t = self.selected_option_text(bx);
                 out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
                 if !t.is_empty() {
                     text(self, &mut out.paint, 2.0, ((ch - lh) / 2.0).max(0.0), t, s.color);
                 }
                 out.paint.cmds.push(Command::PopClip);
-                if self.attr(bx, "multiple").is_none() && self.attr(bx, "size").is_none() {
+                if self.attr(bx, "multiple").is_none() && self.attr(bx, "size").is_none() && !s.appearance_none {
                     text(self, &mut out.paint, cw - 14.0, ((ch - lh) / 2.0).max(0.0), "\u{25be}".into(), s.color);
                 }
             }

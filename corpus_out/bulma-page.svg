@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1353" viewBox="0 0 1000 1353">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="0" y="204" width="1000" height="349" rx="0" fill="#66d1ff" fill-opacity="1"/>
+<text x="72" y="377" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="32" font-weight="800" font-style="normal" fill="#002433" fill-opacity="1" xml:space="preserve">Hero title</text>
+<text x="72" y="404" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="400" font-style="normal" fill="#002433" fill-opacity="1" xml:space="preserve">Hero subtitle</text>
+<defs><filter id="s1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter></defs><rect x="26" y="611" width="297.33334" height="237" rx="12" fill="#090a0c" fill-opacity="0.101960786" filter="url(#s1)"/>
+<defs><filter id="s2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="23" y="600" width="303.33334" height="243" rx="12" fill="#090a0c" fill-opacity="0.019607844" filter="url(#s2)"/>
+<rect x="24" y="601" width="301" height="241" rx="12" fill="#ffffff" fill-opacity="1"/>
+<defs><filter id="s3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect x="24" y="603" width="301.33334" height="48" rx="0" fill="#090a0c" fill-opacity="0.101960786" filter="url(#s3)"/>
+<text x="40" y="631" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Component</text>
+<text x="48" y="691" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet,</text>
+<text x="48" y="715" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">consectetur adipiscing elit.</text>
+<a href="#"><text x="48" y="739" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">@bulmaio</text></a>
+<text x="120.27344" y="739" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">.</text>
+<a href="#"><text x="129.16406" y="739" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">#css</text></a>
+<a href="#"><text x="166.50781" y="739" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">#responsive</text></a>
+<text x="48" y="763" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">11:09 PM - 1 Jan 2016</text>
+<polygon points="24,793 325,793 325,794 24,794" fill="#ebecf0" fill-opacity="1"/>
+<polygon points="125,794 125,842 124,842 124,794" fill="#ebecf0" fill-opacity="1"/>
+<a href="#"><text x="55.654514" y="824" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">Save</text></a>
+<polygon points="226,794 226,842 225,842 225,794" fill="#ebecf0" fill-opacity="1"/>
+<a href="#"><text x="160.88152" y="824" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">Edit</text></a>
+<a href="#"><text x="252.31944" y="824" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2942ff" fill-opacity="1" xml:space="preserve">Delete</text></a>
+<defs><filter id="s4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter></defs><rect x="351.33334" y="611" width="297.33334" height="159" rx="12" fill="#090a0c" fill-opacity="0.101960786" filter="url(#s4)"/>
+<defs><filter id="s5" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="348.33334" y="600" width="303.33334" height="165" rx="12" fill="#090a0c" fill-opacity="0.019607844" filter="url(#s5)"/>
+<rect x="349" y="601" width="302" height="163" rx="12" fill="#ffffff" fill-opacity="1"/>
+<text x="369.33334" y="643" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="800" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">A box</text>
+<text x="369.33334" y="690" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">Everything you need to</text>
+<text x="537.44275" y="690" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">build</text>
+<text x="580.099" y="690" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">a</text>
+<text x="369.33334" y="714" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">website.</text>
+<text x="378.33334" y="736" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#001f1a" fill-opacity="1" xml:space="preserve">primary</text>
+<text x="444.3353" y="736" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#80001a" fill-opacity="1" xml:space="preserve">danger</text>
+<text x="507.70053" y="736" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">plain</text>
+<rect x="675" y="601" width="301" height="92" rx="6" fill="#ffb70f" fill-opacity="1"/>
+<text x="698.6667" y="641" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#291d00" fill-opacity="1" xml:space="preserve">Primar lorem ipsum dolor sit amet,</text>
+<text x="698.6667" y="665" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#291d00" fill-opacity="1" xml:space="preserve">consectetur adipiscing elit.</text>
+<rect x="675" y="717" width="301" height="16" rx="8" fill="#e6e6e6" fill-opacity="1"/>
+<clipPath id="c6"><rect x="674.6667" y="717" width="301.33334" height="16" rx="9999"/></clipPath><g clip-path="url(#c6)">
+<rect x="675" y="717" width="135" height="16" rx="0" fill="#0075ff" fill-opacity="1"/>
+</g>
+<rect x="24" y="866" width="952" height="123" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="24" y="949" width="952" height="40" rx="0" fill="#f9fafb" fill-opacity="1"/>
+<polygon points="24,908 252,908 252,906 24,906" fill="#d6d9e0" fill-opacity="1"/>
+<text x="36" y="892" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Pos</text>
+<polygon points="252,908 767,908 767,906 252,906" fill="#d6d9e0" fill-opacity="1"/>
+<text x="263.56018" y="892" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Team</text>
+<polygon points="767,908 976,908 976,906 767,906" fill="#d6d9e0" fill-opacity="1"/>
+<text x="779.4032" y="892" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Pts</text>
+<polygon points="24,949 252,949 252,948 24,948" fill="#d6d9e0" fill-opacity="1"/>
+<text x="36" y="934" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">1</text>
+<polygon points="252,949 767,949 767,948 252,948" fill="#d6d9e0" fill-opacity="1"/>
+<text x="263.56018" y="934" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Leicester City</text>
+<polygon points="767,949 976,949 976,948 767,948" fill="#d6d9e0" fill-opacity="1"/>
+<text x="779.4032" y="934" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">81</text>
+<text x="36" y="975" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">2</text>
+<text x="263.56018" y="975" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Arsenal</text>
+<text x="779.4032" y="975" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">71</text>
+<text x="24" y="1031" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Name</text>
+<rect x="24" y="1045" width="237" height="40" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="24.5" y="1045.5" width="236" height="39" rx="5.5" fill="none" stroke="#000000" stroke-opacity="0" stroke-width="1"/>
+<clipPath id="c7"><rect x="36" y="1053" width="213" height="24" rx="0"/></clipPath><g clip-path="url(#c7)">
+<text x="36" y="1067" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">Text input</text>
+</g>
+<defs><filter id="s8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="24" y="1098" width="81.796875" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s8)"/>
+<defs><filter id="s9" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect x="24" y="1099" width="81.796875" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s9)"/>
+<text x="40" y="1123" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#f5f6ff" fill-opacity="1" xml:space="preserve">Submit</text>
+<defs><filter id="s10" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="117.796875" y="1098" width="81.80469" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s10)"/>
+<defs><filter id="s11" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect x="117.796875" y="1099" width="81.80469" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s11)"/>
+<text x="133.79688" y="1123" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#0014a8" fill-opacity="1" xml:space="preserve">Cancel</text>
+<rect x="0" y="1185" width="1000" height="168" rx="0" fill="#f9fafb" fill-opacity="1"/>
+<text x="284.3672" y="1251" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Bulma</text>
+<text x="337.71094" y="1251" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#404654" fill-opacity="1" xml:space="preserve">by Jeremy Thomas. The source code is licensed MIT.</text>
+<rect x="0" y="0" width="1000" height="204" rx="0" fill="#00d1b2" fill-opacity="1"/>
+<a href="#"><text x="12" y="26" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Bulma</text></a>
+<defs><filter id="s12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter></defs><rect x="0" y="60" width="1000" height="152" rx="0" fill="#090a0c" fill-opacity="0.101960786" filter="url(#s12)"/>
+<rect x="0" y="52" width="1000" height="152" rx="0" fill="#00d1b2" fill-opacity="1"/>
+<text x="12" y="86" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#001f1a" fill-opacity="1" xml:space="preserve">Home</text>
+<text x="12" y="126" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#001f1a" fill-opacity="1" xml:space="preserve">Documentation</text>
+<defs><filter id="s13" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="12" y="149" width="75.59375" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s13)"/>
+<defs><filter id="s14" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect x="12" y="150" width="75.59375" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s14)"/>
+<text x="28" y="174" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#2e333d" fill-opacity="1" xml:space="preserve">Log in</text>
+<defs><filter id="s15" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="99.59375" y="149" width="86.265625" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s15)"/>
+<defs><filter id="s16" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2"/></filter></defs><rect x="99.59375" y="150" width="86.265625" height="40" rx="6" fill="#333333" fill-opacity="0" filter="url(#s16)"/>
+<text x="115.59375" y="174" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#f5f6ff" fill-opacity="1" xml:space="preserve">Sign up</text>
+</svg>

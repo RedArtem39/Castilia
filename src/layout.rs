@@ -1058,6 +1058,11 @@ impl<'a> Ctx<'a> {
             self.paint_background_image(paint, s, rect, &border);
         }
         for sh in s.shadows.iter().filter(|x| x.inset) {
+            // A huge-spread inset shadow is the "solid overlay" trick (e.g. striped tables).
+            if sh.blur == 0.0 && sh.dx == 0.0 && sh.dy == 0.0 && sh.spread >= rect.width.max(rect.height) / 2.0 {
+                paint.cmds.push(Command::FillRect { rect, color: sh.color, radius: s.border_radius });
+                continue;
+            }
             paint.cmds.push(Command::Shadow {
                 rect,
                 radius: s.border_radius,

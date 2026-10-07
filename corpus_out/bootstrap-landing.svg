@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1660" viewBox="0 0 1000 1660">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<rect x="0" y="0" width="1000" height="56" rx="0" fill="#212529" fill-opacity="1"/>
+<a href="#"><text x="32" y="35" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Brand</text></a>
+<a href="#"><text x="111.9082" y="34" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Home</text></a>
+<a href="#"><text x="172.73633" y="34" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.54901963" xml:space="preserve">Features</text></a>
+<a href="#"><text x="254.98633" y="34" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.54901963" xml:space="preserve">Pricing</text></a>
+<a href="#"><text x="323.38477" y="34" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.54901963" xml:space="preserve">Dropdown</text></a>
+<polygon points="406,25 416,25 411,30 411,30" fill="#ffffff" fill-opacity="0.54901963"/>
+<polygon points="416,25 416,30 411,30 411,30" fill="#000000" fill-opacity="0"/>
+<polygon points="406,25 406,30 411,30 411,30" fill="#000000" fill-opacity="0"/>
+<rect x="618" y="9" width="263" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="618.5" y="9.5" width="262" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c1"><rect x="630.7969" y="16" width="237" height="24" rx="0"/></clipPath><g clip-path="url(#c1)">
+<text x="630.7969" y="32" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">Search</text>
+</g>
+<rect x="889.5" y="9.5" width="78" height="37" rx="5.5" fill="none" stroke="#198754" stroke-opacity="1" stroke-width="1"/>
+<text x="901.7969" y="34" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#198754" fill-opacity="1" xml:space="preserve">Search</text>
+<rect x="0" y="56" width="1000" height="362" rx="0" fill="#f8f9fa" fill-opacity="1"/>
+<text x="32" y="153" letter-spacing="0" font-family="Inter, sans-serif" font-size="50.6" font-weight="700" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Hello, world!</text>
+<text x="32" y="195" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="300" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to</text>
+<text x="32" y="225" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="300" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">featured content or information.</text>
+<polygon points="32,257 968,257 968,258 32,258" fill="#212529" fill-opacity="0.2509804"/>
+<clipPath id="c2"><rect x="32" y="257.72" width="936" height="0" rx="0"/></clipPath><g clip-path="url(#c2)">
+</g>
+<text x="32" y="300" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">It uses utility classes for typography and spacing to space content out within the larger container.</text>
+<rect x="32" y="322" width="142" height="48" rx="8" fill="#0d6efd" fill-opacity="1"/>
+<rect x="32.5" y="322.5" width="141" height="47" rx="7.5" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="49" y="353" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Learn more</text></a>
+<rect x="178.5" y="322.5" width="135" height="47" rx="7.5" fill="none" stroke="#6c757d" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="195.3711" y="353" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="400" font-style="normal" fill="#6c757d" fill-opacity="1" xml:space="preserve">Secondary</text></a>
+<rect x="32" y="442" width="296" height="274" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="32.5" y="442.5" width="295" height="273" rx="5.5" fill="none" stroke="#000000" stroke-opacity="0.1764706" stroke-width="1"/>
+<text x="49" y="478" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="500" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Card one</text>
+<text x="49" y="502" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#212529" fill-opacity="0.7490196" xml:space="preserve">Subtitle</text>
+<text x="49" y="532" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Some quick example text to build</text>
+<text x="49" y="556" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">on the card title and make up the</text>
+<text x="49" y="580" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">bulk of the card&apos;s content.</text>
+<a href="#"><text x="49" y="620" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0d6efd" fill-opacity="1" xml:space="preserve" text-decoration="underline">Card link</text></a>
+<a href="#"><text x="131.97656" y="620" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0d6efd" fill-opacity="1" xml:space="preserve" text-decoration="underline">Another link</text></a>
+<rect x="352" y="442" width="296" height="274" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="352.5" y="442.5" width="295" height="273" rx="5.5" fill="none" stroke="#000000" stroke-opacity="0.1764706" stroke-width="1"/>
+<rect x="353" y="443" width="294" height="41" rx="5" fill="#212529" fill-opacity="0.03137255"/>
+<polygon points="353,484 647,484 647,483 353,483" fill="#000000" fill-opacity="0.1764706"/>
+<text x="368.99997" y="469" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Featured</text>
+<text x="368.99997" y="519" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="500" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Special title</text>
+<text x="368.99997" y="550" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">With supporting text below as a</text>
+<text x="368.99997" y="574" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">natural lead-in to additional</text>
+<text x="368.99997" y="598" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">content.</text>
+<rect x="369" y="620" width="141" height="38" rx="6" fill="#0d6efd" fill-opacity="1"/>
+<rect x="369.5" y="620.5" width="140" height="37" rx="5.5" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="381.99997" y="645" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Go somewhere</text></a>
+<rect x="353" y="674" width="294" height="41" rx="5" fill="#212529" fill-opacity="0.03137255"/>
+<polygon points="353,674 647,674 647,675 353,675" fill="#000000" fill-opacity="0.1764706"/>
+<text x="368.99997" y="701" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="0.7490196" xml:space="preserve">2 days ago</text>
+<rect x="672" y="442" width="296" height="274" rx="6" fill="#0d6efd" fill-opacity="1"/>
+<rect x="672.5" y="442.5" width="295" height="273" rx="5.5" fill="none" stroke="#000000" stroke-opacity="0.1764706" stroke-width="1"/>
+<text x="688.99994" y="478" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="500" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Primary card</text>
+<text x="688.99994" y="509" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Some quick example text to build</text>
+<text x="688.99994" y="533" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">on the card title.</text>
+<rect x="32" y="740" width="936" height="58" rx="6" fill="#d1e7dd" fill-opacity="1"/>
+<rect x="32.5" y="740.5" width="935" height="57" rx="5.5" fill="none" stroke="#a3cfbb" stroke-opacity="1" stroke-width="1"/>
+<text x="49" y="775" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0a3622" fill-opacity="1" xml:space="preserve">A simple success alert — check it out!</text>
+<rect x="32" y="814" width="936" height="58" rx="6" fill="#fff3cd" fill-opacity="1"/>
+<rect x="32.5" y="814.5" width="935" height="57" rx="5.5" fill="none" stroke="#ffe69c" stroke-opacity="1" stroke-width="1"/>
+<text x="49" y="849" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#664d03" fill-opacity="1" xml:space="preserve">Holy guacamole!</text>
+<text x="184.77344" y="849" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#664d03" fill-opacity="1" xml:space="preserve">You should check in on some of those fields below.</text>
+<rect x="32" y="896" width="62" height="20" rx="6" fill="#0d6efd" fill-opacity="1"/>
+<text x="39.8" y="911" letter-spacing="0" font-family="Inter, sans-serif" font-size="12" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Primary</text>
+<rect x="98" y="896" width="79" height="20" rx="6" fill="#6c757d" fill-opacity="1"/>
+<text x="105.84336" y="911" letter-spacing="0" font-family="Inter, sans-serif" font-size="12" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Secondary</text>
+<rect x="182" y="896" width="33" height="20" rx="10" fill="#dc3545" fill-opacity="1"/>
+<text x="189.48242" y="911" letter-spacing="0" font-family="Inter, sans-serif" font-size="12" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Pill</text>
+<rect x="219" y="888" width="73" height="38" rx="6" fill="#0d6efd" fill-opacity="1"/>
+<rect x="219.5" y="888.5" width="72" height="37" rx="5.5" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<text x="234.56366" y="913" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Inbox</text>
+<rect x="271" y="879" width="39" height="20" rx="10" fill="#dc3545" fill-opacity="1"/>
+<text x="278.82343" y="893" letter-spacing="0" font-family="Inter, sans-serif" font-size="12" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">99+</text>
+<rect x="32" y="942" width="64" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="32" y="942" width="64" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="32,983 96,983 96,982 32,982" fill="#dee2e6" fill-opacity="1"/>
+<text x="40" y="968" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">#</text>
+<rect x="96" y="942" width="152" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="96" y="942" width="152" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="96,983 248,983 248,982 96,982" fill="#dee2e6" fill-opacity="1"/>
+<text x="104.07219" y="968" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">First</text>
+<rect x="248" y="942" width="207" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="248" y="942" width="207" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="248,983 455,983 455,982 248,982" fill="#dee2e6" fill-opacity="1"/>
+<text x="256.21753" y="968" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Last</text>
+<rect x="455" y="942" width="193" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="455" y="942" width="193" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="455,983 648,983 648,982 455,982" fill="#dee2e6" fill-opacity="1"/>
+<text x="462.9865" y="968" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Handle</text>
+<rect x="32" y="983" width="64" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="32" y="983" width="64" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="32,1024 96,1024 96,1023 32,1023" fill="#dee2e6" fill-opacity="1"/>
+<text x="40" y="1009" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">1</text>
+<rect x="96" y="983" width="152" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="96" y="983" width="152" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="96,1024 248,1024 248,1023 96,1023" fill="#dee2e6" fill-opacity="1"/>
+<text x="104.07219" y="1009" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Mark</text>
+<rect x="248" y="983" width="207" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="248" y="983" width="207" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="248,1024 455,1024 455,1023 248,1023" fill="#dee2e6" fill-opacity="1"/>
+<text x="256.21753" y="1009" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Otto</text>
+<rect x="455" y="983" width="193" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="455" y="983" width="193" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="455,1024 648,1024 648,1023 455,1023" fill="#dee2e6" fill-opacity="1"/>
+<text x="462.9865" y="1009" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">@mdo</text>
+<rect x="32" y="1024" width="64" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="32" y="1024" width="64" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="32,1065 96,1065 96,1064 32,1064" fill="#dee2e6" fill-opacity="1"/>
+<text x="40" y="1050" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">2</text>
+<rect x="96" y="1024" width="152" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="96" y="1024" width="152" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="96,1065 248,1065 248,1064 96,1064" fill="#dee2e6" fill-opacity="1"/>
+<text x="104.07219" y="1050" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Jacob</text>
+<rect x="248" y="1024" width="207" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="248" y="1024" width="207" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="248,1065 455,1065 455,1064 248,1064" fill="#dee2e6" fill-opacity="1"/>
+<text x="256.21753" y="1050" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Thornton</text>
+<rect x="455" y="1024" width="193" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="455" y="1024" width="193" height="41" rx="0" fill="#000000" fill-opacity="0"/>
+<polygon points="455,1065 648,1065 648,1064 455,1064" fill="#dee2e6" fill-opacity="1"/>
+<text x="462.9865" y="1050" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">@fat</text>
+<rect x="32" y="1065" width="64" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="32" y="1065" width="64" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="32,1106 96,1106 96,1105 32,1105" fill="#dee2e6" fill-opacity="1"/>
+<text x="40" y="1091" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">3</text>
+<rect x="96" y="1065" width="359" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="96" y="1065" width="359" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="96,1106 455,1106 455,1105 96,1105" fill="#dee2e6" fill-opacity="1"/>
+<text x="104.07219" y="1091" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Larry the Bird</text>
+<rect x="455" y="1065" width="193" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="455" y="1065" width="193" height="41" rx="0" fill="#000000" fill-opacity="0.050980393"/>
+<polygon points="455,1106 648,1106 648,1105 455,1105" fill="#dee2e6" fill-opacity="1"/>
+<text x="462.9865" y="1091" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">@twitter</text>
+<rect x="32" y="1122" width="92" height="38" rx="6" fill="#e9ecef" fill-opacity="1"/>
+<rect x="32.5" y="1122.5" width="91" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="45" y="1147" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="0.7490196" xml:space="preserve">Previous</text></a>
+<rect x="154" y="1122" width="36" height="38" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="154.5" y="1122.5" width="35" height="37" rx="0" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="167.44531" y="1147" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0d6efd" fill-opacity="1" xml:space="preserve">2</text></a>
+<rect x="189" y="1122" width="36" height="38" rx="0" fill="#ffffff" fill-opacity="1"/>
+<rect x="189.5" y="1122.5" width="35" height="37" rx="0" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="202.20313" y="1147" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0d6efd" fill-opacity="1" xml:space="preserve">3</text></a>
+<rect x="224" y="1122" width="61" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="224.5" y="1122.5" width="60" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="237.08594" y="1147" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0d6efd" fill-opacity="1" xml:space="preserve">Next</text></a>
+<rect x="672" y="984" width="296" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<polygon points="968,984 968,1025 967,1024 967,984" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,1025 968,1025 967,1024 673,1024" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,984 672,1025 673,1024 673,984" fill="#dee2e6" fill-opacity="1"/>
+<text x="688.99994" y="1010" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">A second item</text>
+<rect x="672" y="1025" width="296" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<polygon points="968,1025 968,1066 967,1065 967,1025" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,1066 968,1066 967,1065 673,1065" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,1025 672,1066 673,1065 673,1025" fill="#dee2e6" fill-opacity="1"/>
+<text x="688.99994" y="1051" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">With badge</text>
+<rect x="922" y="1035" width="29" height="20" rx="10" fill="#0d6efd" fill-opacity="1"/>
+<text x="929.9108" y="1049" letter-spacing="0" font-family="Inter, sans-serif" font-size="12" font-weight="700" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">14</text>
+<rect x="672" y="1066" width="296" height="41" rx="0" fill="#ffffff" fill-opacity="1"/>
+<polygon points="968,1066 968,1107 967,1106 967,1066" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,1107 968,1107 967,1106 673,1106" fill="#dee2e6" fill-opacity="1"/>
+<polygon points="672,1066 672,1107 673,1106 673,1066" fill="#dee2e6" fill-opacity="1"/>
+<text x="688.99994" y="1092" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="0.7490196" xml:space="preserve">A disabled item</text>
+<text x="32" y="1218" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Email</text>
+<rect x="32" y="1232" width="460" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="32.5" y="1232.5" width="459" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c3"><rect x="45" y="1238.72" width="434" height="24" rx="0"/></clipPath><g clip-path="url(#c3)">
+<text x="45" y="1255" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">name@example.com</text>
+</g>
+<text x="508" y="1218" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Password</text>
+<rect x="508" y="1232" width="460" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="508.5" y="1232.5" width="459" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<text x="32" y="1304" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Address</text>
+<rect x="32" y="1318" width="936" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="32.5" y="1318.5" width="935" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c4"><rect x="45" y="1324.72" width="910" height="24" rx="0"/></clipPath><g clip-path="url(#c4)">
+<text x="45" y="1341" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">1234 Main St</text>
+</g>
+<text x="32" y="1390" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">State</text>
+<rect x="32" y="1404" width="460" height="40" rx="6" fill="#ffffff" fill-opacity="1"/>
+<clipPath id="c5"><rect x="33" y="1404.72" width="458" height="38" rx="6"/></clipPath><g clip-path="url(#c5)">
+<image x="463" y="1417.72" width="16" height="12" preserveAspectRatio="none" opacity="1" href="data:image/svg+xml,%3csvg xmlns=&apos;http://www.w3.org/2000/svg&apos; viewBox=&apos;0 0 16 16&apos;%3e%3cpath fill=&apos;none&apos; stroke=&apos;%23343a40&apos; stroke-linecap=&apos;round&apos; stroke-linejoin=&apos;round&apos; stroke-width=&apos;2&apos; d=&apos;m2 5 6 6 6-6&apos;/%3e%3c/svg%3e"/>
+</g>
+<rect x="32.5" y="1404.5" width="459" height="39" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c6"><rect x="45" y="1410.72" width="410" height="26" rx="0"/></clipPath><g clip-path="url(#c6)">
+<text x="47" y="1428" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Choose...</text>
+</g>
+<rect x="508" y="1372" width="41" height="38" rx="6" fill="#f8f9fa" fill-opacity="1"/>
+<rect x="508.5" y="1372.5" width="40" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<text x="521" y="1397" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">@</text>
+<rect x="548" y="1372" width="261" height="38" rx="6" fill="#ffffff" fill-opacity="1"/>
+<rect x="548.5" y="1372.5" width="260" height="37" rx="5.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c7"><rect x="561.4531" y="1378.72" width="234.88019" height="24" rx="0"/></clipPath><g clip-path="url(#c7)">
+<text x="561.4531" y="1395" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#757575" fill-opacity="1" xml:space="preserve">Username</text>
+</g>
+<text x="56" y="1478" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#212529" fill-opacity="1" xml:space="preserve">Check me out</text>
+<rect x="32" y="1464" width="16" height="16" rx="4" fill="#ffffff" fill-opacity="1"/>
+<rect x="32.5" y="1464.5" width="15" height="15" rx="3.5" fill="none" stroke="#dee2e6" stroke-opacity="1" stroke-width="1"/>
+<rect x="32" y="1502" width="77" height="38" rx="6" fill="#0d6efd" fill-opacity="1"/>
+<rect x="32.5" y="1502.5" width="76" height="37" rx="5.5" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<text x="45" y="1527" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Sign in</text>
+<rect x="0" y="1588" width="1000" height="72" rx="0" fill="#212529" fill-opacity="1"/>
+<text x="32" y="1630" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.5019608" xml:space="preserve">© 2024 Company, Inc.</text>
+<text x="850.02344" y="1630" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.5019608" xml:space="preserve">Privacy · Terms</text>
+<rect x="672" y="942" width="296" height="42" rx="0" fill="#0d6efd" fill-opacity="1"/>
+<rect x="672.5" y="942.5" width="295" height="41" rx="0" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<text x="688.99994" y="969" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">An active item</text>
+<rect x="123" y="1122" width="32" height="38" rx="0" fill="#0d6efd" fill-opacity="1"/>
+<rect x="123.5" y="1122.5" width="31" height="37" rx="0" fill="none" stroke="#0d6efd" stroke-opacity="1" stroke-width="1"/>
+<a href="#"><text x="135.9375" y="1147" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">1</text></a>
+</svg>

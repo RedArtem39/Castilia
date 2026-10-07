@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1298" viewBox="0 0 1000 1298">
+<rect width="100%" height="100%" fill="#f9fafb"/>
+<defs><filter id="s1" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="0" y="0" width="1000" height="68" rx="0" fill="#000000" fill-opacity="0" filter="url(#s1)"/>
+<defs><filter id="s2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="0" y="0" width="1000" height="68" rx="0" fill="#000000" fill-opacity="0" filter="url(#s2)"/>
+<defs><filter id="s3" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter></defs><rect x="0" y="1" width="1000" height="68" rx="0" fill="#000000" fill-opacity="0.101960786" filter="url(#s3)"/>
+<defs><filter id="s4" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="1" y="2" width="998" height="66" rx="0" fill="#000000" fill-opacity="0.101960786" filter="url(#s4)"/>
+<rect x="0" y="0" width="1000" height="68" rx="0" fill="#ffffff" fill-opacity="1"/>
+<text x="16" y="41" letter-spacing="0" font-family="Inter, sans-serif" font-size="20" font-weight="700" font-style="normal" fill="#4f46e5" fill-opacity="1" xml:space="preserve">Acme</text>
+<text x="361.59326" y="40" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">Product</text>
+<text x="437.62842" y="40" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">Pricing</text>
+<text x="507.47705" y="40" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">Docs</text>
+<text x="565.3628" y="40" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="500" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">Blog</text>
+<defs><filter id="s5" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="883.6221" y="16" width="100.37793" height="36" rx="6" fill="#000000" fill-opacity="0" filter="url(#s5)"/>
+<defs><filter id="s6" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="883.6221" y="16" width="100.37793" height="36" rx="6" fill="#000000" fill-opacity="0" filter="url(#s6)"/>
+<defs><filter id="s7" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="883.6221" y="17" width="100.37793" height="36" rx="6" fill="#000000" fill-opacity="0.050980393" filter="url(#s7)"/>
+<rect x="884" y="16" width="100" height="36" rx="6" fill="#4f46e5" fill-opacity="1"/>
+<text x="895.6221" y="40" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Get started</text>
+<text x="166.8711" y="168" letter-spacing="-1.5" font-family="Inter, sans-serif" font-size="60" font-weight="800" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Build faster with</text>
+<text x="630.9453" y="168" letter-spacing="-1.5" font-family="Inter, sans-serif" font-size="60" font-weight="800" font-style="normal" fill="#4f46e5" fill-opacity="1" xml:space="preserve">utilities</text>
+<text x="198.28906" y="221" letter-spacing="0" font-family="Inter, sans-serif" font-size="18" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem</text>
+<text x="412.60596" y="249" letter-spacing="0" font-family="Inter, sans-serif" font-size="18" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">cupidatat commodo.</text>
+<rect x="397" y="288" width="76" height="48" rx="6" fill="#4f46e5" fill-opacity="1"/>
+<text x="416.89063" y="318" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">Start</text>
+<defs><filter id="s8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="484.6328" y="288" width="118.47656" height="48" rx="6" fill="#ffffff" fill-opacity="1" filter="url(#s8)"/>
+<defs><filter id="s9" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="483.6328" y="287" width="120.47656" height="50" rx="6" fill="#e5e7eb" fill-opacity="1" filter="url(#s9)"/>
+<defs><filter id="s10" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="484.6328" y="288" width="118.47656" height="48" rx="6" fill="#000000" fill-opacity="0" filter="url(#s10)"/>
+<rect x="485" y="288" width="118" height="48" rx="6" fill="#ffffff" fill-opacity="1"/>
+<text x="504.6328" y="318" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="500" font-style="normal" fill="#4f46e5" fill-opacity="1" xml:space="preserve">Live demo</text>
+<defs><filter id="s11" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="16" y="400" width="472" height="180" rx="8" fill="#000000" fill-opacity="0" filter="url(#s11)"/>
+<defs><filter id="s12" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="16" y="400" width="472" height="180" rx="8" fill="#000000" fill-opacity="0" filter="url(#s12)"/>
+<defs><filter id="s13" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter></defs><rect x="16" y="401" width="472" height="180" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s13)"/>
+<defs><filter id="s14" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="17" y="402" width="470" height="178" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s14)"/>
+<rect x="16" y="400" width="472" height="180" rx="8" fill="#ffffff" fill-opacity="1"/>
+<rect x="40" y="424" width="40" height="40" rx="6" fill="#6366f1" fill-opacity="1"/>
+<text x="40" y="501" letter-spacing="0" font-family="Inter, sans-serif" font-size="18" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Fast</text>
+<text x="40" y="532" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet consectetur adipisicing elit.</text>
+<defs><filter id="s15" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="512" y="400" width="472" height="180" rx="8" fill="#000000" fill-opacity="0" filter="url(#s15)"/>
+<defs><filter id="s16" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="512" y="400" width="472" height="180" rx="8" fill="#000000" fill-opacity="0" filter="url(#s16)"/>
+<defs><filter id="s17" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter></defs><rect x="512" y="401" width="472" height="180" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s17)"/>
+<defs><filter id="s18" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="513" y="402" width="470" height="178" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s18)"/>
+<rect x="512" y="400" width="472" height="180" rx="8" fill="#ffffff" fill-opacity="1"/>
+<rect x="536" y="424" width="40" height="40" rx="6" fill="#10b981" fill-opacity="1"/>
+<text x="536" y="501" letter-spacing="0" font-family="Inter, sans-serif" font-size="18" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Reliable</text>
+<text x="536" y="532" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Maiores impedit perferendis suscipit eaque, iste dolor</text>
+<text x="536" y="552" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">cupiditate blanditiis ratione.</text>
+<defs><filter id="s19" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="16" y="604" width="472" height="160" rx="8" fill="#000000" fill-opacity="0" filter="url(#s19)"/>
+<defs><filter id="s20" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="0"/></filter></defs><rect x="16" y="604" width="472" height="160" rx="8" fill="#000000" fill-opacity="0" filter="url(#s20)"/>
+<defs><filter id="s21" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.5"/></filter></defs><rect x="16" y="605" width="472" height="160" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s21)"/>
+<defs><filter id="s22" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1"/></filter></defs><rect x="17" y="606" width="470" height="158" rx="8" fill="#000000" fill-opacity="0.101960786" filter="url(#s22)"/>
+<rect x="16" y="604" width="472" height="160" rx="8" fill="#ffffff" fill-opacity="1"/>
+<rect x="40" y="628" width="40" height="40" rx="6" fill="#f43f5e" fill-opacity="1"/>
+<text x="40" y="705" letter-spacing="0" font-family="Inter, sans-serif" font-size="18" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Flexible</text>
+<text x="40" y="736" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Quis nostrud exercitation ullamco laboris nisi ut aliquip.</text>
+<text x="16" y="909" letter-spacing="0" font-family="Inter, sans-serif" font-size="30" font-weight="700" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Two columns</text>
+<text x="16" y="946" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">Text on the left side that wraps over several lines so we can</text>
+<text x="16" y="970" letter-spacing="0" font-family="Inter, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#4b5563" fill-opacity="1" xml:space="preserve">see how widths are computed with fractions.</text>
+<rect x="16" y="998" width="8" height="8" rx="4" fill="#6366f1" fill-opacity="1"/>
+<text x="32" y="1007" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">First point</text>
+<rect x="16" y="1026" width="8" height="8" rx="4" fill="#6366f1" fill-opacity="1"/>
+<text x="32" y="1035" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Second point</text>
+<defs><linearGradient id="g23" gradientUnits="userSpaceOnUse" x1="516" y1="959.625" x2="984" y2="959.625"><stop offset="0" stop-color="#6366f1" stop-opacity="1"/><stop offset="1" stop-color="#a855f7" stop-opacity="1"/></linearGradient></defs>
+<rect x="516" y="828" width="468" height="263.25" rx="12" fill="url(#g23)"/>
+<rect x="16" y="1139" width="968" height="110" rx="8" fill="#ffffff" fill-opacity="1"/>
+<rect x="16.5" y="1139.5" width="967" height="109" rx="7.5" fill="none" stroke="#e5e7eb" stroke-opacity="1" stroke-width="1"/>
+<clipPath id="c24"><rect x="17" y="1140.25" width="966" height="108" rx="7"/></clipPath><g clip-path="url(#c24)">
+<rect x="17" y="1140" width="966" height="36" rx="0" fill="#f9fafb" fill-opacity="1"/>
+<polygon points="17,1176 983,1176 983,1177 17,1177" fill="#e5e7eb" fill-opacity="1"/>
+<polygon points="17,1212 983,1212 983,1213 17,1213" fill="#e5e7eb" fill-opacity="1"/>
+<text x="33" y="1164" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Name</text>
+<text x="368.56006" y="1164" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Title</text>
+<text x="785.6649" y="1164" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="600" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Role</text>
+<text x="33" y="1200" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Lindsay Walton</text>
+<text x="368.56006" y="1200" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Front-end Developer</text>
+<text x="785.6649" y="1200" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Member</text>
+<text x="33" y="1236" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#111827" fill-opacity="1" xml:space="preserve">Courtney Henry</text>
+<text x="368.56006" y="1236" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Designer</text>
+<text x="785.6649" y="1236" letter-spacing="0" font-family="Inter, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#6b7280" fill-opacity="1" xml:space="preserve">Admin</text>
+</g>
+</svg>

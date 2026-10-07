@@ -29,8 +29,12 @@ def main() -> None:
     parser.add_argument("--width", type=int, default=800)
     parser.add_argument("--height", type=int, default=300)
     parser.add_argument("--no-report", action="store_true")
+    parser.add_argument("--dir", default="visual_cases")
     args = parser.parse_args()
     WIDTH, HEIGHT = args.width, args.height
+    global CASES, OUTPUT
+    CASES = ROOT / args.dir
+    OUTPUT = ROOT / ("visual_out" if args.dir == "visual_cases" else args.dir + "_out")
 
     OUTPUT.mkdir(exist_ok=True)
     for asset in CASES.glob("*.png"):
