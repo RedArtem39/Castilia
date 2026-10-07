@@ -412,6 +412,11 @@ pub struct Style {
     pub content: Option<Vec<ContentItem>>,
     pub translate: (Dim, Dim),
     pub transform_scale: f32,
+    pub transform: Vec<TransformOp>,
+    pub transform_origin: (Dim, Dim),
+    /// 0 normal, 1 size, 2 inline-size
+    pub container_type: u8,
+    pub container_name: Option<Rc<str>>,
 
     pub vars: Rc<BTreeMap<String, String>>,
 }
@@ -508,6 +513,10 @@ impl Style {
             content: None,
             translate: (Dim::ZERO, Dim::ZERO),
             transform_scale: 1.0,
+            transform: Vec::new(),
+            transform_origin: (Dim::pct(50.0), Dim::pct(50.0)),
+            container_type: 0,
+            container_name: None,
             vars: Rc::new(BTreeMap::new()),
         }
     }
@@ -597,10 +606,38 @@ pub struct Declaration {
 }
 
 /// A chain of `@media` conditions that must all hold.
+/// One function of a `transform` list.
+#[derive(Debug, Clone, PartialEq)]
+pub enum TransformOp {
+    Translate(Dim, Dim),
+    Scale(f32, f32),
+    /// Radians.
+    Rotate(f32),
+    /// Radians (x, y).
+    Skew(f32, f32),
+    Matrix([f32; 6]),
+}
+
 #[derive(Debug)]
 pub struct MediaChain {
     parent: Option<Rc<MediaChain>>,
     query: String,
+    /// `@container` link (evaluated per element against its container) rather than `@media`.
+    container: bool,
+    name: Option<String>,
+}
+
+impl MediaChain {
+    fn has_container(chain: &Option<Rc<MediaChain>>) -> bool {
+        let mut cur = chain.as_ref();
+        while let Some(c) = cur {
+            if c.container {
+                return true;
+            }
+            cur = c.parent.as_ref();
+        }
+        false
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -613,11 +650,15 @@ pub struct Rule {
     /// Index of the cascade layer; `u16::MAX` for unlayered rules.
     pub layer: u16,
     pub media: Option<Rc<MediaChain>>,
+    /// True when an enclosing `@container` rule must be checked per element.
+    pub has_container: bool,
 }
 
 #[derive(Debug, Clone, Default)]
 pub struct StyleSheet {
     pub rules: Vec<Rule>,
+    /// The sheet contains `@container` rules (layout must run twice to learn container sizes).
+    pub has_container: bool,
     /// `@import` targets: (url, media query).
     pub imports: Vec<(String, String)>,
     layers: Vec<String>,
@@ -794,7 +835,7 @@ fn parse_rules(source: &str, sheet: &mut StyleSheet, origin: u8, layer: u16, med
             let params = at[name_end..].trim();
             match name.as_str() {
                 "media" => {
-                    let chain = Rc::new(MediaChain { parent: media.clone(), query: params.to_string() });
+                    let chain = Rc::new(MediaChain { parent: media.clone(), query: params.to_string(), container: false, name: None });
                     parse_rules(body, sheet, origin, layer, Some(chain));
                 }
                 "supports" => {
@@ -813,7 +854,13 @@ fn parse_rules(source: &str, sheet: &mut StyleSheet, origin: u8, layer: u16, med
                     } as u16;
                     parse_rules(body, sheet, origin, idx.min(60000), media.clone());
                 }
-                "document" | "-moz-document" | "scope" | "container" => {
+                "container" => {
+                    let (name, query) = split_container_prelude(params);
+                    sheet.has_container = true;
+                    let chain = Rc::new(MediaChain { parent: media.clone(), query, container: true, name });
+                    parse_rules(body, sheet, origin, layer, Some(chain));
+                }
+                "document" | "-moz-document" | "scope" => {
                     sheet.audit.at_rules += 1;
                 }
                 _ => sheet.audit.at_rules += 1,
@@ -821,6 +868,17 @@ fn parse_rules(source: &str, sheet: &mut StyleSheet, origin: u8, layer: u16, med
             continue;
         }
         parse_style_rule(prelude, body, sheet, origin, layer, &media);
+    }
+}
+
+fn split_container_prelude(params: &str) -> (Option<String>, String) {
+    let p = params.trim();
+    if p.starts_with('(') || p.starts_with("not ") || p.starts_with("style(") {
+        return (None, p.to_string());
+    }
+    match p.find(|c: char| c.is_whitespace() || c == '(') {
+        Some(i) => (Some(p[..i].to_string()), p[i..].trim().to_string()),
+        None => (Some(p.to_string()), String::new()),
     }
 }
 
@@ -968,6 +1026,7 @@ fn parse_style_rule(prelude: &str, body: &str, sheet: &mut StyleSheet, origin: u
             origin,
             layer,
             media: media.clone(),
+            has_container: MediaChain::has_container(media),
         });
     }
     // CSS nesting: `&` stands for `:is(parent)`.
@@ -980,10 +1039,16 @@ fn parse_style_rule(prelude: &str, body: &str, sheet: &mut StyleSheet, origin: u
             let wrapped = alloc::format!("{parent} {{ {b} }}");
             match name.as_str() {
                 "media" => {
-                    let chain = Rc::new(MediaChain { parent: media.clone(), query: params.to_string() });
+                    let chain = Rc::new(MediaChain { parent: media.clone(), query: params.to_string(), container: false, name: None });
                     parse_rules(&wrapped, sheet, origin, layer, Some(chain));
                 }
                 "supports" if eval_supports(params) => parse_rules(&wrapped, sheet, origin, layer, media.clone()),
+                "container" => {
+                    let (cname, query) = split_container_prelude(params);
+                    sheet.has_container = true;
+                    let chain = Rc::new(MediaChain { parent: media.clone(), query, container: true, name: cname });
+                    parse_rules(&wrapped, sheet, origin, layer, Some(chain));
+                }
                 _ => {}
             }
             continue;
@@ -1286,7 +1351,8 @@ fn chain_matches(chain: &Option<Rc<MediaChain>>, vp: Viewport, memo: &mut BTreeM
     if let Some(&v) = memo.get(&key) {
         return v;
     }
-    let v = media_matches(&c.query, vp) && chain_matches(&c.parent, vp, memo);
+    let own = c.container || media_matches(&c.query, vp);
+    let v = own && chain_matches(&c.parent, vp, memo);
     memo.insert(key, v);
     v
 }
@@ -1399,12 +1465,49 @@ impl core::ops::Index<usize> for Styles {
 const UA_CSS: &str = include_str!("ua.css");
 
 pub fn compute_styles(doc: &Document, author: &StyleSheet, vp: Viewport) -> Styles {
+    compute_styles_with(doc, author, vp, &BTreeMap::new())
+}
+
+/// Like [`compute_styles`], with the content-box sizes of query containers (from a previous layout).
+pub fn compute_styles_with(doc: &Document, author: &StyleSheet, vp: Viewport, containers: &BTreeMap<NodeId, (f32, f32)>) -> Styles {
     let ua = parse_origin(UA_CSS, 0);
     let active = ActiveRules::new(&[&ua, author], vp);
-    compute_with_rules(doc, &active, vp)
+    compute_with_rules_ctx(doc, &active, vp, containers)
 }
 
 pub fn compute_with_rules(doc: &Document, active: &ActiveRules, vp: Viewport) -> Styles {
+    compute_with_rules_ctx(doc, active, vp, &BTreeMap::new())
+}
+
+fn container_ok(chain: &Option<Rc<MediaChain>>, doc: &Document, id: NodeId, styles: &[Style], sizes: &BTreeMap<NodeId, (f32, f32)>) -> bool {
+    let mut cur = chain.as_ref();
+    while let Some(c) = cur {
+        if c.container {
+            let mut anc = doc.nodes[id].parent;
+            let mut found = None;
+            while let Some(a) = anc {
+                let st = &styles[a];
+                if st.container_type != 0 && c.name.as_deref().is_none_or(|n| st.container_name.as_deref() == Some(n)) {
+                    found = Some(a);
+                    break;
+                }
+                anc = doc.nodes[a].parent;
+            }
+            let Some(a) = found else { return false };
+            let Some(&(w, h)) = sizes.get(&a) else { return false };
+            let q = c.query.replace("inline-size", "width").replace("block-size", "height");
+            let q = if q.trim_start().starts_with('(') || q.trim_start().starts_with("not ") { alloc::format!("all and {q}") } else { q };
+            let q = q.replace("all and not", "not all and");
+            if !media_matches(&q, Viewport::new(w, h)) {
+                return false;
+            }
+        }
+        cur = c.parent.as_ref();
+    }
+    true
+}
+
+pub fn compute_with_rules_ctx(doc: &Document, active: &ActiveRules, vp: Viewport, containers: &BTreeMap<NodeId, (f32, f32)>) -> Styles {
     let n = doc.nodes.len();
     let mut out = Styles { nodes: vec![Style::initial(); 0], before: vec![None; n], after: vec![None; n] };
     out.nodes = (0..n).map(|_| Style::initial()).collect();
@@ -1432,7 +1535,7 @@ pub fn compute_with_rules(doc: &Document, active: &ActiveRules, vp: Viewport) ->
             }
             NodeKind::Element { .. } => {
                 let parent = node.parent.map(|p| out.nodes[p].clone());
-                let (style, before, after) = compute_element(doc, id, parent.as_ref(), active, vp, root_font);
+                let (style, before, after) = compute_element(doc, id, parent.as_ref(), active, vp, root_font, &out.nodes, containers);
                 if doc.nodes[id].tag() == Some("html") {
                     root_font = style.font_size;
                 }
@@ -1458,6 +1561,8 @@ fn compute_element(
     active: &ActiveRules,
     vp: Viewport,
     root_font: f32,
+    ancestors: &[Style],
+    containers: &BTreeMap<NodeId, (f32, f32)>,
 ) -> (Style, Option<Style>, Option<Style>) {
     let node = &doc.nodes[id];
     let mut main: Cascaded = Vec::new();
@@ -1470,6 +1575,9 @@ fn compute_element(
     for r in active.candidates(doc, id) {
         let rule = active.rules[r as usize];
         if !selector::matches_complex_ignoring_pseudo_element(doc, id, &rule.selector) {
+            continue;
+        }
+        if rule.has_container && !container_ok(&rule.media, doc, id, ancestors, containers) {
             continue;
         }
         let target = match rule.selector.pseudo_element {
@@ -3005,6 +3113,23 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
                 style.border_spacing = (h, toks.get(1).and_then(|t| parse_px(t, &ctx)).unwrap_or(h));
             }
         }
+        "container-type" => {
+            style.container_type = match &*lv {
+                "size" => 1,
+                "inline-size" => 2,
+                _ => 0,
+            }
+        }
+        "container-name" => style.container_name = if lv == "none" { None } else { lv.split_whitespace().next().map(Rc::from) },
+        "container" => {
+            let (n, t) = lv.split_once('/').map_or((&*lv, ""), |(a, b)| (a, b));
+            style.container_name = n.split_whitespace().next().filter(|x| *x != "none").map(Rc::from);
+            style.container_type = match t.trim() {
+                "size" => 1,
+                "inline-size" => 2,
+                _ => 0,
+            };
+        }
         "table-layout" => style.table_fixed = lv == "fixed",
         "caption-side" => style.caption_bottom = lv == "bottom",
         "content" => style.content = parse_content(value),
@@ -3015,33 +3140,84 @@ fn apply(style: &mut Style, name: &str, value: &str, parent: Option<&Style>, ini
             }
         }
         "transform" => {
-            let mut tx = Dim::ZERO;
-            let mut ty = Dim::ZERO;
-            let mut scale = 1.0;
+            let mut ops = Vec::new();
             if lv != "none" {
                 for f in split_ws(value) {
-                    if let Some(i) = strip_function(f, "translate") {
-                        let a = split_commas(i);
-                        tx = a.first().and_then(|t| dim(t)).unwrap_or(Dim::ZERO);
-                        ty = a.get(1).and_then(|t| dim(t)).unwrap_or(Dim::ZERO);
-                    } else if let Some(i) = strip_function(f, "translatex") {
-                        tx = dim(i).unwrap_or(Dim::ZERO);
-                    } else if let Some(i) = strip_function(f, "translatey") {
-                        ty = dim(i).unwrap_or(Dim::ZERO);
-                    } else if let Some(i) = strip_function(f, "translate3d") {
-                        let a = split_commas(i);
-                        tx = a.first().and_then(|t| dim(t)).unwrap_or(Dim::ZERO);
-                        ty = a.get(1).and_then(|t| dim(t)).unwrap_or(Dim::ZERO);
-                    } else if let Some(i) = strip_function(f, "scale") {
-                        scale = split_commas(i).first().and_then(|t| parse_number(t)).unwrap_or(1.0);
+                    if let Some(op) = parse_transform_function(f, &ctx) {
+                        ops.push(op);
                     }
                 }
             }
-            style.translate = (tx, ty);
-            style.transform_scale = scale;
+            style.transform_scale = 1.0;
+            style.transform = ops;
+        }
+        "transform-origin" => {
+            let toks = split_ws(&lv);
+            let axis = |t: &str, horizontal: bool| -> Option<Dim> {
+                Some(match t {
+                    "left" if horizontal => Dim::pct(0.0),
+                    "right" if horizontal => Dim::pct(100.0),
+                    "top" if !horizontal => Dim::pct(0.0),
+                    "bottom" if !horizontal => Dim::pct(100.0),
+                    "center" => Dim::pct(50.0),
+                    other => dim(other)?,
+                })
+            };
+            let first = toks.first().copied().unwrap_or("50%");
+            let second = toks.get(1).copied();
+            // `top left` style: keyword order may be swapped
+            let (xs, ys) = match (first, second) {
+                ("top" | "bottom", Some(b)) if !matches!(b, "top" | "bottom") => (b, first),
+                (a, Some(b)) => (a, b),
+                ("top" | "bottom", None) => ("center", first),
+                (a, None) => (a, "center"),
+            };
+            if let (Some(x), Some(y)) = (axis(xs, true), axis(ys, false)) {
+                style.transform_origin = (x, y);
+            }
         }
         _ => {}
     }
+}
+
+fn parse_transform_function(f: &str, ctx: &LenCtx) -> Option<TransformOp> {
+    let lower = f.to_ascii_lowercase();
+    let open = lower.find('(')?;
+    let name = lower[..open].trim();
+    let inner = lower[open + 1..].strip_suffix(')')?;
+    let args = split_commas(inner);
+    let num = |i: usize| args.get(i).and_then(|t| parse_number(t.trim()));
+    let ang = |i: usize| args.get(i).and_then(|t| crate::css_values::parse_angle(t.trim()).or_else(|| if t.trim() == "0" { Some(0.0) } else { None })).map(|d| d * core::f32::consts::PI / 180.0);
+    let d = |i: usize| args.get(i).and_then(|t| parse_dim(t.trim(), ctx));
+    Some(match name {
+        "translate" | "translate3d" => TransformOp::Translate(d(0).unwrap_or(Dim::ZERO), d(1).unwrap_or(Dim::ZERO)),
+        "translatex" => TransformOp::Translate(d(0).unwrap_or(Dim::ZERO), Dim::ZERO),
+        "translatey" => TransformOp::Translate(Dim::ZERO, d(0).unwrap_or(Dim::ZERO)),
+        "translatez" => return None,
+        "scale" | "scale3d" => {
+            let x = num(0).unwrap_or(1.0);
+            TransformOp::Scale(x, num(1).unwrap_or(x))
+        }
+        "scalex" => TransformOp::Scale(num(0).unwrap_or(1.0), 1.0),
+        "scaley" => TransformOp::Scale(1.0, num(0).unwrap_or(1.0)),
+        "rotate" | "rotatez" => TransformOp::Rotate(ang(0)?),
+        "skew" => TransformOp::Skew(ang(0).unwrap_or(0.0), ang(1).unwrap_or(0.0)),
+        "skewx" => TransformOp::Skew(ang(0)?, 0.0),
+        "skewy" => TransformOp::Skew(0.0, ang(0)?),
+        "matrix" => {
+            if args.len() != 6 {
+                return None;
+            }
+            TransformOp::Matrix([num(0)?, num(1)?, num(2)?, num(3)?, num(4)?, num(5)?])
+        }
+        "matrix3d" => {
+            if args.len() != 16 {
+                return None;
+            }
+            TransformOp::Matrix([num(0)?, num(1)?, num(4)?, num(5)?, num(12)?, num(13)?])
+        }
+        _ => return None,
+    })
 }
 
 fn apply_line_height(style: &mut Style, value: &str, ctx: &LenCtx) {

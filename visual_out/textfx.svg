@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="345" viewBox="0 0 800 345">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="10" y="10" width="300" height="78" rx="0" fill="#f4f4f4" fill-opacity="1"/>
+<clipPath id="c1"><rect x="10" y="10" width="300" height="78.4" rx="0"/></clipPath><g clip-path="url(#c1)">
+<text x="10" y="25" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet, consectetur</text>
+<text x="10" y="44" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">adipiscing elit, sed do eiusmod tempor</text>
+<text x="10" y="64" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">incididunt ut labore et dolore magna aliqua. Ut</text>
+<text x="10" y="84" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">enim ad minim veniam.</text>
+</g>
+<rect x="10" y="98" width="300" height="59" rx="0" fill="#f4f4f4" fill-opacity="1"/>
+<text x="40" y="113" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet, consectetur</text>
+<text x="10" y="133" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">adipiscing elit, sed do eiusmod tempor</text>
+<text x="10" y="152" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">incididunt ut labore et dolore magna aliqua.</text>
+<rect x="10" y="167" width="320" height="59" rx="0" fill="#f4f4f4" fill-opacity="1"/>
+<text x="10" y="182" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Hanging indent lorem ipsum dolor sit amet,</text>
+<text x="30" y="202" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">consectetur adipiscing elit, sed do eiusmod</text>
+<text x="30" y="221" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">tempor incididunt ut labore.</text>
+<text x="10" y="265" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="28" font-weight="700" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">Shadow text</text>
+<text x="20" y="300" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">outlined</text>
+<rect x="10" y="315" width="200" height="19" rx="0" fill="#f4f4f4" fill-opacity="1"/>
+<clipPath id="c2"><rect x="10" y="314.80002" width="200" height="19.6" rx="0"/></clipPath><g clip-path="url(#c2)">
+<text x="10" y="330" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#000000" fill-opacity="1" xml:space="preserve">This is a very long line that sh…</text>
+</g>
+</svg>

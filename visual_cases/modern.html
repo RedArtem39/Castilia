@@ -1,0 +1,31 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:10px;font:14px sans-serif}
+.row{display:flex;gap:10px;margin-bottom:10px}
+.t{padding:8px;color:#fff;min-width:90px;text-align:center}
+#a{background:color-mix(in srgb, #f00 50%, #00f)}
+#b{background:oklch(60% .2 250)}
+#c{background:hsl(120 60% 40% / .7)}
+#d{background:rgb(0 128 255 / 50%)}
+#e{width:clamp(60px, 15vw, 150px);background:#383}
+#f{width:min(120px, 50%);background:#833}
+#g{width:max(80px, 5vw);background:#338}
+.card:has(img){border:2px solid #d33}
+.card{padding:6px;border:2px solid #999;width:100px}
+:is(h4,h5){color:#a0a;margin:0}
+:where(.x) .y{color:#0a0}
+.ar{aspect-ratio:16/9;width:160px;background:#bbb}
+.ct{container-type:inline-size;width:300px;border:1px solid #333}
+.in{background:#ddd;padding:4px}
+@container (min-width: 250px){.in{background:#9d9}}
+@container (max-width: 100px){.in{background:#d99}}
+.inset{position:relative;height:60px;background:#eee}.inset>div{position:absolute;inset:10px 20px;background:#6af}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:6px;width:360px}
+.grid div{background:#fa6;padding:6px}
+</style></head><body>
+<div class="row"><div class="t" id="a">mix</div><div class="t" id="b">oklch</div><div class="t" id="c">hsl</div><div class="t" id="d">rgb</div></div>
+<div class="row"><div class="t" id="e">clamp</div><div class="t" id="f">min</div><div class="t" id="g">max</div></div>
+<div class="row"><div class="card"><img src="image.png" width=20 height=10></div><div class="card">no img</div><h4>is-h4</h4><span class="x"><b class="y">where</b></span><div class="ar"></div></div>
+<div class="ct"><div class="in">container query</div></div>
+<div class="inset"><div></div></div>
+<div class="grid"><div>1</div><div>2</div><div>3</div><div>4</div><div>5</div></div>
+</body></html>

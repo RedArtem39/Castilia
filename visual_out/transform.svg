@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="300" viewBox="0 0 800 300">
+<rect width="100%" height="100%" fill="white"/>
+<g transform="matrix(0.9659258 0.25881904 -0.25881904 0.9659258 20.087112 -16.576744)">
+<rect x="30" y="40" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="31.5" y="41.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="57.657227" y="72" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">rot 15</text>
+</g>
+<g transform="matrix(1.5 0 0 1.5 -106.5 -34)">
+<rect x="170" y="40" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="171.5" y="41.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="198.99316" y="72" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">scale</text>
+</g>
+<g transform="matrix(1 0 -0.36397025 1 24.749973 0)">
+<rect x="320" y="40" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="321.5" y="41.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="349.33008" y="72" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">skew</text>
+</g>
+<g transform="matrix(0.6928203 -0.4 0.6 1.0392305 131.5347 185.76091)">
+<rect x="470" y="40" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="471.5" y="41.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="500.33203" y="72" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">multi</text>
+</g>
+<g transform="matrix(1 0.3 -0.3 1 20.400002 -198.9)">
+<rect x="620" y="40" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="621.5" y="41.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="646.667" y="72" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">matrix</text>
+</g>
+<rect x="30" y="170" width="200" height="100" rx="0" fill="#eeeeee" fill-opacity="1"/>
+<g transform="matrix(0.70710677 0.70710677 -0.70710677 0.70710677 193.63962 -55.771645)">
+<rect x="130" y="220" width="40" height="40" rx="0" fill="#d94a4a" fill-opacity="1"/>
+</g>
+<g transform="matrix(1 0 0 1 0 -20)">
+<rect x="300" y="190" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="0.6"/>
+<rect x="301.5" y="191.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="0.6" stroke-width="3"/>
+<text x="338.333" y="222" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="0.6" xml:space="preserve">ty</text>
+</g>
+<g transform="matrix(-1 0 0 1 986 0)">
+<rect x="450" y="180" width="86" height="56" rx="0" fill="#4a90d9" fill-opacity="1"/>
+<rect x="451.5" y="181.5" width="83" height="53" rx="0" fill="none" stroke="#223344" stroke-opacity="1" stroke-width="3"/>
+<text x="485.33008" y="212" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12" font-weight="400" font-style="normal" fill="#ffffff" fill-opacity="1" xml:space="preserve">flip</text>
+</g>
+</svg>

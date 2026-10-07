@@ -1,0 +1,17 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+body{margin:0;font:14px sans-serif}
+.b{position:absolute;width:80px;height:50px;background:#4a90d9;color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;border:3px solid #234}
+#a{left:30px;top:40px;transform:rotate(15deg)}
+#b{left:170px;top:40px;transform:scale(1.5)}
+#c{left:320px;top:40px;transform:skewX(-20deg)}
+#d{left:470px;top:40px;transform:rotate(-30deg) translate(10px,5px) scale(.8,1.2);transform-origin:0 0}
+#e{left:620px;top:40px;transform:matrix(1,0.3,-0.3,1,0,0)}
+.wrap{position:absolute;left:30px;top:170px;width:200px;height:100px;background:#eee}
+#f{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(45deg);width:40px;height:40px;background:#d94a4a}
+#g{left:300px;top:190px;transform:translateY(-20px);opacity:.6}
+#h{left:450px;top:180px;transform:scaleX(-1)}
+</style></head><body>
+<div class="b" id="a">rot 15</div><div class="b" id="b">scale</div><div class="b" id="c">skew</div><div class="b" id="d">multi</div><div class="b" id="e">matrix</div>
+<div class="wrap"><div id="f"></div></div>
+<div class="b" id="g">ty</div><div class="b" id="h">flip</div>
+</body></html>

@@ -91,6 +91,17 @@ pub(crate) fn embedded_css(document: &Document, link_css: &alloc::collections::B
 
 pub(crate) fn render_document(document: &Document, sheet: &css::StyleSheet, viewport: Viewport, fonts: &dyn FontMetrics) -> DisplayList {
     let styles = css::compute_styles(document, sheet, viewport);
+    let first = layout::layout(document, &styles, viewport, fonts);
+    if !sheet.has_container {
+        return first;
+    }
+    // Container queries depend on laid-out sizes: restyle with the sizes from the first pass.
+    let sizes: alloc::collections::BTreeMap<NodeId, (f32, f32)> = first.container_sizes.iter().map(|&(id, w, h)| (id, (w, h))).collect();
+    let styles = css::compute_styles_with(document, sheet, viewport, &sizes);
+    let second = layout::layout(document, &styles, viewport, fonts);
+    // a third pass settles nested containers whose size depends on outer query results
+    let sizes: alloc::collections::BTreeMap<NodeId, (f32, f32)> = second.container_sizes.iter().map(|&(id, w, h)| (id, (w, h))).collect();
+    let styles = css::compute_styles_with(document, sheet, viewport, &sizes);
     layout::layout(document, &styles, viewport, fonts)
 }
 

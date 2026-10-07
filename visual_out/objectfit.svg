@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="300" viewBox="0 0 800 300">
+<rect width="100%" height="100%" fill="white"/>
+<rect x="10" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="10.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="11" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="142" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="142.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="143" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="274" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="274.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="275" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="406" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="406.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="407" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="538" y="10" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="538.5" y="10.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="539" y="11" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="10" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="10.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="11" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="142" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="142.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="143" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+<rect x="274" y="102" width="122" height="82" rx="0" fill="#dddddd" fill-opacity="1"/>
+<rect x="274.5" y="102.5" width="121" height="81" rx="0" fill="none" stroke="#333333" stroke-opacity="1" stroke-width="1"/>
+<image x="275" y="103" width="120" height="80" preserveAspectRatio="none" opacity="1" href="image.png"/>
+</svg>

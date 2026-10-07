@@ -201,13 +201,142 @@ pub fn parse_color(value: &str) -> Option<Color> {
                 Some(rgba(mix(16), mix(8), mix(0), a))
             }
             "color-mix" => parse_color_mix(inner),
+            "lab" | "lch" | "oklab" | "oklch" => parse_lab_family(name, &args),
+            "color" => parse_color_function(&args),
+            "light-dark" => {
+                let parts = split_top_level(inner);
+                parse_color(parts.first()?)
+            }
             _ => None,
         };
     }
     named_color(&lower)
 }
 
-/// `color-mix(in srgb, A p%, B q%)` in sRGB space, which is the common usage.
+fn split_top_level(inner: &str) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let mut depth = 0;
+    let mut start = 0;
+    for (i, c) in inner.char_indices() {
+        match c {
+            '(' => depth += 1,
+            ')' => depth -= 1,
+            ',' if depth == 0 => {
+                parts.push(inner[start..i].trim());
+                start = i + 1;
+            }
+            _ => {}
+        }
+    }
+    parts.push(inner[start..].trim());
+    parts
+}
+
+/// A numeric component: `none`, a number, or a percentage scaled to `pct_ref`.
+fn component(token: &str, pct_ref: f32) -> Option<f32> {
+    if token == "none" {
+        return Some(0.0);
+    }
+    if let Some(p) = token.strip_suffix('%') {
+        return Some(p.parse::<f32>().ok()? / 100.0 * pct_ref);
+    }
+    token.parse::<f32>().ok()
+}
+
+fn gamma_encode(c: f32) -> f32 {
+    let c = c.clamp(0.0, 1.0);
+    if c <= 0.0031308 { 12.92 * c } else { 1.055 * crate::math::powf(c as f64, 1.0 / 2.4) as f32 - 0.055 }
+}
+
+fn gamma_decode(c: f32) -> f32 {
+    if c <= 0.04045 { c / 12.92 } else { crate::math::powf(((c + 0.055) / 1.055) as f64, 2.4) as f32 }
+}
+
+fn linear_to_color(r: f32, g: f32, b: f32, a: u8) -> Color {
+    rgba(clamp_byte(gamma_encode(r) * 255.0), clamp_byte(gamma_encode(g) * 255.0), clamp_byte(gamma_encode(b) * 255.0), a)
+}
+
+pub fn oklab_to_color(l: f32, a: f32, b: f32, alpha: u8) -> Color {
+    let l_ = l + 0.396_337_78 * a + 0.215_803_76 * b;
+    let m_ = l - 0.105_561_346 * a - 0.063_854_17 * b;
+    let s_ = l - 0.089_484_18 * a - 1.291_485_5 * b;
+    let (l3, m3, s3) = (l_ * l_ * l_, m_ * m_ * m_, s_ * s_ * s_);
+    linear_to_color(
+        4.076_741_7 * l3 - 3.307_711_6 * m3 + 0.230_969_93 * s3,
+        -1.268_438 * l3 + 2.609_757_4 * m3 - 0.341_319_4 * s3,
+        -0.004_196_086 * l3 - 0.703_418_6 * m3 + 1.707_614_7 * s3,
+        alpha,
+    )
+}
+
+pub fn color_to_oklab(c: Color) -> (f32, f32, f32) {
+    let r = gamma_decode(((c >> 16) & 0xff) as f32 / 255.0);
+    let g = gamma_decode(((c >> 8) & 0xff) as f32 / 255.0);
+    let b = gamma_decode((c & 0xff) as f32 / 255.0);
+    let l = 0.412_221_47 * r + 0.536_332_55 * g + 0.051_445_995 * b;
+    let m = 0.211_903_5 * r + 0.680_699_5 * g + 0.107_396_96 * b;
+    let s = 0.088_302_46 * r + 0.281_718_85 * g + 0.629_978_7 * b;
+    let (l, m, s) = (crate::math::cbrt(l as f64) as f32, crate::math::cbrt(m as f64) as f32, crate::math::cbrt(s as f64) as f32);
+    (0.210_454_26 * l + 0.793_617_8 * m - 0.004_072_047 * s, 1.977_998_5 * l - 2.428_592_2 * m + 0.450_593_7 * s, 0.025_904_037 * l + 0.782_771_77 * m - 0.808_675_77 * s)
+}
+
+fn lab_to_color(l: f32, a: f32, b: f32, alpha: u8) -> Color {
+    let fy = (l + 16.0) / 116.0;
+    let fx = a / 500.0 + fy;
+    let fz = fy - b / 200.0;
+    let cube = |f: f32| if f * f * f > 0.008_856 { f * f * f } else { (116.0 * f - 16.0) / 903.3 };
+    let xr = cube(fx);
+    let yr = if l > 8.0 { fy * fy * fy } else { l / 903.3 };
+    let zr = cube(fz);
+    let (x, y, z) = (xr * 0.964_22, yr, zr * 0.825_21);
+    // D50 -> D65 (Bradford), then XYZ -> linear sRGB
+    let x65 = 0.955_576_6 * x - 0.023_039_3 * y + 0.063_163_6 * z;
+    let y65 = -0.028_289_5 * x + 1.009_941_6 * y + 0.021_007_7 * z;
+    let z65 = 0.012_298_2 * x - 0.020_483 * y + 1.329_909_8 * z;
+    linear_to_color(
+        3.240_454_2 * x65 - 1.537_138_5 * y65 - 0.498_531_4 * z65,
+        -0.969_266 * x65 + 1.876_010_8 * y65 + 0.041_556 * z65,
+        0.055_643_4 * x65 - 0.204_025_9 * y65 + 1.057_225_2 * z65,
+        alpha,
+    )
+}
+
+fn parse_lab_family(name: &str, args: &[&str]) -> Option<Color> {
+    if args.len() < 3 {
+        return None;
+    }
+    let alpha = if args.len() >= 4 { parse_alpha(args[3])? } else { 255 };
+    let polar = name == "lch" || name == "oklch";
+    let ok = name.starts_with("ok");
+    let l = component(args[0], if ok { 1.0 } else { 100.0 })?;
+    let (a, b) = if polar {
+        let c = component(args[1], if ok { 0.4 } else { 150.0 })?;
+        let h = parse_hue(args[2])? * core::f32::consts::PI / 180.0;
+        (c * crate::math::cos(h as f64) as f32, c * crate::math::sin(h as f64) as f32)
+    } else {
+        (component(args[1], if ok { 0.4 } else { 125.0 })?, component(args[2], if ok { 0.4 } else { 125.0 })?)
+    };
+    Some(if ok { oklab_to_color(l, a, b, alpha) } else { lab_to_color(l, a, b, alpha) })
+}
+
+fn parse_color_function(args: &[&str]) -> Option<Color> {
+    if args.len() < 4 {
+        return None;
+    }
+    let alpha = if args.len() >= 5 { parse_alpha(args[4])? } else { 255 };
+    let (c1, c2, c3) = (component(args[1], 1.0)?, component(args[2], 1.0)?, component(args[3], 1.0)?);
+    Some(match args[0] {
+        "srgb" => rgba(clamp_byte(c1 * 255.0), clamp_byte(c2 * 255.0), clamp_byte(c3 * 255.0), alpha),
+        "srgb-linear" => linear_to_color(c1, c2, c3, alpha),
+        "display-p3" => {
+            let (r, g, b) = (gamma_decode(c1), gamma_decode(c2), gamma_decode(c3));
+            linear_to_color(1.224_940_2 * r - 0.224_940_2 * g, -0.042_056_9 * r + 1.042_057_1 * g, -0.019_637_6 * r - 0.078_636_1 * g + 1.098_273_5 * b, alpha)
+        }
+        _ => return None,
+    })
+}
+
+/// `color-mix(in srgb, A p%, B q%)`; perceptual spaces (oklab/oklch/lab/lch) mix in OKLab.
 fn parse_color_mix(inner: &str) -> Option<Color> {
     let mut parts = Vec::new();
     let mut depth = 0;
@@ -250,6 +379,13 @@ fn parse_color_mix(inner: &str) -> Option<Color> {
         return None;
     }
     let (pa, pb) = (pa / total, pb / total);
+    let space = parts[0].trim_start_matches("in ").split_whitespace().next().unwrap_or("srgb");
+    if matches!(space, "oklab" | "oklch" | "lab" | "lch") {
+        let (l1, a1, b1) = color_to_oklab(a);
+        let (l2, a2, b2) = color_to_oklab(b);
+        let alpha = (((a >> 24) & 0xff) as f32 * pa + ((b >> 24) & 0xff) as f32 * pb) as u8;
+        return Some(oklab_to_color(l1 * pa + l2 * pb, a1 * pa + a2 * pb, b1 * pa + b2 * pb, alpha));
+    }
     let mix = |shift: u32| {
         let x = ((a >> shift) & 0xff) as f32;
         let y = ((b >> shift) & 0xff) as f32;

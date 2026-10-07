@@ -188,6 +188,13 @@ pub enum Command {
         color: Color,
         inset: bool,
     },
+    /// Apply the affine transform `m = [a, b, c, d, e, f]` (CSS `matrix()` convention:
+    /// `x' = a*x + c*y + e`, `y' = b*x + d*y + f`, already including `transform-origin`) to all
+    /// commands until the matching `PopTransform`.
+    PushTransform {
+        m: [f32; 6],
+    },
+    PopTransform,
     /// Clip subsequent commands to `rect` until the matching `PopClip`.
     PushClip {
         rect: Rect,
@@ -204,6 +211,8 @@ pub struct DisplayList {
     pub background: Color,
     pub commands: Vec<Command>,
     pub hit_regions: Vec<HitRegion>,
+    /// Content-box sizes of query containers (`container-type`), for `@container` evaluation.
+    pub container_sizes: Vec<(NodeId, f32, f32)>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -260,8 +269,39 @@ fn translate_cmd(c: &mut Command, dx: f32, dy: f32) {
             *x += dx;
             *y += dy;
         }
-        Command::PopClip => {}
+        Command::PushTransform { m } => {
+            // keep the transform anchored to the same point of the (moved) content
+            m[4] += dx - (m[0] * dx + m[2] * dy);
+            m[5] += dy - (m[1] * dx + m[3] * dy);
+        }
+        Command::PopClip | Command::PopTransform => {}
     }
+}
+
+pub(crate) fn mat_mul(a: [f32; 6], b: [f32; 6]) -> [f32; 6] {
+    [
+        a[0] * b[0] + a[2] * b[1],
+        a[1] * b[0] + a[3] * b[1],
+        a[0] * b[2] + a[2] * b[3],
+        a[1] * b[2] + a[3] * b[3],
+        a[0] * b[4] + a[2] * b[5] + a[4],
+        a[1] * b[4] + a[3] * b[5] + a[5],
+    ]
+}
+
+/// Bounding box of `r` after applying `m`.
+pub(crate) fn transform_rect(m: &[f32; 6], r: Rect) -> Rect {
+    let pts = [(r.x, r.y), (r.x + r.width, r.y), (r.x, r.y + r.height), (r.x + r.width, r.y + r.height)];
+    let (mut x0, mut y0, mut x1, mut y1) = (f32::MAX, f32::MAX, f32::MIN, f32::MIN);
+    for (x, y) in pts {
+        let tx = m[0] * x + m[2] * y + m[4];
+        let ty = m[1] * x + m[3] * y + m[5];
+        x0 = x0.min(tx);
+        y0 = y0.min(ty);
+        x1 = x1.max(tx);
+        y1 = y1.max(ty);
+    }
+    Rect { x: x0, y: y0, width: x1 - x0, height: y1 - y0 }
 }
 
 fn scale_alpha(c: Color, f: f32) -> Color {
@@ -288,6 +328,17 @@ impl Paint {
     }
     pub fn is_empty(&self) -> bool {
         self.cmds.is_empty() && self.hits.is_empty()
+    }
+    /// Wrap everything painted so far in a transform (local coordinates).
+    pub fn wrap_transform(&mut self, m: [f32; 6]) {
+        if self.cmds.is_empty() && self.hits.is_empty() {
+            return;
+        }
+        self.cmds.insert(0, Command::PushTransform { m });
+        self.cmds.push(Command::PopTransform);
+        for h in &mut self.hits {
+            h.rect = transform_rect(&m, h.rect);
+        }
     }
     pub fn apply_opacity(&mut self, f: f32) {
         if f >= 1.0 {
@@ -462,6 +513,7 @@ pub(crate) struct Ctx<'a> {
     pub anon: Vec<Style>,
     /// Set by the table layout for the next cell box: borders to drop in collapsed mode.
     pub cell_border_skip: Option<[bool; 4]>,
+    pub containers: Vec<(NodeId, f32, f32)>,
 }
 
 pub(crate) const MAX_DEPTH: usize = 90;
@@ -503,6 +555,7 @@ pub fn layout(doc: &Document, styles: &Styles, viewport: Viewport, fonts: &dyn F
         depth: 0,
         anon: Vec::new(),
         cell_border_skip: None,
+        containers: Vec::new(),
     };
     ctx.layout_document()
 }
@@ -675,7 +728,7 @@ impl<'a> Ctx<'a> {
             commands.extend(p.cmds);
             hits.extend(p.hits);
         }
-        DisplayList { width: vw, height: math::ceil32(out.h.max(0.0)), background, commands, hit_regions: hits }
+        DisplayList { width: vw, height: math::ceil32(out.h.max(0.0)), background, commands, hit_regions: hits, container_sizes: core::mem::take(&mut self.containers) }
     }
 
     /// Lay out pending absolutely positioned boxes inside the containing block `cb`
@@ -968,6 +1021,10 @@ impl<'a> Ctx<'a> {
         }
         let border_h = border_h.max(vpb);
 
+        if s.container_type != 0 && bx.pseudo == 0 {
+            self.containers.retain(|c| c.0 != bx.id);
+            self.containers.push((bx.id, content_w, content_h));
+        }
         // ---- assemble ----
         let mut out = Out { w: border_w, h: border_h, ml, mr, ..Default::default() };
         let rect = Rect { x: 0.0, y: 0.0, width: border_w, height: border_h };
@@ -1020,7 +1077,7 @@ impl<'a> Ctx<'a> {
         }
 
         // positioned boxes are containing blocks for their absolute descendants
-        let positioned = s.is_positioned();
+        let positioned = s.is_positioned() || !s.transform.is_empty();
         if positioned && !is_root {
             let cb = Rect {
                 x: border.l,
@@ -1040,6 +1097,15 @@ impl<'a> Ctx<'a> {
                 p.apply_opacity(s.opacity);
             }
         }
+        if !s.transform.is_empty() {
+            let m = self.transform_matrix(s, border_w, border_h);
+            if m != [1.0, 0.0, 0.0, 1.0, 0.0, 0.0] {
+                out.paint.wrap_transform(m);
+                for (_, p) in out.layers.iter_mut() {
+                    p.wrap_transform(m);
+                }
+            }
+        }
         if positioned && s.z_index.is_some() {
             out.z = s.z_index;
         }
@@ -1056,6 +1122,27 @@ impl<'a> Ctx<'a> {
         shift.1 += s.translate.1.resolve(border_h).unwrap_or(0.0);
         out.shift = shift;
         out
+    }
+
+    /// Combined matrix of the `transform` list around `transform-origin`, in border-box coordinates.
+    pub fn transform_matrix(&self, s: &Style, w: f32, h: f32) -> [f32; 6] {
+        let mut m = [1.0, 0.0, 0.0, 1.0, 0.0, 0.0];
+        for op in &s.transform {
+            let o = match op {
+                TransformOp::Translate(x, y) => [1.0, 0.0, 0.0, 1.0, x.resolve(w).unwrap_or(0.0), y.resolve(h).unwrap_or(0.0)],
+                TransformOp::Scale(x, y) => [*x, 0.0, 0.0, *y, 0.0, 0.0],
+                TransformOp::Rotate(r) => {
+                    let (sn, cs) = (math::sin(*r as f64) as f32, math::cos(*r as f64) as f32);
+                    [cs, sn, -sn, cs, 0.0, 0.0]
+                }
+                TransformOp::Skew(x, y) => [1.0, math::tan(*y as f64) as f32, math::tan(*x as f64) as f32, 1.0, 0.0, 0.0],
+                TransformOp::Matrix(a) => *a,
+            };
+            m = mat_mul(m, o);
+        }
+        let ox = s.transform_origin.0.resolve(w).unwrap_or(w / 2.0);
+        let oy = s.transform_origin.1.resolve(h).unwrap_or(h / 2.0);
+        mat_mul(mat_mul([1.0, 0.0, 0.0, 1.0, ox, oy], m), [1.0, 0.0, 0.0, 1.0, -ox, -oy])
     }
 
     fn html_bg_none(&self) -> bool {

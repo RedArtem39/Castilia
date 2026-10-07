@@ -161,7 +161,11 @@ pub fn to_svg(list: &DisplayList, fonts: &dyn FontMetrics, resources: &[Resource
                     rect.x, rect.y, rect.width, rect.height
                 );
             }
-            Command::PopClip => {
+            Command::PushTransform { m } => {
+                clip_depth += 1;
+                let _ = writeln!(out, "<g transform=\"matrix({} {} {} {} {} {})\">", m[0], m[1], m[2], m[3], m[4], m[5]);
+            }
+            Command::PopTransform | Command::PopClip => {
                 if clip_depth > 0 {
                     clip_depth -= 1;
                     out.push_str("</g>\n");
