@@ -286,6 +286,11 @@ impl Page {
         self.runtime.take_navigation()
     }
 
+    /// The executable memory and interrupt given at load time, for reuse by the next page.
+    pub fn take_platform(&mut self) -> (Option<alloc::boxed::Box<dyn crate::platform::CodeMemory>>, Option<alloc::boxed::Box<dyn crate::platform::Interrupt>>) {
+        self.runtime.take_platform()
+    }
+
     /// True when scripts changed the DOM since the last call (a re-render is needed).
     pub fn take_dirty(&mut self) -> bool {
         self.runtime.take_dirty()

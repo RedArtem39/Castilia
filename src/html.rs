@@ -1007,7 +1007,7 @@ impl<'a> Builder<'a> {
             if rest.starts_with("<!") || rest.starts_with("<?") {
                 flush_text!(pos);
                 let end = rest.find('>').map_or(rest.len(), |e| e + 1);
-                if rest.len() >= 9 && rest[2..9].eq_ignore_ascii_case("doctype") {
+                if rest.len() >= 9 && rest.as_bytes()[2..9].eq_ignore_ascii_case(b"doctype") {
                     self.doctype(&rest[..end]);
                 } else {
                     // bogus comment: `<?x>` keeps the `?`, `<!x>` drops the `!` (Lit's `<?lit$..$>` markers)

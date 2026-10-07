@@ -32,7 +32,7 @@ fn process_inner(css: &str, base: &str, fetch: &mut dyn FnMut(&str) -> Option<St
                 None => break,
             }
         }
-        if t.len() >= 7 && t[..7].eq_ignore_ascii_case("@import") {
+        if t.len() >= 7 && t.as_bytes()[..7].eq_ignore_ascii_case(b"@import") {
             let Some(end) = find_rule_end(t) else { break };
             let rule = &t[7..end];
             rest = &t[end + 1..];
@@ -97,7 +97,7 @@ fn find_rule_end(s: &str) -> Option<usize> {
 /// Split `url(x) media...` or `"x" layer(a) supports(..) media` into (url, remaining conditions).
 fn parse_import(rule: &str) -> Option<(String, &str)> {
     let r = rule.trim_start();
-    if r.len() >= 4 && r[..4].eq_ignore_ascii_case("url(") {
+    if r.len() >= 4 && r.as_bytes()[..4].eq_ignore_ascii_case(b"url(") {
         let close = r.find(')')?;
         let inner = r[4..close].trim().trim_matches(|c| c == '"' || c == '\'');
         return Some((inner.to_string(), &r[close + 1..]));
@@ -191,7 +191,7 @@ pub fn absolutize_urls(css: &str, base: &str) -> String {
             i += 1;
             continue;
         }
-        if (c == b'u' || c == b'U') && css[i..].len() >= 4 && css[i..i + 4].eq_ignore_ascii_case("url(") && (i == 0 || !(b[i - 1].is_ascii_alphanumeric() || b[i - 1] == b'-' || b[i - 1] == b'_')) {
+        if (c == b'u' || c == b'U') && css[i..].len() >= 4 && b[i..i + 4].eq_ignore_ascii_case(b"url(") && (i == 0 || !(b[i - 1].is_ascii_alphanumeric() || b[i - 1] == b'-' || b[i - 1] == b'_')) {
             let start = i + 4;
             let inner_start = start + css[start..].len() - css[start..].trim_start().len();
             let (value, end) = if matches!(b.get(inner_start), Some(b'"') | Some(b'\'')) {

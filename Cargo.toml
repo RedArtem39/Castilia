@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-ureq = { version = "3.4", optional = true, features = ["charset"] }
+ureq = { version = "3.4", optional = true, features = ["charset", "cookies"] }
 url = { version = "2.5", optional = true }
 base64 = { version = "0.23", optional = true }
 

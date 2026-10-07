@@ -60,8 +60,10 @@ fn one_inner(url: &str) {
                 castilia::Command::Text { text, color, .. } if color >> 24 != 0 => text.chars().filter(|ch| !ch.is_whitespace()).count(),
                 _ => 0,
             }).sum();
-            // an (almost) empty document means the server refused us (bot protection), not a rendering failure
-            let status = if r.html_bytes < 1024 && chars < 50 { "blocked" } else { "ok" };
+            // an (almost) empty document or an anti-bot interstitial means the server refused us, not a
+            // rendering failure
+            let wall = page.page.as_ref().is_some_and(|p| bot_wall(&p.document));
+            let status = if wall { "bot-wall" } else if r.html_bytes < 1024 && chars < 50 { "blocked" } else { "ok" };
             println!(
                 "RESULT {status} ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={} html={} chars={chars}",
                 start.elapsed().as_millis(),
@@ -77,6 +79,22 @@ fn one_inner(url: &str) {
         }
         Err(e) => println!("RESULT fetch-fail ms={} error={}", start.elapsed().as_millis(), e.replace('\n', " ")),
     }
+}
+
+/// Anti-bot interstitials (Cloudflare, AWS WAF, Akamai, DataDome, Imperva, PerimeterX) on a small page.
+fn bot_wall(doc: &castilia::Document) -> bool {
+    const MARKERS: [&str; 9] = ["/cdn-cgi/challenge-platform/", "awswaf.com", "bm-verify", "captcha-delivery.com", "_Incapsula_Resource", "px-captcha", "challenges.cloudflare.com", "/_sec/verify", "geo.captcha-delivery"];
+    if doc.nodes.len() > 400 {
+        return false;
+    }
+    doc.nodes.iter().any(|n| {
+        let attr = n.attribute("src").or_else(|| n.attribute("action")).or_else(|| n.attribute("content")).unwrap_or("");
+        let text = match &n.kind {
+            castilia::NodeKind::Text(t) => t.as_str(),
+            _ => "",
+        };
+        MARKERS.iter().any(|m| attr.contains(m) || text.contains(m))
+    })
 }
 
 struct Outcome {

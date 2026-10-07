@@ -211,7 +211,7 @@ pub fn load_page(
     width: f32,
     fonts: &impl FontMetrics,
 ) -> Result<LoadedPage, String> {
-    load_page_mode(fetcher, url, width, fonts, false, LoadOptions::default())
+    load_page_mode(fetcher, url, width, fonts, false, LoadOptions::default(), 0)
 }
 
 /// Engine settings for [`load_page_with`].
@@ -232,7 +232,7 @@ pub fn load_page_with(
     fonts: &impl FontMetrics,
     options: LoadOptions,
 ) -> Result<LoadedPage, String> {
-    load_page_mode(fetcher, url, width, fonts, false, options)
+    load_page_mode(fetcher, url, width, fonts, false, options, 0)
 }
 
 /// A simplified reading view for pages whose layout exceeds the MVP CSS engine.
@@ -242,7 +242,7 @@ pub fn load_reader_page(
     width: f32,
     fonts: &impl FontMetrics,
 ) -> Result<LoadedPage, String> {
-    load_page_mode(fetcher, url, width, fonts, true, LoadOptions::default())
+    load_page_mode(fetcher, url, width, fonts, true, LoadOptions::default(), 0)
 }
 
 fn fetch_css_text<F: Fetcher>(fetcher: &mut F, url: &str) -> Option<String> {
@@ -324,6 +324,7 @@ fn load_page_mode<F: Fetcher>(
     fonts: &impl FontMetrics,
     reader: bool,
     load_options: LoadOptions,
+    hops: u8,
 ) -> Result<LoadedPage, String> {
     let response = fetcher.get(url, MAX_HTML_BYTES)?;
     if response.body.len() > MAX_HTML_BYTES {
@@ -433,6 +434,7 @@ fn load_page_mode<F: Fetcher>(
         // runs and the host holding it is dropped (`clear_host`) before returning.
         let erased: *mut (dyn Fetcher + 'static) = unsafe { core::mem::transmute::<*mut (dyn Fetcher + '_), *mut (dyn Fetcher + 'static)>(fetcher_ptr as *mut (dyn Fetcher + '_)) };
         let max_js = load_options.config.max_script_bytes;
+        let config = load_options.config.clone();
         let options = crate::page::PageOptions {
             url: Some(response.final_url.clone()),
             host: Some(Box::new(BorrowedHost { fetcher: erased })),
@@ -458,6 +460,16 @@ fn load_page_mode<F: Fetcher>(
             Ok(crate::encoding::decode_resource(&response.body, cs))
         });
         page.clear_host();
+        // A script navigated during load (bot interstitials, JS redirects): follow it like a browser.
+        if hops < 2
+            && let Some(next) = page.take_navigation()
+            && let Ok(next) = fetcher.resolve(&response.final_url, &next)
+            && (next.starts_with("http://") || next.starts_with("https://"))
+        {
+            let (code_memory, interrupt) = page.take_platform();
+            drop(page);
+            return load_page_mode(fetcher, &next, width, fonts, reader, LoadOptions { config, code_memory, interrupt }, hops + 1);
+        }
         load_fonts(fetcher, &base, &page.font_faces(), fonts);
         let mut display = page.render(width, fonts);
         // scripts that measure the page (ResizeObserver, rAF reading clientHeight) react to the

@@ -32,6 +32,9 @@ impl HostFetcher {
         let mut body = Vec::new();
         response.body_mut().as_reader().take(max_bytes as u64 + 1).read_to_end(&mut body).map_err(|e| e.to_string())?;
         body.truncate(max_bytes);
+        if std::env::var_os("CASTILIA_NETLOG").is_some() {
+            eprintln!("NET {status} {} bytes {final_url}", body.len());
+        }
         Ok(Response { final_url, body, content_type, status, headers })
     }
 }
@@ -62,6 +65,9 @@ impl Fetcher for HostFetcher {
             builder = builder.header(k.as_str(), v.as_str());
         }
         let req = builder.body(body.unwrap_or("").to_string()).map_err(|e| e.to_string())?;
+        if std::env::var_os("CASTILIA_NETLOG").is_some() {
+            eprintln!("NET {method} {url} body={}", body.map_or(0, str::len));
+        }
         let response = self.agent.run(req).map_err(|error| error.to_string())?;
         self.read(response, max_bytes)
     }

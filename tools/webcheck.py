@@ -45,6 +45,7 @@ def ours(url):
     return r
 
 _local = threading.local()
+WALL_MARKERS = ('/cdn-cgi/challenge-platform/', 'awswaf.com', 'bm-verify', 'captcha-delivery.com', '_Incapsula_Resource', 'px-captcha', 'challenges.cloudflare.com', '/_sec/verify')
 
 def chrome(url):
     from playwright.sync_api import sync_playwright
@@ -58,7 +59,9 @@ def chrome(url):
         page.wait_for_timeout(1500)
         text = page.evaluate("document.body ? document.body.innerText : ''") or ''
         height = page.evaluate("document.documentElement.scrollHeight")
-        return {'chars': sum(1 for c in text if not c.isspace()), 'height': height}
+        html = page.content()
+        wall = len(html) < 300000 and any(m in html for m in WALL_MARKERS)
+        return {'chars': sum(1 for c in text if not c.isspace()), 'height': height, 'wall': wall}
     except Exception as e:
         return {'error': str(e)[:160]}
     finally:
@@ -67,6 +70,11 @@ def chrome(url):
 def classify(o, c):
     if 'error' in c or c.get('chars', 0) < 50:
         return 'excluded'
+    if c.get('wall'):
+        return 'excluded:bot-wall'
+    if o['status'] == 'bot-wall':
+        # an anti-bot interstitial: says nothing about the engine (headless Chromium often gets one too)
+        return 'excluded:bot-wall'
     if o['status'] in ('blocked', 'fetch-fail'):
         # Chromium got the page and we did not: a host networking failure (TLS, HTTP/2, bot checks)
         return 'fail:network'
@@ -112,7 +120,7 @@ def summarize(path):
     counts = {}
     for r in recs:
         counts[r['verdict']] = counts.get(r['verdict'], 0) + 1
-    considered = [r for r in recs if r['verdict'] != 'excluded']
+    considered = [r for r in recs if not r['verdict'].startswith('excluded')]
     passed = sum(1 for r in considered if r['verdict'] == 'pass')
     clean = sum(1 for r in considered if r['verdict'] == 'pass' and r['ours'].get('errors', 1) == 0)
     print('\nverdicts:', counts)

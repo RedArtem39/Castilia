@@ -76,6 +76,15 @@ impl Runtime {
         self.interp.interrupt = Some(i);
     }
 
+    /// Hand back the platform services (to reuse them for the next page).
+    pub fn take_platform(&mut self) -> (Option<Box<dyn crate::platform::CodeMemory>>, Option<Box<dyn crate::platform::Interrupt>>) {
+        #[cfg(feature = "jit")]
+        let mem = self.interp.jit.memory.take();
+        #[cfg(not(feature = "jit"))]
+        let mem = None;
+        (mem, self.interp.interrupt.take())
+    }
+
     /// Executable memory for the native tier; without it `ExecMode::Jit` runs interpreted.
     pub fn set_code_memory(&mut self, mem: Box<dyn crate::platform::CodeMemory>) {
         #[cfg(feature = "jit")]
