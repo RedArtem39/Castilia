@@ -231,7 +231,13 @@ impl Interp {
         let is_node = matches!(target, Value::Obj(o) if matches!(o.borrow().class, Class::Node(_)));
         if is_node {
             let mut cur = self.node_id(target)?;
-            while let Some(p) = self.dom()?.nodes[cur].parent {
+            loop {
+                let next = match self.dom()?.nodes[cur].parent {
+                    Some(p) => Some(p),
+                    // a shadow root continues the path at its host
+                    None => crate::shadow::host_of(self.dom()?, cur).filter(|&h| h != cur),
+                };
+                let Some(p) = next else { break };
                 let w = self.wrap(p);
                 path.push((p, w));
                 cur = p;

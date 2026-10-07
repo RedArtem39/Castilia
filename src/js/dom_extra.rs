@@ -1972,16 +1972,17 @@ fn setup_custom_elements(it: &mut Interp) {
                 st.extend(d.nodes[n].children.iter().rev().copied());
             }
             let proto = it.get_obj(&ctor, &it.names.prototype.clone(), &Value::Obj(ctor.clone()))?;
+            let _ = proto;
             for n in found {
-                let w = it.wrap(n);
-                if let (Value::Obj(o), Value::Obj(p)) = (&w, &proto) {
-                    o.borrow_mut().proto = Some(p.clone());
+                // run the constructor against the existing element
+                it.upgrade_target = Some(n);
+                if let Err(Ctl::Throw(e)) = it.construct(&Value::Obj(ctor.clone()), &[], None) {
+                    it.report_error(&e);
                 }
-                let cb = it.get_str(&w, "connectedCallback")?;
-                if cb.as_obj().is_some_and(|o| o.is_callable()) {
-                    if let Err(Ctl::Throw(e)) = it.call(&cb, w.clone(), &[]) {
-                        it.report_error(&e);
-                    }
+                it.upgrade_target = None;
+                let connected = it.dom()?.is_connected(n);
+                if connected {
+                    it.custom_element_callbacks(n, "connectedCallback");
                 }
             }
         }

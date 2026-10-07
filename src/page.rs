@@ -387,8 +387,9 @@ impl Page {
         None
     }
 
-    fn stylesheet(&self) -> Rc<StyleSheet> {
-        let css = embedded_css(&self.document, &self.link_css, &self.external_css);
+    fn stylesheet_with(&self, extra: &str) -> Rc<StyleSheet> {
+        let mut css = embedded_css(&self.document, &self.link_css, &self.external_css);
+        css.push_str(extra);
         let mut cache = self.sheet_cache.borrow_mut();
         if let Some((text, sheet)) = cache.as_ref()
             && *text == css
@@ -406,12 +407,17 @@ impl Page {
     }
 
     pub fn render_viewport(&self, viewport: Viewport, fonts: &impl FontMetrics) -> DisplayList {
-        let sheet = self.stylesheet();
+        let composed = crate::shadow::compose(&self.document);
+        let (doc, extra) = match &composed {
+            Some(c) => (&c.doc, c.css.as_str()),
+            None => (&self.document, ""),
+        };
+        let sheet = self.stylesheet_with(extra);
         let list = if self.image_sizes.is_empty() {
-            render_document(&self.document, &sheet, viewport, fonts)
+            render_document(doc, &sheet, viewport, fonts)
         } else {
             let wrapped = crate::layout::WithImageSizes { inner: fonts, sizes: &self.image_sizes };
-            render_document(&self.document, &sheet, viewport, &wrapped)
+            render_document(doc, &sheet, viewport, &wrapped)
         };
         *self.layout_rects.borrow_mut() = Some(Runtime::rects_from_hits(&self.document, &list.hit_regions));
         list
@@ -470,5 +476,38 @@ mod tests {
             Some("go outer")
         );
         assert_eq!(page.click_at(&list, -1.0, -1.0).unwrap(), None);
+    }
+
+    #[test]
+    fn shadow_dom_renders_slots_and_scoped_styles() {
+        let mut page = Page::new(
+            "<style>p { color: #00ff00 }</style><my-card><span slot='t'>Title</span>light</my-card><p>outside</p><script>const h = document.querySelector('my-card'); const r = h.attachShadow({mode:'open'}); r.innerHTML = '<style>p { color: #ff0000 } :host { display:block }</style><p><slot name=t></slot>|<slot></slot></p>';</script>",
+            "",
+        );
+        let list = page.render(400.0, &Mono);
+        let color_of = |t: &str| list.commands.iter().find_map(|c| match c { Command::Text { text, color, .. } if text.contains(t) => Some(*color), _ => None });
+        assert_eq!(color_of("Title"), Some(0xffff0000));
+        assert_eq!(color_of("outside"), Some(0xff00ff00));
+        assert!(color_of("light").is_some());
+        let _ = &mut page;
+    }
+
+    #[test]
+    fn declarative_shadow_dom() {
+        let page = Page::new("<div><template shadowrootmode='open'><b>from shadow</b></template></div>", "");
+        let list = page.render(400.0, &Mono);
+        assert!(list.commands.iter().any(|c| matches!(c, Command::Text { text, .. } if text.contains("from shadow"))));
+    }
+
+    #[test]
+    fn custom_elements_with_shadow_dom() {
+        let page = Page::new(
+            "<x-greet name='Ann'></x-greet><script>class G extends HTMLElement { static get observedAttributes(){ return ['name']; } constructor(){ super(); this.attachShadow({mode:'open'}); } connectedCallback(){ this.draw(); } attributeChangedCallback(){ if (this.isConnected) this.draw(); } draw(){ this.shadowRoot.innerHTML = '<b>Hello ' + this.getAttribute('name') + '</b>'; } } customElements.define('x-greet', G); const e = document.createElement('x-greet'); e.setAttribute('name','Bob'); document.body.appendChild(e);</script>",
+            "",
+        );
+        let list = page.render(400.0, &Mono);
+        let texts: Vec<&str> = list.commands.iter().filter_map(|c| match c { Command::Text { text, .. } => Some(text.as_str()), _ => None }).collect();
+        assert!(texts.iter().any(|t| t.contains("Hello Ann")), "{texts:?} {:?}", page.console());
+        assert!(texts.iter().any(|t| t.contains("Hello Bob")), "{texts:?}");
     }
 }

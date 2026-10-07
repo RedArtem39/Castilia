@@ -1,6 +1,7 @@
 html { display: block; color: #000; background-color: transparent }
 head, link, meta, script, style, title, base, template, noscript, datalist, area, param, source, track,
-[hidden], dialog:not([open]), slot { display: none }
+[hidden], dialog:not([open]) { display: none }
+slot { display: contents }
 body { display: block; margin: 8px }
 address, blockquote, center, dialog, div, figure, figcaption, footer, form, header, hr, legend, listing, main,
 p, plaintext, pre, search, xmp, article, aside, h1, h2, h3, h4, h5, h6, hgroup, nav, section, details, summary,

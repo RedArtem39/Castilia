@@ -198,7 +198,8 @@ pub struct Interp {
     pub current_script: Option<usize>,
     pub custom_elements: Vec<(String, Obj)>,
     pub template_content: BTreeMap<usize, usize>,
-    pub shadow_roots: BTreeMap<usize, usize>,
+    pub shadow_closed: Vec<usize>,
+    pub upgrade_target: Option<usize>,
     pub counters: BTreeMap<String, u32>,
     pub dom_symbols: BTreeMap<u32, Sym>,
 }

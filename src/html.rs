@@ -11,7 +11,27 @@ pub fn parse(source: &str) -> Document {
     let mut b = Builder::new(&mut doc, None);
     b.run(source);
     wrap_templates(&mut doc, 0);
+    attach_declarative_shadow_roots(&mut doc);
     doc
+}
+
+/// `<template shadowrootmode="open|closed">` directly inside an element becomes that element's shadow root.
+fn attach_declarative_shadow_roots(doc: &mut Document) {
+    for id in 0..doc.nodes.len() {
+        if doc.nodes[id].tag() != Some("template") || doc.nodes[id].attribute("shadowrootmode").is_none() {
+            continue;
+        }
+        let Some(host) = doc.nodes[id].parent else { continue };
+        if !matches!(doc.nodes[host].kind, NodeKind::Element { .. }) || doc.shadow_roots.contains_key(&host) {
+            continue;
+        }
+        let Some(&frag) = doc.nodes[id].children.iter().find(|&&c| doc.nodes[c].kind == NodeKind::Fragment) else { continue };
+        doc.nodes[id].children.retain(|&c| c != frag);
+        doc.nodes[frag].parent = None;
+        doc.nodes[host].children.retain(|&c| c != id);
+        doc.nodes[id].parent = None;
+        doc.shadow_roots.insert(host, frag);
+    }
 }
 
 /// `<template>` keeps its parsed children inside a single `Fragment` child (its content), so that

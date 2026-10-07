@@ -52,6 +52,8 @@ pub struct Document {
     pub body: NodeId,
     /// True when the document has no (or a legacy) doctype: quirks mode.
     pub quirks: bool,
+    /// Shadow hosts and their root fragments (shadow trees are not part of the light tree).
+    pub shadow_roots: alloc::collections::BTreeMap<NodeId, NodeId>,
 }
 
 impl Document {
@@ -214,6 +216,7 @@ impl Document {
             head: 0,
             body: 0,
             quirks: true,
+            shadow_roots: alloc::collections::BTreeMap::new(),
         };
         document.root = document.push(NodeKind::Document, None);
         let html = document.push(

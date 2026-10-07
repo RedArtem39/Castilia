@@ -28,6 +28,7 @@ pub mod network;
 pub mod page;
 mod presentation;
 pub mod selector;
+pub mod shadow;
 
 pub use css::Viewport;
 pub use dom::{Document, Node, NodeId, NodeKind};

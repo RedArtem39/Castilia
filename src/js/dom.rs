@@ -342,6 +342,9 @@ impl Interp {
         self.dom.dirty = true;
         self.note_children(parent, vec![child], Vec::new());
         self.after_insert(child)?;
+        if self.dom()?.is_connected(child) {
+            self.custom_element_callbacks(child, "connectedCallback");
+        }
         Ok(())
     }
 
@@ -350,6 +353,7 @@ impl Interp {
         if let Some(p) = doc.nodes[child].parent {
             doc.remove(child);
             self.dom.dirty = true;
+            self.custom_element_callbacks(child, "disconnectedCallback");
             self.note_children(p, Vec::new(), vec![child]);
         }
         Ok(())

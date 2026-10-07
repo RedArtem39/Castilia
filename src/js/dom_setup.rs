@@ -132,6 +132,7 @@ pub fn setup_all(it: &mut Interp) {
     setup_node(it, &node);
     setup_parent_child_mixins(it, &[&element, &document, &fragment], &[&element, &text, &comment]);
     setup_element(it, &element);
+    it.def_accessor(&fragment, "innerHTML", inner_html_get, inner_html_set);
     setup_char_data(it, &text, &comment);
     setup_document(it, &document, &fragment);
     super::dom_extra::setup(it);
@@ -142,8 +143,11 @@ fn html_element_ctor(it: &mut Interp, c: &Call) -> Res {
     let Some(nt) = c.new_target.clone() else { return it.type_error("Illegal constructor") };
     let tag = it.custom_elements.iter().find(|(_, ctor)| ctor.ptr_eq(&nt)).map(|(t, _)| t.clone());
     let Some(tag) = tag else { return it.type_error("Illegal constructor: custom element not registered") };
-    let doc = it.dom()?;
-    let id = doc.create_element(&tag);
+    // upgrading an existing element: `super()` returns that node
+    let id = match it.upgrade_target.take() {
+        Some(id) => id,
+        None => it.dom()?.create_element(&tag),
+    };
     let w = it.wrap(id);
     if let Value::Obj(o) = &w {
         let p = it.get_obj(&nt, &it.names.prototype.clone(), &Value::Obj(nt.clone()))?;
@@ -789,24 +793,46 @@ fn setup_element(it: &mut Interp, p: &Obj) {
     });
     it.def_method(p, "attachShadow", 1, |it, c| {
         let id = this_el(it, c)?;
+        if it.dom()?.shadow_roots.contains_key(&id) {
+            return Err(it.error_ctl("NotSupportedError", "Shadow root cannot be created on a host which already hosts a shadow tree."));
+        }
+        let mode = if matches!(c.arg(0), Value::Obj(_)) { it.get_str(&c.arg(0), "mode")? } else { Value::Undefined };
+        let mode = it.to_string_lossy(&mode);
         let frag = it.dom()?.push(NodeKind::Fragment, None);
-        it.shadow_roots.insert(id, frag);
+        it.dom()?.shadow_roots.insert(id, frag);
+        if mode == "closed" {
+            it.shadow_closed.push(id);
+        }
         let w = it.wrap(frag);
         if let Value::Obj(o) = &w {
             let host = it.wrap(id);
             it.define_data(o, Key::str("host"), host, 0);
-            it.define_data(o, Key::str("mode"), Value::str("open"), 0);
-            let sr = it.protos().extra.get("fragment").cloned().unwrap();
-            let _ = sr;
+            it.define_data(o, Key::str("mode"), Value::string(if mode == "closed" { mode.clone() } else { "open".to_string() }), 0);
+            it.dom.dirty = true;
         }
         Ok(w)
     });
     it.def_getter(p, "shadowRoot", |it, c| {
         let id = this_el(it, c)?;
-        Ok(match it.shadow_roots.get(&id).copied() {
+        if it.shadow_closed.contains(&id) {
+            return Ok(Value::Null);
+        }
+        let f = it.dom()?.shadow_roots.get(&id).copied();
+        Ok(match f {
             Some(f) => it.wrap(f),
             None => Value::Null,
         })
+    });
+    it.def_method(p, "assignedNodes", 1, |it, c| {
+        let id = this_el(it, c)?;
+        let list = slot_assigned(it, id)?;
+        Ok(it.node_list(&list))
+    });
+    it.def_method(p, "assignedElements", 1, |it, c| {
+        let id = this_el(it, c)?;
+        let mut list = slot_assigned(it, id)?;
+        list.retain(|&n| it.is_element(n));
+        Ok(it.node_list(&list))
     });
     it.def_method(p, "scrollIntoView", 0, |_, _| Ok(Value::Undefined));
     for n in ["scrollTo", "scroll", "scrollBy", "requestFullscreen", "setPointerCapture", "releasePointerCapture", "scrollIntoViewIfNeeded"] {
@@ -1068,18 +1094,15 @@ fn setup_char_data(it: &mut Interp, text: &Obj, comment: &Obj) {
 
 fn create_element(it: &mut Interp, tag: &str) -> Res<Value> {
     let tag = tag.to_ascii_lowercase();
-    let doc = it.dom()?;
-    let id = doc.create_element(&tag);
-    let w = it.wrap(id);
     if tag.contains('-') {
         if let Some((_, ctor)) = it.custom_elements.iter().find(|(t, _)| *t == tag).cloned() {
-            let p = it.get_obj(&ctor, &it.names.prototype.clone(), &Value::Obj(ctor.clone()))?;
-            if let (Value::Obj(o), Value::Obj(p)) = (&w, p) {
-                o.borrow_mut().proto = Some(p);
-            }
+            // run the author's constructor (its `super()` creates the element)
+            return it.construct(&Value::Obj(ctor), &[], None);
         }
     }
-    Ok(w)
+    let doc = it.dom()?;
+    let id = doc.create_element(&tag);
+    Ok(it.wrap(id))
 }
 
 fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
@@ -1412,7 +1435,79 @@ fn doc_write(it: &mut Interp, c: &Call) -> Res {
 
 impl Interp {
     /// Hook for custom element `attributeChangedCallback`.
-    pub fn attribute_changed(&mut self, _id: NodeId, _name: &str) -> Res<()> {
+    pub fn attribute_changed(&mut self, id: NodeId, name: &str) -> Res<()> {
+        let tag = self.tag_name(id);
+        if !tag.contains('-') {
+            return Ok(());
+        }
+        let Some((_, ctor)) = self.custom_elements.iter().find(|(t, _)| *t == tag).cloned() else { return Ok(()) };
+        let observed = self.get_str(&Value::Obj(ctor), "observedAttributes")?;
+        if observed.is_nullish() {
+            return Ok(());
+        }
+        let list = self.array_like_to_vec(&observed)?;
+        let mut hit = false;
+        for v in list {
+            if &*self.to_str(&v)? == name {
+                hit = true;
+            }
+        }
+        if !hit {
+            return Ok(());
+        }
+        let w = self.wrap(id);
+        let cb = self.get_str(&w, "attributeChangedCallback")?;
+        if cb.as_obj().is_some_and(|o| o.is_callable()) {
+            let new = self.attr(id, &name.to_ascii_lowercase()).map_or(Value::Null, Value::string);
+            if let Err(Ctl::Throw(e)) = self.call(&cb, w, &[Value::str(name), Value::Null, new]) {
+                self.report_error(&e);
+            }
+        }
         Ok(())
     }
+
+    /// Run `connectedCallback`/`disconnectedCallback` for custom elements in the subtree of `id`.
+    pub fn custom_element_callbacks(&mut self, id: NodeId, name: &str) {
+        if self.custom_elements.is_empty() {
+            return;
+        }
+        let mut stack = vec![id];
+        let mut found = Vec::new();
+        while let Some(n) = stack.pop() {
+            let Some(d) = self.doc() else { return };
+            if d.nodes[n].tag().is_some_and(|t| t.contains('-')) {
+                found.push(n);
+            }
+            stack.extend(d.nodes[n].children.iter().rev().copied());
+            if let Some(&sr) = d.shadow_roots.get(&n) {
+                stack.push(sr);
+            }
+        }
+        for n in found {
+            let tag = self.tag_name(n);
+            if !self.custom_elements.iter().any(|(t, _)| *t == tag) {
+                continue;
+            }
+            let w = self.wrap(n);
+            if let Ok(cb) = self.get_str(&w, name) {
+                if cb.as_obj().is_some_and(|o| o.is_callable()) {
+                    if let Err(Ctl::Throw(e)) = self.call(&cb, w, &[]) {
+                        self.report_error(&e);
+                    }
+                }
+            }
+        }
+    }
+}
+
+fn slot_assigned(it: &mut Interp, slot: NodeId) -> Res<Vec<NodeId>> {
+    let d = it.dom()?;
+    if d.nodes[slot].tag() != Some("slot") {
+        return Ok(Vec::new());
+    }
+    let name = d.nodes[slot].attribute("name").unwrap_or("").to_string();
+    Ok(match crate::shadow::host_of(d, slot) {
+        Some(host) => crate::shadow::assigned_nodes(d, host, &name),
+        None => Vec::new(),
+    })
 }
