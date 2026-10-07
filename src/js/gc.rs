@@ -21,6 +21,7 @@ use super::{
 use alloc::{
     collections::BTreeMap,
     rc::{Rc, Weak},
+    string::String,
     vec::Vec,
 };
 use core::cell::{Cell, RefCell};
@@ -31,6 +32,10 @@ pub struct Heap {
     scopes: RefCell<Vec<Weak<Scope>>>,
     /// Allocations since the last collection.
     since: Cell<usize>,
+    /// Allocations in the current task (reset by `begin_task`).
+    pub task_allocs: Cell<usize>,
+    /// Registry size that triggers dropping dead entries (a `Weak` keeps its box allocated).
+    compact_at: Cell<usize>,
     /// Allocations between collections (0 disables automatic collection).
     pub threshold: usize,
     pub stats: GcStats,
@@ -47,13 +52,14 @@ pub struct GcStats {
 
 impl Default for Heap {
     fn default() -> Self {
-        Heap { objs: RefCell::new(Vec::new()), scopes: RefCell::new(Vec::new()), since: Cell::new(0), threshold: 200_000, stats: GcStats::default() }
+        Heap { objs: RefCell::new(Vec::new()), scopes: RefCell::new(Vec::new()), since: Cell::new(0), task_allocs: Cell::new(0), compact_at: Cell::new(1 << 16), threshold: 200_000, stats: GcStats::default() }
     }
 }
 
 impl Heap {
     fn note(&self) {
         self.since.set(self.since.get() + 1);
+        self.task_allocs.set(self.task_allocs.get() + 1);
     }
 
     /// Drop registry entries whose node is already gone.
@@ -247,15 +253,34 @@ impl Interp {
     /// Allocate a collectable object.
     pub fn alloc(&self, o: Object) -> Obj {
         let obj = Obj::new(o);
-        self.heap.objs.borrow_mut().push(Rc::downgrade(&obj.0));
+        let len = {
+            let mut objs = self.heap.objs.borrow_mut();
+            objs.push(Rc::downgrade(&obj.0));
+            objs.len()
+        };
         self.heap.note();
+        if len >= self.heap.compact_at.get() {
+            // free the boxes of objects that already died within this task
+            self.heap.compact();
+            let live = self.heap.objs.borrow().len();
+            self.heap.compact_at.set((live * 2).max(1 << 16));
+        }
         obj
     }
 
     /// Register a scope with the collector.
     pub fn track_scope(&self, s: Env) -> Env {
-        self.heap.scopes.borrow_mut().push(Rc::downgrade(&s));
+        let len = {
+            let mut sc = self.heap.scopes.borrow_mut();
+            sc.push(Rc::downgrade(&s));
+            sc.len()
+        };
         self.heap.note();
+        if len >= self.heap.compact_at.get() {
+            self.heap.compact();
+            let live = self.heap.objs.borrow().len().max(self.heap.scopes.borrow().len());
+            self.heap.compact_at.set((live * 2).max(1 << 16));
+        }
         s
     }
 
@@ -371,6 +396,50 @@ impl Interp {
         self.heap.stats.freed_scopes += fs;
         self.heap.stats.live = total - fo - fs;
         fo + fs
+    }
+
+    /// Live tracked objects grouped by kind and constructor name (diagnostics), largest first.
+    pub fn heap_histogram(&mut self, top: usize) -> Vec<(String, usize)> {
+        use alloc::string::ToString;
+        let objs: Vec<Obj> = self.heap.objs.borrow().iter().filter_map(|w| w.upgrade()).map(Obj).collect();
+        let mut counts: BTreeMap<String, usize> = BTreeMap::new();
+        for o in &objs {
+            let kind = match &o.borrow().class {
+                Class::Plain => "Plain",
+                Class::Array(_) => "Array",
+                Class::Function(Func::Closure(_)) => "Closure",
+                Class::Function(_) => "NativeFn",
+                Class::Promise(_) => "Promise",
+                Class::Node(_) => "Node",
+                Class::Map(_) => "Map",
+                Class::Set(_) => "Set",
+                Class::Generator(_) => "Generator",
+                Class::Arguments => "Arguments",
+                _ => "Other",
+            };
+            let proto = o.borrow().proto.clone();
+            let ctor = proto.and_then(|p| match p.borrow().props.get(&Key::str("constructor")).map(|pr| pr.slot.clone()) {
+                Some(Slot::Data(Value::Obj(c))) => match c.borrow().props.get(&Key::str("name")).map(|pr| pr.slot.clone()) {
+                    Some(Slot::Data(Value::Str(s))) => Some(s.to_string()),
+                    _ => None,
+                },
+                _ => None,
+            });
+            *counts.entry(alloc::format!("{kind}:{}", ctor.unwrap_or_else(|| "?".to_string()))).or_default() += 1;
+        }
+        let scopes = self.heap.scopes.borrow().iter().filter(|w| w.strong_count() > 0).count();
+        counts.insert("Scope".to_string(), scopes);
+        let detached = match self.doc() {
+            Some(d) => self.node_cache.keys().filter(|&&id| !d.is_connected(id)).count(),
+            None => 0,
+        };
+        counts.insert("~cached wrappers".to_string(), self.node_cache.len());
+        counts.insert("~cached detached wrappers".to_string(), detached);
+        counts.insert("~listeners".to_string(), self.dom.listeners.len());
+        let mut v: Vec<(String, usize)> = counts.into_iter().collect();
+        v.sort_by(|a, b| b.1.cmp(&a.1));
+        v.truncate(top);
+        v
     }
 
     pub fn gc_stats(&self) -> GcStats {

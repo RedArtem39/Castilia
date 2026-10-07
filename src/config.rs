@@ -61,6 +61,10 @@ pub struct EngineConfig {
     pub settle_ms: f64,
     /// Upper bound on timer callbacks fired while settling.
     pub settle_fires: usize,
+    /// Objects a single task may allocate before it is stopped (runaway scripts).
+    pub max_task_allocs: usize,
+    /// Longest string scripts may build, in bytes.
+    pub max_string_len: usize,
     /// Allocations between cycle collections (0 disables the collector).
     pub gc_threshold: usize,
     /// Log the functions each uncaught exception unwinds through (debugging).
@@ -83,6 +87,8 @@ impl EngineConfig {
             settle_ms: 1500.0,
             settle_fires: 3000,
             gc_threshold: 200_000,
+            max_task_allocs: 8_000_000,
+            max_string_len: 256 << 20,
             trace_errors: false,
             max_scripts: 256,
             max_script_bytes: 24 * 1024 * 1024,
@@ -109,6 +115,8 @@ impl EngineConfig {
             settle_ms: 500.0,
             settle_fires: 500,
             gc_threshold: 50_000,
+            max_task_allocs: 1_000_000,
+            max_string_len: 32 << 20,
             max_scripts: 64,
             max_script_bytes: 4 * 1024 * 1024,
             ..EngineConfig::desktop()

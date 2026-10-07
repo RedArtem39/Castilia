@@ -890,6 +890,9 @@ impl Interp {
                 if matches!(lp, Value::Str(_)) || matches!(rp, Value::Str(_)) {
                     let a = self.to_str(&lp)?;
                     let b = self.to_str(&rp)?;
+                    if a.len() + b.len() > self.max_string_len {
+                        return Err(self.error_ctl("RangeError", "Invalid string length"));
+                    }
                     let mut s = String::with_capacity(a.len() + b.len());
                     s.push_str(&a);
                     s.push_str(&b);

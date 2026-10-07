@@ -150,3 +150,4 @@ mod tests {
         assert!(list.commands.iter().any(|c| matches!(c, Command::Text { text, color: 0xff123456, .. } if text == "Привет")));
     }
 }
+

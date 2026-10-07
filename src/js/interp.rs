@@ -212,6 +212,10 @@ pub struct Interp {
     /// Frames currently on VM loop stacks.
     pub vm_frames: usize,
     pub max_frames: usize,
+    /// Objects one task may allocate before it is stopped.
+    pub max_task_allocs: usize,
+    /// Longest string (bytes) scripts may create.
+    pub max_string_len: usize,
     /// Finished frames kept for reuse (their buffers keep their capacity).
     pub frame_pool: Vec<alloc::boxed::Box<super::vm::Frame>>,
     /// Module URL of each module's source text (keyed by the `Rc<str>` address).
@@ -277,6 +281,7 @@ impl Interp {
     pub fn begin_task(&mut self) {
         self.ticks = 0;
         self.next_poll = 0;
+        self.heap.task_allocs.set(0);
         if let Some(i) = self.interrupt.as_mut() {
             i.task_started();
         }
@@ -289,6 +294,10 @@ impl Interp {
                 return Err(self.error_ctl("Error", "script execution limit reached"));
             }
             self.next_poll = self.ticks + 65_536;
+            if self.heap.task_allocs.get() > self.max_task_allocs {
+                self.heap.task_allocs.set(0);
+                return Err(self.error_ctl("RangeError", "Out of memory: too many objects allocated by one task"));
+            }
             if let Some(i) = self.interrupt.as_mut() {
                 if i.should_stop() {
                     // keep failing until the host lets scripts run again

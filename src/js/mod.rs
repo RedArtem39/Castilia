@@ -62,6 +62,8 @@ impl Runtime {
         it.tick_limit = config.task_budget;
         it.max_frames = config.max_frames;
         it.heap.threshold = config.gc_threshold;
+        it.max_task_allocs = config.max_task_allocs;
+        it.max_string_len = config.max_string_len;
         it.trace_errors = config.trace_errors;
         #[cfg(feature = "jit")]
         {
@@ -82,6 +84,11 @@ impl Runtime {
         }
         #[cfg(not(feature = "jit"))]
         drop(mem);
+    }
+
+    /// Live objects by kind/constructor (diagnostics).
+    pub fn heap_histogram(&mut self, document: &mut Document, top: usize) -> Vec<(String, usize)> {
+        self.with(document, |it| it.heap_histogram(top))
     }
 
     /// Run the cycle collector now; returns freed objects + scopes.

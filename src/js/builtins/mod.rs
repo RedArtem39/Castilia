@@ -165,6 +165,8 @@ pub fn new_interp() -> Interp {
         vm_stats: Default::default(),
         vm_frames: 0,
         max_frames: 10_000,
+        max_task_allocs: 8_000_000,
+        max_string_len: 256 << 20,
         frame_pool: Vec::new(),
         source_urls: BTreeMap::new(),
         interrupt: None,

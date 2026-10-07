@@ -250,6 +250,16 @@ impl Page {
         self.runtime.vm_stats()
     }
 
+    /// Live objects by kind/constructor (diagnostics).
+    pub fn heap_histogram(&mut self, top: usize) -> Vec<(String, usize)> {
+        self.runtime.heap_histogram(&mut self.document, top)
+    }
+
+    /// Run the cycle collector now (returns freed objects + scopes).
+    pub fn collect_garbage(&mut self) -> usize {
+        self.runtime.collect_garbage()
+    }
+
     /// Cycle collector counters.
     pub fn gc_stats(&self) -> crate::js::gc::GcStats {
         self.runtime.gc_stats()

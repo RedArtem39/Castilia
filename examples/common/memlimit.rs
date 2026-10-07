@@ -7,6 +7,19 @@ pub struct Limited;
 
 static USED: AtomicUsize = AtomicUsize::new(0);
 static LIMIT: AtomicUsize = AtomicUsize::new(1536 << 20);
+static PEAK: AtomicUsize = AtomicUsize::new(0);
+
+/// Highest heap usage seen so far (bytes).
+#[allow(dead_code)]
+pub fn peak() -> usize {
+    PEAK.load(Ordering::Relaxed)
+}
+
+/// Current heap usage (bytes).
+#[allow(dead_code)]
+pub fn used() -> usize {
+    USED.load(Ordering::Relaxed)
+}
 
 pub fn init() {
     if let Some(mb) = std::env::var("CASTILIA_MEM_MB").ok().and_then(|v| v.parse::<usize>().ok()) {
@@ -15,7 +28,9 @@ pub fn init() {
 }
 
 fn over(size: usize) -> bool {
-    USED.fetch_add(size, Ordering::Relaxed) + size > LIMIT.load(Ordering::Relaxed)
+    let now = USED.fetch_add(size, Ordering::Relaxed) + size;
+    PEAK.fetch_max(now, Ordering::Relaxed);
+    now > LIMIT.load(Ordering::Relaxed)
 }
 
 fn out_of_memory() -> ! {

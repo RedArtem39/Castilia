@@ -34,6 +34,9 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
     }
     config.max_native_depth = 1000;
     config.trace_errors = env::var("CASTILIA_TRACE").is_ok();
+    if env::var("CASTILIA_NO_JS").is_ok() {
+        config.max_scripts = 0;
+    }
     let args: Vec<_> = env::args().collect();
     let reader = args.len() == 4 && args[1] == "--reader";
     if !(args.len() == 3 || reader) {
@@ -103,6 +106,16 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
                 println!("console {l}");
             }
         }
+    }
+    println!("Heap: peak {} MB, now {} MB", memlimit::peak() >> 20, memlimit::used() >> 20);
+    if let Some(p) = page.page.as_mut() {
+        let freed = p.collect_garbage();
+        if env::var("CASTILIA_HEAP").is_ok() {
+            for (k, n) in p.heap_histogram(25) {
+                println!("heap {n:>9} {k}");
+            }
+        }
+        println!("GC: freed {freed}, {:?}, heap now {} MB, vm {:?}", p.gc_stats(), memlimit::used() >> 20, p.vm_stats());
     }
     println!("SVG: {}", args[output_index]);
     Ok(())

@@ -759,6 +759,10 @@ impl Interp {
                 }
                 Op::Concat(n) => {
                     let start = f.stack.len() - n as usize;
+                    let total: usize = f.stack[start..].iter().map(|v| if let Value::Str(s) = v { s.len() } else { 0 }).sum();
+                    if total > self.max_string_len {
+                        return Err(self.error_ctl("RangeError", "Invalid string length"));
+                    }
                     let mut out = String::new();
                     for v in &f.stack[start..] {
                         if let Value::Str(s) = v {
