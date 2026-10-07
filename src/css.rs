@@ -1087,7 +1087,7 @@ fn eval_supports(cond: &str) -> bool {
 
 // ---- media queries -------------------------------------------------------
 
-fn media_matches(query: &str, vp: Viewport) -> bool {
+pub fn media_matches(query: &str, vp: Viewport) -> bool {
     let query = query.trim();
     if query.is_empty() {
         return true;
@@ -1423,6 +1423,7 @@ pub fn compute_with_rules(doc: &Document, active: &ActiveRules, vp: Viewport) ->
                 s.display = Display::Block;
                 out.nodes[id] = s;
             }
+            NodeKind::Comment(_) | NodeKind::Fragment => {}
             NodeKind::Text(_) => {
                 let parent = node.parent.map(|p| &out.nodes[p]);
                 let mut s = parent.map_or_else(Style::initial, Style::inherit_from);

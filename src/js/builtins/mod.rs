@@ -141,6 +141,15 @@ pub fn new_interp() -> Interp {
         array_values_native: true,
         join_stack: Vec::new(),
         console_indent: 0,
+        last_prevented: false,
+        dispatch_count: 0,
+        history_state: BTreeMap::new(),
+        parsing_html_scripts: false,
+        executed_scripts: Vec::new(),
+        current_script: None,
+        custom_elements: Vec::new(),
+        template_content: BTreeMap::new(),
+        shadow_roots: BTreeMap::new(),
         counters: BTreeMap::new(),
         dom_symbols: BTreeMap::new(),
     };
@@ -153,6 +162,9 @@ pub fn new_interp() -> Interp {
     collections::setup(&mut it);
     promise::setup(&mut it);
     misc::setup(&mut it);
+    super::dom_setup::setup_all(&mut it);
+    super::events::setup(&mut it);
+    super::window::setup(&mut it);
     it
 }
 

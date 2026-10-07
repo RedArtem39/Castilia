@@ -2,15 +2,29 @@
 pub mod ast;
 pub mod builtins;
 pub mod dom;
+pub mod dom_extra;
+pub mod dom_setup;
+pub mod events;
+pub mod window;
 pub mod interp;
 pub mod lexer;
 pub mod ops;
 pub mod parser;
 pub mod regex;
+pub mod url;
 pub mod value;
 
 use crate::dom::{Document, NodeId};
-use alloc::{string::String, vec::Vec};
+use alloc::{boxed::Box, collections::BTreeMap, string::String, vec::Vec};
+
+pub use dom::{Host, HostResponse};
+
+/// Property value for synthesized events.
+pub enum Prop<'a> {
+    Num(f64),
+    Str(&'a str),
+    Bool(bool),
+}
 
 /// A script runtime bound to one page.
 pub struct Runtime {
@@ -28,29 +42,235 @@ impl Runtime {
         Runtime { interp: builtins::new_interp() }
     }
 
-    pub fn execute(&mut self, source: &str, document: &mut Document) -> Result<(), String> {
-        self.interp.doc = document as *mut Document;
-        let r = self.interp.eval_script(source);
-        self.interp.run_microtasks();
+    fn with<R>(&mut self, doc: &mut Document, f: impl FnOnce(&mut interp::Interp) -> R) -> R {
+        self.interp.doc = doc as *mut Document;
+        let r = f(&mut self.interp);
         self.interp.doc = core::ptr::null_mut();
         r
     }
 
-    pub fn dispatch(&mut self, node: NodeId, event: &str, document: &mut Document) -> Result<usize, String> {
-        self.begin_event();
-        self.dispatch_to(node, node, event, document)
+    pub fn set_host(&mut self, host: Box<dyn Host>) {
+        self.interp.host.host = Some(host);
     }
 
-    pub(crate) fn begin_event(&mut self) {
-        self.interp.ticks = 0;
+    pub fn set_url(&mut self, url: &str) {
+        self.interp.dom.base_url = String::from(url);
+        self.interp.dom.history = alloc::vec![String::from(url)];
+        self.interp.dom.history_pos = 0;
     }
 
-    pub(crate) fn dispatch_to(&mut self, _current: NodeId, _target: NodeId, _event: &str, _document: &mut Document) -> Result<usize, String> {
-        Ok(0)
+    pub fn url(&self) -> &str {
+        &self.interp.dom.base_url
+    }
+
+    pub fn set_viewport(&mut self, w: f32, h: f32) {
+        self.interp.dom.viewport = (w, h);
+    }
+
+    pub fn set_layout(&mut self, rects: BTreeMap<usize, [f32; 4]>) {
+        self.interp.dom.rects = rects;
+    }
+
+    pub fn set_computed(&mut self, computed: BTreeMap<usize, Vec<(String, String)>>) {
+        self.interp.dom.computed = computed;
+    }
+
+    /// Run a classic script. `node` is the `<script>` element (for `document.currentScript`).
+    pub fn run_script(&mut self, source: &str, node: Option<NodeId>, document: &mut Document) -> Result<(), String> {
+        self.with(document, |it| {
+            it.ticks = 0;
+            let prev = it.current_script;
+            it.current_script = node;
+            if let Some(n) = node {
+                it.executed_scripts.push(n);
+            }
+            let r = it.eval_script(source);
+            it.current_script = prev;
+            it.run_microtasks();
+            r
+        })
+    }
+
+    pub fn execute(&mut self, source: &str, document: &mut Document) -> Result<(), String> {
+        self.run_script(source, None, document)
+    }
+
+    /// Dispatch a synthesized event; returns how many listeners ran.
+    pub fn dispatch_event(&mut self, document: &mut Document, target: NodeId, ty: &str, class: &str, bubbles: bool, cancelable: bool, props: &[(&str, Prop)]) -> Result<usize, String> {
+        self.with(document, |it| {
+            it.ticks = 0;
+            let before = it.dispatch_count;
+            let mut vals = Vec::new();
+            for (k, p) in props {
+                let v = match p {
+                    Prop::Num(n) => value::Value::Num(*n),
+                    Prop::Str(s) => value::Value::str(s),
+                    Prop::Bool(b) => value::Value::Bool(*b),
+                };
+                vals.push((*k, v));
+            }
+            let ev = it.make_event(ty, class, bubbles, cancelable, &vals);
+            let t = it.wrap(target);
+            let result = match it.dispatch_event_obj(&t, &ev) {
+                Ok(not_prevented) => {
+                    it.last_prevented = !not_prevented;
+                    if not_prevented && ty == "click" {
+                        it.run_default_action(target).map_err(|_| String::from("default action failed"))?;
+                    }
+                    Ok(it.dispatch_count - before)
+                }
+                Err(value::Ctl::Throw(e)) => Err(it.error_text(&e)),
+                Err(_) => Ok(0),
+            };
+            it.run_microtasks();
+            result
+        })
+    }
+
+    /// Run timers and microtasks until `ms` of virtual time have elapsed.
+    pub fn advance(&mut self, document: &mut Document, ms: f64, max_fires: usize) {
+        self.with(document, |it| {
+            it.ticks = 0;
+            let until = it.now + ms;
+            it.run_timers_until(until, max_fires);
+        });
+    }
+
+    pub fn has_pending_timers(&self) -> bool {
+        !self.interp.timers.is_empty()
+    }
+
+    fn fire(it: &mut interp::Interp, target: value::Value, ty: &str, bubbles: bool) {
+        let ev = it.make_event(ty, "Event", bubbles, false, &[]);
+        let _ = it.dispatch_event_obj(&target, &ev);
+    }
+
+    pub fn dom_content_loaded(&mut self, document: &mut Document) {
+        self.with(document, |it| {
+            it.dom.ready_state = "interactive";
+            let _ = it.fire_ready_state_change();
+            let root = it.dom().map(|d| d.root).unwrap_or(0);
+            let d = it.wrap(root);
+            Self::fire(it, d, "DOMContentLoaded", true);
+            it.run_microtasks();
+        });
+    }
+
+    pub fn load(&mut self, document: &mut Document) {
+        self.with(document, |it| {
+            it.dom.ready_state = "complete";
+            let _ = it.fire_ready_state_change();
+            let g = value::Value::Obj(it.global.clone());
+            Self::fire(it, g.clone(), "load", false);
+            Self::fire(it, g, "pageshow", false);
+            it.run_microtasks();
+        });
+    }
+
+    pub fn last_event_prevented(&self) -> bool {
+        self.interp.last_prevented
+    }
+
+    /// Insert text at the caret of an input/textarea/contenteditable (typing).
+    pub fn insert_text(&mut self, document: &mut Document, target: NodeId, text: &str) {
+        self.with(document, |it| {
+            let _ = it.input_insert(target, text);
+            it.run_microtasks();
+        });
+    }
+
+    /// Default action of a key press that was not cancelled.
+    pub fn key_default(&mut self, document: &mut Document, target: NodeId, key: &str) {
+        self.with(document, |it| {
+            let _ = it.key_default(target, key);
+            it.run_microtasks();
+        });
+    }
+
+    pub fn take_navigation(&mut self) -> Option<String> {
+        self.interp.dom.navigate_to.take()
+    }
+
+    pub fn take_dirty(&mut self) -> bool {
+        core::mem::take(&mut self.interp.dom.dirty)
+    }
+
+    pub fn focused(&self) -> Option<NodeId> {
+        self.interp.dom.focused
+    }
+
+    pub fn focus(&mut self, document: &mut Document, node: Option<NodeId>) {
+        self.with(document, |it| {
+            match node {
+                Some(n) => {
+                    let _ = it.focus_node(n);
+                }
+                None => {
+                    if let Some(f) = it.dom.focused {
+                        let _ = it.blur_node(f);
+                    }
+                }
+            }
+            it.run_microtasks();
+        });
     }
 
     pub fn logs(&self) -> Vec<String> {
         self.interp.logs.iter().map(|l| alloc::format!("{}: {}", l.level, l.text)).collect()
+    }
+
+    pub fn clear_logs(&mut self) {
+        self.interp.logs.clear();
+    }
+
+    pub fn eval_in_page(&mut self, document: &mut Document, source: &str) -> Result<String, String> {
+        self.with(document, |it| {
+            let prog = parser::parse_program(source, &mut it.interner, false).map_err(|e| alloc::format!("SyntaxError: {e}"))?;
+            match it.run_program(&prog) {
+                Ok(v) => {
+                    it.run_microtasks();
+                    Ok(it.to_string_lossy(&v))
+                }
+                Err(value::Ctl::Throw(v)) => Err(it.error_text(&v)),
+                Err(_) => Ok(String::new()),
+            }
+        })
+    }
+
+    /// Fill the `NodeId -> [x, y, w, h]` table from hit regions.
+    pub fn rects_from_hits(document: &Document, hits: &[crate::layout::HitRegion]) -> BTreeMap<usize, [f32; 4]> {
+        let mut r: BTreeMap<usize, [f32; 4]> = BTreeMap::new();
+        let mut merge = |id: usize, x0: f32, y0: f32, x1: f32, y1: f32, r: &mut BTreeMap<usize, [f32; 4]>| {
+            let e = r.entry(id).or_insert([x0, y0, x1 - x0, y1 - y0]);
+            let (ex1, ey1) = (e[0] + e[2], e[1] + e[3]);
+            let nx0 = e[0].min(x0);
+            let ny0 = e[1].min(y0);
+            *e = [nx0, ny0, ex1.max(x1) - nx0, ey1.max(y1) - ny0];
+        };
+        for h in hits {
+            // block boxes replace, inline fragments accumulate (both handled by union)
+            merge(h.node, h.rect.x, h.rect.y, h.rect.x + h.rect.width, h.rect.y + h.rect.height, &mut r);
+        }
+        // propagate to ancestors lacking their own region
+        let ids: Vec<usize> = r.keys().copied().collect();
+        for id in ids {
+            let b = r[&id];
+            let mut cur = document.nodes.get(id).and_then(|n| n.parent);
+            let mut depth = 0;
+            while let Some(p) = cur {
+                if depth > 64 {
+                    break;
+                }
+                depth += 1;
+                if !hits.iter().any(|h| h.node == p) || !r.contains_key(&p) {
+                    merge(p, b[0], b[1], b[0] + b[2], b[1] + b[3], &mut r);
+                } else {
+                    break;
+                }
+                cur = document.nodes[p].parent;
+            }
+        }
+        r
     }
 }
 

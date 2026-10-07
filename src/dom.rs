@@ -13,6 +13,9 @@ pub enum NodeKind {
         attributes: Vec<(String, String)>,
     },
     Text(String),
+    Comment(String),
+    /// A detached container produced by `createDocumentFragment` / `template` parsing.
+    Fragment,
 }
 
 #[derive(Debug, Clone)]
@@ -66,7 +69,7 @@ impl Document {
         if parent >= self.nodes.len() || child >= self.nodes.len() || child == self.root {
             return false;
         }
-        if matches!(self.nodes[parent].kind, NodeKind::Text(_)) {
+        if matches!(self.nodes[parent].kind, NodeKind::Text(_) | NodeKind::Comment(_)) {
             return false;
         }
         let mut current = Some(parent);
@@ -82,6 +85,40 @@ impl Document {
         self.nodes[child].parent = Some(parent);
         self.nodes[parent].children.push(child);
         true
+    }
+
+    /// Insert `child` into `parent` before `reference` (append when `None`).
+    pub fn insert_before(&mut self, parent: NodeId, child: NodeId, reference: Option<NodeId>) -> bool {
+        let Some(reference) = reference else {
+            return self.append_child(parent, child);
+        };
+        if reference >= self.nodes.len() || self.nodes[reference].parent != Some(parent) || reference == child {
+            return false;
+        }
+        // reuse append_child's validation, then move into position
+        if !self.append_child(parent, child) {
+            return false;
+        }
+        let list = &mut self.nodes[parent].children;
+        list.retain(|&c| c != child);
+        let at = list.iter().position(|&c| c == reference).unwrap_or(list.len());
+        list.insert(at, child);
+        true
+    }
+
+    /// Deep or shallow copy of `id` as a detached tree; returns the new root.
+    pub fn clone_node(&mut self, id: NodeId, deep: bool) -> NodeId {
+        let kind = self.nodes[id].kind.clone();
+        let copy = self.push(kind, None);
+        if deep {
+            let kids = self.nodes[id].children.clone();
+            for k in kids {
+                let c = self.clone_node(k, true);
+                self.nodes[c].parent = Some(copy);
+                self.nodes[copy].children.push(c);
+            }
+        }
+        copy
     }
 
     pub fn remove(&mut self, id: NodeId) -> bool {
@@ -138,7 +175,7 @@ impl Document {
         if matches!(node.kind, NodeKind::Document) {
             return false;
         }
-        if let NodeKind::Text(text) = &mut self.nodes[id].kind {
+        if let NodeKind::Text(text) | NodeKind::Comment(text) = &mut self.nodes[id].kind {
             *text = value.to_string();
             return true;
         }

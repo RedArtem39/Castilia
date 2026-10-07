@@ -1240,7 +1240,12 @@ fn serialize_into(doc: &Document, id: NodeId, out: &mut String, depth: usize) {
                 escape_text(t, out);
             }
         }
-        NodeKind::Document => {
+        NodeKind::Comment(t) => {
+            out.push_str("<!--");
+            out.push_str(t);
+            out.push_str("-->");
+        }
+        NodeKind::Document | NodeKind::Fragment => {
             for &c in &doc.nodes[id].children {
                 serialize_into(doc, c, out, depth + 1);
             }

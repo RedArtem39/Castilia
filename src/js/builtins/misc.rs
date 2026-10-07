@@ -349,7 +349,7 @@ fn setup_timers(it: &mut Interp) {
         let f = c.arg(0);
         it.timer_seq += 1;
         let id = it.timer_seq;
-        let due = (m_ceil16(it.now)).max(it.now + 1.0);
+        let due = m_next16(it.now);
         it.timers.push(Timer { id, due, interval: None, callback: f, args: Vec::new(), raf: true });
         Ok(Value::Num(id as f64))
     });
@@ -365,8 +365,8 @@ fn setup_timers(it: &mut Interp) {
     });
 }
 
-fn m_ceil16(t: f64) -> f64 {
-    crate::math::ceil(t / 16.0) * 16.0
+fn m_next16(t: f64) -> f64 {
+    (crate::math::floor(t / 16.0) + 1.0) * 16.0
 }
 
 // ---------------------------------------------------------------------------
