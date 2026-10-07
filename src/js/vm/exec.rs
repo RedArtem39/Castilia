@@ -190,6 +190,9 @@ impl Interp {
                 if let Value::Obj(_) = v {
                     return Finish::Value(v);
                 }
+                if let Some(t) = &f.this {
+                    return Finish::Value(t.clone());
+                }
                 match self.this_value(&f.fenv) {
                     Ok(t) => Finish::Value(t),
                     Err(Ctl::Throw(e)) => Finish::Throw(e),
@@ -576,7 +579,10 @@ impl Interp {
                     f.scopes.push(old);
                 }
                 Op::This => {
-                    let v = self.this_value(&f.env)?;
+                    let v = match &f.this {
+                        Some(t) => t.clone(),
+                        None => self.this_value(&f.env)?,
+                    };
                     f.stack.push(v);
                 }
                 Op::NewTarget => {

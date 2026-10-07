@@ -117,52 +117,88 @@ pub struct Prop {
     pub flags: u8,
 }
 
+/// Own properties in insertion order. Small maps (most objects) are searched linearly, comparing
+/// key pointers first; a sorted index is built only once a map grows past `INDEX_AT` entries.
 #[derive(Default)]
 pub struct PropMap {
     list: Vec<Option<(Key, Prop)>>,
-    index: BTreeMap<Key, usize>,
+    index: Option<BTreeMap<Key, usize>>,
     live: usize,
 }
 
+const INDEX_AT: usize = 12;
+
+#[inline]
+fn key_eq(a: &Key, b: &Key) -> bool {
+    match (a, b) {
+        (Key::S(x), Key::S(y)) => Rc::ptr_eq(x, y) || x.len() == y.len() && **x == **y,
+        (Key::Y(x), Key::Y(y)) => x == y,
+        _ => false,
+    }
+}
+
 impl PropMap {
+    #[inline]
+    fn find(&self, k: &Key) -> Option<usize> {
+        match &self.index {
+            Some(ix) => ix.get(k).copied(),
+            None => self.list.iter().position(|e| matches!(e, Some((key, _)) if key_eq(key, k))),
+        }
+    }
     pub fn get(&self, k: &Key) -> Option<&Prop> {
-        self.index.get(k).and_then(|&i| self.list[i].as_ref().map(|e| &e.1))
+        self.find(k).and_then(|i| self.list[i].as_ref().map(|e| &e.1))
     }
     pub fn get_mut(&mut self, k: &Key) -> Option<&mut Prop> {
-        match self.index.get(k) {
-            Some(&i) => self.list[i].as_mut().map(|e| &mut e.1),
+        match self.find(k) {
+            Some(i) => self.list[i].as_mut().map(|e| &mut e.1),
             None => None,
         }
     }
     pub fn insert(&mut self, k: Key, p: Prop) {
-        if let Some(&i) = self.index.get(&k) {
+        if let Some(i) = self.find(&k) {
             if let Some(e) = self.list[i].as_mut() {
                 e.1 = p;
             }
             return;
         }
-        self.index.insert(k.clone(), self.list.len());
+        if let Some(ix) = self.index.as_mut() {
+            ix.insert(k.clone(), self.list.len());
+        }
         self.list.push(Some((k, p)));
         self.live += 1;
-    }
-    pub fn remove(&mut self, k: &Key) -> bool {
-        if let Some(i) = self.index.remove(k) {
-            self.list[i] = None;
-            self.live -= 1;
-            if self.list.len() > 32 && self.live * 2 < self.list.len() {
-                self.compact();
-            }
-            true
-        } else {
-            false
+        if self.index.is_none() && self.list.len() > INDEX_AT {
+            self.rebuild_index();
         }
     }
+    fn rebuild_index(&mut self) {
+        let mut ix = BTreeMap::new();
+        for (i, e) in self.list.iter().enumerate() {
+            if let Some((k, _)) = e {
+                ix.insert(k.clone(), i);
+            }
+        }
+        self.index = Some(ix);
+    }
+    pub fn remove(&mut self, k: &Key) -> bool {
+        let Some(i) = self.find(k) else { return false };
+        if let Some(ix) = self.index.as_mut() {
+            ix.remove(k);
+        }
+        self.list[i] = None;
+        self.live -= 1;
+        if self.list.len() > 32 && self.live * 2 < self.list.len() {
+            self.compact();
+        } else if self.index.is_none() && self.list.len() > 2 * self.live + 4 {
+            self.list.retain(|e| e.is_some());
+        }
+        true
+    }
     fn compact(&mut self) {
-        let old = core::mem::take(&mut self.list);
-        self.index.clear();
-        for e in old.into_iter().flatten() {
-            self.index.insert(e.0.clone(), self.list.len());
-            self.list.push(Some(e));
+        self.list.retain(|e| e.is_some());
+        if self.list.len() > INDEX_AT {
+            self.rebuild_index();
+        } else {
+            self.index = None;
         }
     }
     pub fn len(&self) -> usize {

@@ -124,6 +124,9 @@ impl Edges<'_> {
         if let Some((_, v)) = &f.pending_resume {
             self.val(v);
         }
+        if let Some(t) = &f.this {
+            self.val(t);
+        }
     }
     fn object(&mut self, o: &Object) {
         if let Some(p) = &o.proto {

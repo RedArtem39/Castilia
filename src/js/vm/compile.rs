@@ -120,6 +120,7 @@ pub fn compile_function(it: &mut Interp, def: &Rc<FuncDef>) -> CResult<Code> {
         arguments_name: it.names.arguments,
         annex_b: BTreeSet::new(),
     };
+    let dynamic = c.an.dynamic;
     c.function_prologue(def)?;
     match &def.body {
         FuncBody::Expr(e) => {
@@ -137,6 +138,33 @@ pub fn compile_function(it: &mut Interp, def: &Rc<FuncDef>) -> CResult<Code> {
     let name = def.name.map(|n| it.interner.get(n).clone()).unwrap_or_else(|| Rc::from(""));
     let mut code = c.finish(name, def.is_generator, def.is_async);
     code.source = Some((def.source.clone(), def.span));
+    code.needs_scope = dynamic || def.is_generator || def.is_async || code.ops.iter().any(|op| {
+        matches!(
+            op,
+            Op::Closure(_)
+                | Op::FuncExpr(_)
+                | Op::ClosureNamed(..)
+                | Op::ClosureStrName(..)
+                | Op::Class(..)
+                | Op::InitMethod(..)
+                | Op::PushScope
+                | Op::PushWith
+                | Op::CopyScope
+                | Op::DeclVar(_)
+                | Op::DeclLet(..)
+                | Op::InitLet(..)
+                | Op::SetVarOuter(_)
+                | Op::SuperCall(_)
+                | Op::SuperCallSpread
+                | Op::GetSuper(_)
+                | Op::GetSuperElem
+                | Op::GetSuperMethod(_)
+                | Op::SetSuper(_)
+                | Op::SetSuperElem
+                | Op::NewTarget
+                | Op::CallEval(_)
+        )
+    });
     Ok(code)
 }
 
@@ -441,6 +469,7 @@ impl Compiler {
             templates: self.templates,
             regexes: self.regexes,
             nregs: self.nregs,
+            needs_scope: true,
             strict: self.strict,
             is_generator,
             is_async,

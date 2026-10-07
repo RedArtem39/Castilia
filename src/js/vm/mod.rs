@@ -215,6 +215,10 @@ pub struct Code {
     pub templates: Vec<Rc<TemplateObj>>,
     pub regexes: Vec<(JsStr, JsStr)>,
     pub nregs: u32,
+    /// The function needs its own runtime scope (closures, `with`/`eval`, scope-stored bindings,
+    /// `super`/`new.target`, suspension). When false, `this` lives in the frame and calls skip
+    /// the scope allocation entirely.
+    pub needs_scope: bool,
     pub strict: bool,
     pub is_generator: bool,
     pub is_async: bool,
@@ -283,6 +287,8 @@ pub struct Frame {
     pub pending_resume: Option<(Resume, Value)>,
     /// The last yield delivered an inner iterator result as-is (`yield*`).
     pub yield_raw: bool,
+    /// `this` of a function that runs without its own scope.
+    pub this: Option<Value>,
 }
 
 /// How a run of the loop ended.
@@ -355,6 +361,42 @@ impl Interp {
     /// Build the frame for a closure call. `this` is `None` for derived constructors until `super()`.
     #[allow(clippy::too_many_arguments)]
     pub fn vm_frame(&mut self, code: Rc<Code>, fo: &Obj, def: &Rc<FuncDef>, env: &Env, home: Option<Obj>, this: Option<Value>, args: &[Value], new_target: Option<Obj>) -> Frame {
+        let mut own_this = None;
+        if !code.needs_scope && (def.is_arrow || this.is_some()) {
+            if !def.is_arrow {
+                let t = this.expect("checked");
+                own_this = Some(if def.strict {
+                    t
+                } else {
+                    match &t {
+                        Value::Undefined | Value::Null => Value::Obj(self.global.clone()),
+                        Value::Obj(_) => t,
+                        prim => self.to_object(prim).map(Value::Obj).unwrap_or(Value::Undefined),
+                    }
+                });
+            }
+            let kind = if new_target.is_some() && !def.is_arrow { FrameKind::Construct } else { FrameKind::Normal };
+            let nregs = code.nregs as usize;
+            let _ = home;
+            return Frame {
+                code,
+                pc: 0,
+                stack: Vec::with_capacity(8),
+                regs: alloc::vec![Value::Undefined; nregs],
+                env: env.clone(),
+                scopes: Vec::new(),
+                fenv: env.clone(),
+                handlers: Vec::new(),
+                completions: Vec::new(),
+                args: args.to_vec(),
+                callee: Some(fo.clone()),
+                kind,
+                promise: None,
+                pending_resume: None,
+                yield_raw: false,
+                this: own_this,
+            };
+        }
         let func_ctx = if def.is_arrow {
             None
         } else {
@@ -394,6 +436,7 @@ impl Interp {
             promise: None,
             pending_resume: None,
             yield_raw: false,
+            this: own_this,
         }
     }
 
