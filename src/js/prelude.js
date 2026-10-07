@@ -566,12 +566,37 @@
   expose('NodeFilter', Object.assign(G.NodeFilter || {}, { FILTER_ACCEPT, FILTER_REJECT, FILTER_SKIP, SHOW_ALL: 0xFFFFFFFF, SHOW_ELEMENT: 1, SHOW_ATTRIBUTE: 2, SHOW_TEXT: 4, SHOW_CDATA_SECTION: 8, SHOW_PROCESSING_INSTRUCTION: 64, SHOW_COMMENT: 128, SHOW_DOCUMENT: 256, SHOW_DOCUMENT_TYPE: 512, SHOW_DOCUMENT_FRAGMENT: 1024 }));
   hide(Document.prototype, 'createTreeWalker', function (root, what, filter) { return new TreeWalker(root, what, filter); });
   hide(Document.prototype, 'createNodeIterator', function (root, what, filter) { return new NodeIterator(root, what, filter); });
-  class CSSStyleSheetImpl { constructor() { this.cssRules = []; this.rules = this.cssRules; this.disabled = false; } replaceSync(t) { this._t = t; } replace(t) { this._t = t; return Promise.resolve(this); } insertRule(r, i = 0) { this.cssRules.splice(i, 0, { cssText: r }); return i; } deleteRule(i) { this.cssRules.splice(i, 1); } }
+  // constructable style sheets; adopted ones are pushed to the engine as CSS text per root
+  const sheetRoots = new WeakMap();
+  const adoptedLists = new WeakMap();
+  const syncRoot = (root) => {
+    const list = adoptedLists.get(root) || [];
+    const text = list.filter((sh) => sh && !sh.disabled).map((sh) => sh._text()).join('\n');
+    try { __setAdoptedCss(root, text); } catch (e) {}
+  };
+  const resyncSheet = (sh) => { const roots = sheetRoots.get(sh); if (roots) for (const r of roots) syncRoot(r); };
+  class CSSStyleSheetImpl {
+    constructor(opts = {}) { this.cssRules = []; this.rules = this.cssRules; this.disabled = !!opts.disabled; this.media = { mediaText: opts.media || '' }; this._t = ''; }
+    _text() { return this._t + (this.cssRules.length ? '\n' + this.cssRules.map((r) => r.cssText).join('\n') : ''); }
+    replaceSync(t) { this._t = String(t); this.cssRules.length = 0; resyncSheet(this); }
+    replace(t) { this.replaceSync(t); return Promise.resolve(this); }
+    insertRule(r, i = 0) { this.cssRules.splice(i, 0, { cssText: String(r) }); resyncSheet(this); return i; }
+    deleteRule(i) { this.cssRules.splice(i, 1); resyncSheet(this); }
+    addRule(sel, decl, i) { return this.insertRule(sel + '{' + decl + '}', i === undefined ? this.cssRules.length : i); }
+  }
   expose('CSSStyleSheet', CSSStyleSheetImpl);
   {
     // per-document / per-shadow-root lists
-    const adopted = new WeakMap();
-    const desc = { configurable: true, get() { let a = adopted.get(this); if (!a) { a = []; adopted.set(this, a); } return a; }, set(v) { adopted.set(this, Array.from(v || [])); } };
+    const desc = {
+      configurable: true,
+      get() { let a = adoptedLists.get(this); if (!a) { a = []; adoptedLists.set(this, a); } return a; },
+      set(v) {
+        const list = Array.from(v || []);
+        adoptedLists.set(this, list);
+        for (const sh of list) { if (!sh) continue; let roots = sheetRoots.get(sh); if (!roots) { roots = new Set(); sheetRoots.set(sh, roots); } roots.add(this); }
+        syncRoot(this);
+      },
+    };
     Object.defineProperty(Document.prototype, 'adoptedStyleSheets', desc);
     if (G.DocumentFragment) Object.defineProperty(G.DocumentFragment.prototype, 'adoptedStyleSheets', desc);
     if (G.ShadowRoot && G.ShadowRoot.prototype) Object.defineProperty(G.ShadowRoot.prototype, 'adoptedStyleSheets', desc);

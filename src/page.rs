@@ -417,6 +417,10 @@ impl Page {
 
     fn stylesheet_with(&self, extra: &str) -> Rc<StyleSheet> {
         let mut css = embedded_css(&self.document, &self.link_css, &self.external_css);
+        if let Some(text) = self.document.adopted_css.get(&self.document.root) {
+            css.push_str(text);
+            css.push('\n');
+        }
         css.push_str(extra);
         let mut cache = self.sheet_cache.borrow_mut();
         if let Some((text, sheet)) = cache.as_ref()
@@ -518,6 +522,19 @@ mod tests {
         assert_eq!(color_of("outside"), Some(0xff00ff00));
         assert!(color_of("light").is_some());
         let _ = &mut page;
+    }
+
+    #[test]
+    fn adopted_style_sheets_apply() {
+        let page = Page::new(
+            "<x-a></x-a><p>doc</p><script>const s = new CSSStyleSheet(); s.replaceSync('b { color: #ff0000 }'); const r = document.querySelector('x-a').attachShadow({mode:'open'}); r.adoptedStyleSheets = [s]; r.innerHTML = '<b>inner</b>'; const d = new CSSStyleSheet(); d.replaceSync('p { color: #0000ff }'); document.adoptedStyleSheets = [...document.adoptedStyleSheets, d]; s.insertRule('i { color: #00ff00 }'); r.innerHTML += '<i>later</i>';</script>",
+            "",
+        );
+        let list = page.render(400.0, &Mono);
+        let color_of = |t: &str| list.commands.iter().find_map(|c| match c { Command::Text { text, color, .. } if text.contains(t) => Some(*color), _ => None });
+        assert_eq!(color_of("inner"), Some(0xffff0000));
+        assert_eq!(color_of("doc"), Some(0xff0000ff));
+        assert_eq!(color_of("later"), Some(0xff00ff00));
     }
 
     #[test]

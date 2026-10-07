@@ -54,6 +54,8 @@ pub struct Document {
     pub quirks: bool,
     /// Shadow hosts and their root fragments (shadow trees are not part of the light tree).
     pub shadow_roots: alloc::collections::BTreeMap<NodeId, NodeId>,
+    /// CSS text of `adoptedStyleSheets`, keyed by the document root or a shadow root.
+    pub adopted_css: alloc::collections::BTreeMap<NodeId, alloc::string::String>,
 }
 
 impl Document {
@@ -161,13 +163,23 @@ impl Document {
         Some(result)
     }
 
+    /// Shadow-including connectedness: a node inside a shadow tree is connected when its host is.
     pub fn is_connected(&self, id: NodeId) -> bool {
         let mut current = Some(id);
+        let mut hops = 0;
         while let Some(next) = current {
             if next == self.root {
                 return true;
             }
-            current = self.nodes.get(next).and_then(|node| node.parent);
+            current = match self.nodes.get(next).and_then(|node| node.parent) {
+                Some(p) => Some(p),
+                // a shadow root continues at its host
+                None if !self.shadow_roots.is_empty() && hops < 64 => {
+                    hops += 1;
+                    self.shadow_roots.iter().find(|e| *e.1 == next).map(|e| *e.0)
+                }
+                None => None,
+            };
         }
         false
     }
@@ -217,6 +229,7 @@ impl Document {
             body: 0,
             quirks: true,
             shadow_roots: alloc::collections::BTreeMap::new(),
+            adopted_css: alloc::collections::BTreeMap::new(),
         };
         document.root = document.push(NodeKind::Document, None);
         let html = document.push(

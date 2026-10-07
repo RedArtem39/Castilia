@@ -2007,6 +2007,21 @@ fn setup_custom_elements(it: &mut Interp) {
         }
         Ok(Value::Undefined)
     });
+    // bridge for `adoptedStyleSheets`: (document | shadow root, css text)
+    let g = it.global.clone();
+    let f = it.new_native("__setAdoptedCss", 2, |it, c| {
+        let id = it.node_id(&c.arg(0))?;
+        let text = it.arg_str(c, 1)?;
+        let d = it.dom()?;
+        if text.is_empty() {
+            d.adopted_css.remove(&id);
+        } else {
+            d.adopted_css.insert(id, text.to_string());
+        }
+        it.dom.dirty = true;
+        Ok(Value::Undefined)
+    });
+    it.define_data(&g, Key::str("__setAdoptedCss"), Value::Obj(f), HIDDEN);
     it.def_method(&ce, "get", 1, |it, c| {
         let name = it.arg_str(c, 0)?.to_ascii_lowercase();
         Ok(it.custom_elements.iter().find(|(n, _)| *n == name).map_or(Value::Undefined, |(_, o)| Value::Obj(o.clone())))

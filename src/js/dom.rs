@@ -420,10 +420,19 @@ impl Interp {
         // template content lives in the element itself
         html::parse_fragment(doc, id, src);
         let added = doc.nodes[id].children.clone();
+        let connected = doc.is_connected(id);
         self.dom.dirty = true;
+        if connected {
+            for &r in &removed {
+                self.custom_element_callbacks(r, "disconnectedCallback");
+            }
+        }
         self.note_children(id, added.clone(), removed);
         for a in added {
             self.after_insert(a)?;
+            if connected {
+                self.custom_element_callbacks(a, "connectedCallback");
+            }
         }
         Ok(())
     }

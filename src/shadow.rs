@@ -60,6 +60,11 @@ pub fn compose(doc: &Document) -> Option<Composed> {
         counter += 1;
         let n = counter;
         d.set_attribute(host, "data-cs-host", &n.to_string());
+        // adopted style sheets come first, then <style> elements (document order)
+        if let Some(text) = doc.adopted_css.get(&root) {
+            css.push_str(&scope_css(text, n));
+            css.push('\n');
+        }
         // mark the shadow tree and collect its styles
         let mut stack: Vec<NodeId> = doc.nodes[root].children.clone();
         while let Some(id) = stack.pop() {
