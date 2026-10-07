@@ -420,6 +420,8 @@ pub struct Style {
     pub caption_bottom: bool,
 
     pub content: Option<Vec<ContentItem>>,
+    /// Color of `::placeholder` text (with its opacity folded into alpha), if styled.
+    pub placeholder_color: Option<Color>,
     pub translate: (Dim, Dim),
     pub transform_scale: f32,
     pub transform: Vec<TransformOp>,
@@ -530,6 +532,7 @@ impl Style {
             table_fixed: false,
             caption_bottom: false,
             content: None,
+            placeholder_color: None,
             translate: (Dim::ZERO, Dim::ZERO),
             transform_scale: 1.0,
             transform: Vec::new(),
@@ -1210,40 +1213,63 @@ fn media_alternative(alt: &str, vp: Viewport) -> bool {
     if let Some(r) = rest.strip_prefix("and ") {
         rest = r.trim_start();
     }
-    // conditions: (a) and (b) ...
-    let conds = split_media_conditions(rest);
-    for cond in conds {
-        if !media_condition(&cond, vp) {
-            ok = false;
-        }
+    if !rest.is_empty() && !media_condition_list(rest, vp) {
+        ok = false;
     }
     ok != negate
 }
 
-fn split_media_conditions(rest: &str) -> Vec<String> {
-    let mut out = Vec::new();
-    let mut depth = 0;
-    let mut start = None;
-    for (i, c) in rest.char_indices() {
+/// `(a) and (b)`, `(a) or (b)`, `not (a)`, with nesting (Media Queries 4).
+fn media_condition_list(s: &str, vp: Viewport) -> bool {
+    let s = s.trim();
+    if let Some(r) = s.strip_prefix("not ") {
+        return !media_condition_list(r, vp);
+    }
+    // split into top-level parenthesised terms and the keywords between them
+    let mut terms: Vec<&str> = Vec::new();
+    let mut joins: Vec<&str> = Vec::new();
+    let (mut depth, mut start) = (0i32, None);
+    let mut last_end = 0;
+    for (i, c) in s.char_indices() {
         match c {
             '(' => {
                 if depth == 0 {
+                    if !terms.is_empty() {
+                        joins.push(s[last_end..i].trim());
+                    }
                     start = Some(i);
                 }
                 depth += 1;
             }
             ')' => {
                 depth -= 1;
-                if depth == 0
-                    && let Some(s) = start.take()
-                {
-                    out.push(rest[s + 1..i].trim().to_string());
+                if depth == 0 {
+                    if let Some(st) = start.take() {
+                        terms.push(&s[st + 1..i]);
+                        last_end = i + 1;
+                    }
                 }
             }
             _ => {}
         }
     }
-    out
+    if terms.is_empty() {
+        return false;
+    }
+    let eval = |t: &str| {
+        let t = t.trim();
+        if t.starts_with('(') || t.starts_with("not ") { media_condition_list(t, vp) } else { media_condition(t, vp) }
+    };
+    let mut acc = eval(terms[0]);
+    for (i, t) in terms.iter().enumerate().skip(1) {
+        let v = eval(t);
+        match joins.get(i - 1).copied() {
+            Some(j) if j.ends_with("or") => acc = acc || v,
+            Some(j) if j.ends_with("not") => acc = acc && !v,
+            _ => acc = acc && v,
+        }
+    }
+    acc
 }
 
 fn media_condition(cond: &str, vp: Viewport) -> bool {
@@ -1590,6 +1616,7 @@ fn compute_element(
     let mut main: Cascaded = Vec::new();
     let mut before: Cascaded = Vec::new();
     let mut after: Cascaded = Vec::new();
+    let mut placeholder: Cascaded = Vec::new();
     let hints = crate::presentation::hints(doc, id);
     for (i, d) in hints.iter().enumerate() {
         main.push((cascade_key(false, 2, 0, 0, 0, i), d));
@@ -1606,6 +1633,7 @@ fn compute_element(
             None => &mut main,
             Some(PseudoElement::Before) => &mut before,
             Some(PseudoElement::After) => &mut after,
+            Some(PseudoElement::Placeholder) => &mut placeholder,
             Some(_) => continue,
         };
         for (i, d) in rule.declarations.iter().enumerate() {
@@ -1620,7 +1648,13 @@ fn compute_element(
         main.push((cascade_key(d.important, 1, u16::MAX, u32::MAX, usize::MAX - 1, i), d));
     }
     main.sort_by_key(|e| e.0);
-    let style = build_style(parent, &main, vp, root_font, node.tag(), false);
+    let mut style = build_style(parent, &main, vp, root_font, node.tag(), false);
+    if !placeholder.is_empty() && matches!(node.tag(), Some("input" | "textarea")) {
+        placeholder.sort_by_key(|e| e.0);
+        let ps = build_style(Some(&style), &placeholder, vp, root_font, None, true);
+        let a = ((ps.color >> 24) as f32 * ps.opacity.clamp(0.0, 1.0) + 0.5) as u32;
+        style.placeholder_color = Some((a << 24) | (ps.color & 0x00ff_ffff));
+    }
     let make_pseudo = |mut list: Cascaded, is_before: bool| -> Option<Style> {
         let _ = is_before;
         if list.is_empty() {

@@ -489,6 +489,24 @@ pub fn setup(it: &mut Interp) {
         it.protos.as_mut().expect("realm").extra.insert(name, proto);
     }
 
+    // native UTF-8 bridges used by TextEncoder/TextDecoder in the prelude
+    let g = it.global.clone();
+    let enc = it.new_native("__utf8Encode", 1, |it, c| {
+        let s = it.to_str(&c.arg(0))?;
+        // JS strings may hold lone surrogates; Rust strings here are already valid UTF-8
+        Ok(it.new_uint8_array(s.as_bytes().to_vec()))
+    });
+    it.define_data(&g, Key::str("__utf8Encode"), Value::Obj(enc), HIDDEN);
+    let dec = it.new_native("__utf8Decode", 2, |it, c| {
+        let Some(bytes) = it.buffer_source_bytes(&c.arg(0)) else { return Ok(Value::str("")) };
+        let bytes = if bytes.starts_with(&[0xef, 0xbb, 0xbf]) { &bytes[3..] } else { &bytes[..] };
+        if c.arg(1).truthy() && core::str::from_utf8(bytes).is_err() {
+            return it.type_error("The encoded data was not valid for encoding utf-8");
+        }
+        Ok(Value::string(String::from_utf8_lossy(bytes).into_owned()))
+    });
+    it.define_data(&g, Key::str("__utf8Decode"), Value::Obj(dec), HIDDEN);
+
     // DataView
     let dvp = it.alloc(Object::new(Some(op), Class::Plain));
     it.make_ctor("DataView", 1, data_view_ctor, &dvp);

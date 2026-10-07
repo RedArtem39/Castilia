@@ -438,7 +438,14 @@
   hide(Document.prototype, 'createNodeIterator', function (root, what, filter) { const w = makeWalker(root, what, filter); w.nextNode = w.nextNode; return w; });
   class CSSStyleSheetImpl { constructor() { this.cssRules = []; this.rules = this.cssRules; this.disabled = false; } replaceSync(t) { this._t = t; } replace(t) { this._t = t; return Promise.resolve(this); } insertRule(r, i = 0) { this.cssRules.splice(i, 0, { cssText: r }); return i; } deleteRule(i) { this.cssRules.splice(i, 1); } }
   expose('CSSStyleSheet', CSSStyleSheetImpl);
-  hide(Document.prototype, 'adoptedStyleSheets', []);
+  {
+    // per-document / per-shadow-root lists
+    const adopted = new WeakMap();
+    const desc = { configurable: true, get() { let a = adopted.get(this); if (!a) { a = []; adopted.set(this, a); } return a; }, set(v) { adopted.set(this, Array.from(v || [])); } };
+    Object.defineProperty(Document.prototype, 'adoptedStyleSheets', desc);
+    if (G.DocumentFragment) Object.defineProperty(G.DocumentFragment.prototype, 'adoptedStyleSheets', desc);
+    if (G.ShadowRoot && G.ShadowRoot.prototype) Object.defineProperty(G.ShadowRoot.prototype, 'adoptedStyleSheets', desc);
+  }
 
   // ---- XPath (minimal; evaluates nothing) ----------------------------------------------
   const XPathResult = { ANY_TYPE: 0, NUMBER_TYPE: 1, STRING_TYPE: 2, BOOLEAN_TYPE: 3, UNORDERED_NODE_ITERATOR_TYPE: 4, ORDERED_NODE_ITERATOR_TYPE: 5, UNORDERED_NODE_SNAPSHOT_TYPE: 6, ORDERED_NODE_SNAPSHOT_TYPE: 7, ANY_UNORDERED_NODE_TYPE: 8, FIRST_ORDERED_NODE_TYPE: 9 };
@@ -554,11 +561,12 @@
   def(TextDecoder.prototype, 'decode', function (buf) {
     const b = bytesOf(buf);
     const enc = this.encoding;
-    if (enc === 'utf-8' || enc === 'utf8' || enc === 'unicode-1-1-utf-8') return utf8Decode(b, this.fatal);
+    if (enc === 'utf-8' || enc === 'utf8' || enc === 'unicode-1-1-utf-8') return __utf8Decode(b, this.fatal);
     if (enc === 'utf-16le' || enc === 'utf-16') { let s = ''; for (let i = 0; i + 1 < b.length; i += 2) s += String.fromCharCode(b[i] | (b[i + 1] << 8)); return s; }
     let s = ''; for (let i = 0; i < b.length; i++) s += String.fromCharCode(b[i]); return s;
   });
-  def(TextEncoder.prototype, 'encode', function (str = '') {
+  def(TextEncoder.prototype, 'encode', function (str = '') { return __utf8Encode(String(str)); });
+  def(TextEncoder.prototype, '_encodeJs', function (str = '') {
     str = String(str);
     const out = new Uint8Array(str.length * 3);
     let n = 0;
@@ -767,6 +775,15 @@
     if (!G.performance.navigation) def(G.performance, 'navigation', { type: 0, redirectCount: 0 });
   }
   if (!G.PerformanceNavigationTiming) iface('PerformanceNavigationTiming');
+  // SVG elements share style/dataset/focus with HTML elements (both are HTMLOrSVGElement)
+  if (G.SVGElement && G.HTMLElement) {
+    for (const k of ['style', 'dataset', 'tabIndex', 'focus', 'blur', 'nonce', 'autofocus']) {
+      if (!Object.getOwnPropertyDescriptor(G.SVGElement.prototype, k)) {
+        const d = Object.getOwnPropertyDescriptor(G.HTMLElement.prototype, k);
+        if (d) Object.defineProperty(G.SVGElement.prototype, k, d);
+      }
+    }
+  }
   // ---- iframes: a child browsing context approximated by a window that inherits the page's
   // globals and a private, detached document (writes into it never touch the page) ----
   if (G.HTMLElement) {

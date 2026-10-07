@@ -749,14 +749,29 @@ impl<'a> Ctx<'a> {
     /// Lay out pending absolutely positioned boxes inside the containing block `cb`
     /// (expressed in `out`'s coordinate space) and add them on top of `out`.
     pub fn place_pending(&mut self, out: &mut Out, pending: Vec<Pending>, cb: Rect, keep_fixed: bool) {
-        for p in pending {
-            if p.fixed && keep_fixed {
-                out.abs.push(p);
-                continue;
+        let mut queue = pending;
+        // fixed descendants of boxes placed here surface in `out.abs`; place them as well
+        for _ in 0..64 {
+            if queue.is_empty() {
+                break;
             }
-            let cbr = if p.fixed { Rect { x: 0.0, y: 0.0, width: self.vp.width, height: self.vp.height } } else { cb };
-            let (child, (x, y)) = self.layout_abs(p.bx, cbr, p.x, p.y);
-            out.absorb(child, x, y);
+            let before = out.abs.len();
+            for p in queue {
+                if p.fixed && keep_fixed {
+                    out.abs.push(p);
+                    continue;
+                }
+                let cbr = if p.fixed { Rect { x: 0.0, y: 0.0, width: self.vp.width, height: self.vp.height } } else { cb };
+                let (child, (x, y)) = self.layout_abs(p.bx, cbr, p.x, p.y);
+                out.absorb(child, x, y);
+            }
+            if keep_fixed {
+                break;
+            }
+            let fresh: Vec<Pending> = out.abs.drain(before..).collect();
+            let (fixed, other): (Vec<_>, Vec<_>) = fresh.into_iter().partition(|p| p.fixed);
+            out.abs.extend(other);
+            queue = fixed;
         }
     }
 

@@ -404,7 +404,7 @@ impl<'a> Ctx<'a> {
                     let value = self.control_text(bx);
                     let placeholder = self.attr(bx, "placeholder").unwrap_or("");
                     let button_like = matches!(ty, "submit" | "button" | "reset");
-                    let (shown, c) = if value.is_empty() && !button_like { (placeholder.to_string(), 0xff757575u32) } else { (value, s.color) };
+                    let (shown, c) = if value.is_empty() && !button_like { (placeholder.to_string(), s.placeholder_color.unwrap_or(0xff757575u32)) } else { (value, s.color) };
                     {
                         // text controls align on the baseline of their text
                         let asc = self.fonts.ascent(&Font::of(s));
@@ -424,7 +424,7 @@ impl<'a> Ctx<'a> {
                 let placeholder = self.attr(bx, "placeholder").unwrap_or("").to_string();
                 let lh = self.used_line_height(s);
                 out.paint.cmds.push(Command::PushClip { rect, radius: 0.0 });
-                let (body, c) = if content.is_empty() { (placeholder, 0xff757575u32) } else { (content, s.color) };
+                let (body, c) = if content.is_empty() { (placeholder, s.placeholder_color.unwrap_or(0xff757575u32)) } else { (content, s.color) };
                 for (i, line) in body.trim_start_matches('\n').split('\n').enumerate() {
                     if !line.is_empty() {
                         text(self, &mut out.paint, 0.0, i as f32 * lh, line.trim_end_matches('\r').to_string(), c);

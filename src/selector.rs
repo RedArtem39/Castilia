@@ -21,6 +21,8 @@ pub enum PseudoElement {
     After,
     FirstLine,
     FirstLetter,
+    /// `::placeholder` of inputs and textareas (its color is used).
+    Placeholder,
     /// Parsed but never rendered (`::selection`, `::placeholder`, ...).
     Other,
 }
@@ -354,7 +356,7 @@ fn parse_compound(p: &mut Parser) -> Option<(Compound, Option<PseudoElement>, u3
                 let double = p.eat(':');
                 let name = p.ident()?.to_ascii_lowercase();
                 if double || matches!(name.as_str(), "before" | "after" | "first-line" | "first-letter") {
-                    if name.starts_with("-moz-") || name.starts_with("-ms-") {
+                    if (name.starts_with("-moz-") || name.starts_with("-ms-")) && name != "-moz-placeholder" {
                         return None;
                     }
                     pe = Some(match name.as_str() {
@@ -362,6 +364,7 @@ fn parse_compound(p: &mut Parser) -> Option<(Compound, Option<PseudoElement>, u3
                         "after" => PseudoElement::After,
                         "first-line" => PseudoElement::FirstLine,
                         "first-letter" => PseudoElement::FirstLetter,
+                        "placeholder" | "-webkit-input-placeholder" => PseudoElement::Placeholder,
                         _ => PseudoElement::Other,
                     });
                     if p.eat('(') {

@@ -2261,6 +2261,9 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn get_iterator(&mut self, v: &Value, is_async: bool) -> Res<Value> {
+        if v.is_nullish() {
+            return Err(self.error_ctl("TypeError", &format!("{} is not iterable", self.describe(v))));
+        }
         let sym = if is_async { self.wk().async_iterator.clone() } else { self.wk().iterator.clone() };
         let mut method = self.get_v(v, &Key::Y(sym.0.id))?;
         if method.is_nullish() && is_async {

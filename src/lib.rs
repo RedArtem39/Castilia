@@ -127,6 +127,23 @@ mod tests {
         }
     }
 
+    fn texts(list: &DisplayList) -> alloc::vec::Vec<(alloc::string::String, f32, f32, u32)> {
+        list.commands.iter().filter_map(|c| match c {
+            Command::Text { text, x, y, color, .. } => Some((text.clone(), *x, *y, *color)),
+            _ => None,
+        }).collect()
+    }
+
+    #[test]
+    fn nested_fixed_media_or_and_placeholder() {
+        let html = "<style>.w{position:fixed;left:0;right:0}@media (min-width:600px) or (max-width:10px){b{color:#ff0000}}.x::placeholder{opacity:0}</style>
+            <div class=w><span style='position:fixed;top:50px'>INNER</span></div><b>OR</b><input class=x placeholder=PH>";
+        let t = texts(&render(html, "", 800.0, &Mono));
+        assert!(t.iter().any(|(s, _, y, _)| s == "INNER" && (*y - 50.0).abs() < 20.0), "{t:?}");
+        assert!(t.iter().any(|(s, _, _, c)| s == "OR" && *c == 0xffff0000), "{t:?}");
+        assert!(t.iter().any(|(s, _, _, c)| s == "PH" && *c >> 24 == 0), "{t:?}");
+    }
+
     #[test]
     fn embedded_css_reaches_the_display_list() {
         let list = render("<style>.note { color: #123456 }</style><p class='note'>Привет</p>", "", 320.0, &Mono);
