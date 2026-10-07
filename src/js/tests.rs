@@ -472,3 +472,11 @@ fn iframe_context() {
         &["null", "function true hi null true"],
     );
 }
+
+#[test]
+fn intl_callable_without_new() {
+    check(
+        "const f = Intl.DateTimeFormat(); const n = new Intl.NumberFormat('en'); console.log(typeof f.format, f instanceof Intl.DateTimeFormat, n instanceof Intl.NumberFormat, Intl.Collator().compare('a', 'b'), new Intl.Locale('en-US').region, typeof performance.clearMarks)",
+        &["function true true -1 US function"],
+    );
+}

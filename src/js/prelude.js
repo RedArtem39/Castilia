@@ -393,6 +393,33 @@
   Intl.DisplayNames = class DisplayNames { constructor() {} of(c) { return c; } };
   Intl.getCanonicalLocales = (l) => [].concat(l || []);
   Intl.supportedValuesOf = () => [];
+  // the legacy Intl constructors may be called without `new`
+  for (const k of ['NumberFormat', 'DateTimeFormat', 'Collator']) {
+    const C = Intl[k];
+    const W = { [k]: function (...args) { return new C(...args); } }[k];
+    W.prototype = C.prototype;
+    Object.defineProperty(C.prototype, 'constructor', { value: W, writable: true, configurable: true });
+    for (const s of Object.getOwnPropertyNames(C)) if (!['length', 'name', 'prototype'].includes(s)) W[s] = C[s];
+    if (!W.supportedLocalesOf) W.supportedLocalesOf = (l) => [].concat(l || []);
+    Intl[k] = W;
+  }
+  if (!Intl.Locale) {
+    Intl.Locale = class Locale {
+      constructor(tag, opts = {}) {
+        const parts = String(tag).split(/[-_]/);
+        this.language = opts.language || parts[0] || 'en';
+        this.script = opts.script || parts.find((p, i) => i > 0 && p.length === 4) || undefined;
+        this.region = opts.region || parts.find((p, i) => i > 0 && (p.length === 2 || /^\d{3}$/.test(p))) || undefined;
+        this.baseName = [this.language, this.script, this.region].filter(Boolean).join('-');
+        this.calendar = opts.calendar; this.numberingSystem = opts.numberingSystem; this.hourCycle = opts.hourCycle;
+      }
+      toString() { return this.baseName; }
+      maximize() { return this; }
+      minimize() { return this; }
+      getWeekInfo() { return { firstDay: 1, weekend: [6, 7], minimalDays: 1 }; }
+      getTextInfo() { return { direction: 'ltr' }; }
+    };
+  }
   expose('Intl', Intl);
 
   // ---- DOM helpers -----------------------------------------------------------
@@ -816,7 +843,7 @@
     Object.defineProperty(G.HTMLElement.prototype, 'contentWindow', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).win : null; } });
     Object.defineProperty(G.HTMLElement.prototype, 'contentDocument', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).doc : null; } });
   }
-  if (G.performance && !G.performance.mark) {
+  if (G.performance && !G.performance.clearMarks) {
     const marks = [];
     def(G.performance, 'mark', (name, o = {}) => { const e = { name: String(name), entryType: 'mark', startTime: o.startTime !== undefined ? o.startTime : G.performance.now(), duration: 0, detail: o.detail === undefined ? null : o.detail }; marks.push(e); return e; });
     def(G.performance, 'measure', (name, a, b) => { const find = (n) => { const m = marks.filter((x) => x.name === n).pop(); return m ? m.startTime : 0; }; const s = typeof a === 'string' ? find(a) : (a && a.start) || 0; const e = typeof b === 'string' ? find(b) : G.performance.now(); const m = { name: String(name), entryType: 'measure', startTime: s, duration: e - s, detail: null }; marks.push(m); return m; });
