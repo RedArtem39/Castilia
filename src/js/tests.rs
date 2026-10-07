@@ -9,6 +9,11 @@ fn run_tier(src: &str, tier: vm::Tier) -> Vec<String> {
     let mut doc = crate::html::parse("<html><body></body></html>");
     let mut rt = Runtime::new();
     rt.interp.tier = tier;
+    #[cfg(feature = "jit")]
+    if tier == vm::Tier::Native {
+        rt.interp.jit.threshold = 1;
+        rt.set_code_memory(alloc::boxed::Box::new(test_exec_mem::Mem));
+    }
     // collect very often so a wrongly freed object shows up as a test failure
     rt.interp.heap.threshold = 50;
     if let Err(e) = rt.execute(src, &mut doc) {
@@ -26,12 +31,64 @@ fn check(src: &str, expect: &[&str]) {
     assert_eq!(got, expect, "AST tier, script: {src}");
     let got = run(src);
     assert_eq!(got, expect, "bytecode tier, script: {src}");
+    check_native(src, expect);
 }
 
 /// Semantics only the bytecode tier implements (real suspension, deep recursion).
 fn check_vm(src: &str, expect: &[&str]) {
     let got = run(src);
     assert_eq!(got, expect, "bytecode tier, script: {src}");
+    check_native(src, expect);
+}
+
+/// The native tier (every function compiled immediately) must agree too.
+fn check_native(src: &str, expect: &[&str]) {
+    #[cfg(all(feature = "jit", target_arch = "x86_64", any(windows, unix)))]
+    {
+        let got = run_tier(src, vm::Tier::Native);
+        assert_eq!(got, expect, "native tier, script: {src}");
+    }
+    let _ = (src, expect);
+}
+
+#[cfg(all(feature = "jit", target_arch = "x86_64", any(windows, unix)))]
+mod test_exec_mem {
+    extern crate std;
+    use core::ptr::NonNull;
+    pub struct Mem;
+    #[cfg(windows)]
+    unsafe extern "system" {
+        fn VirtualAlloc(addr: *mut u8, size: usize, kind: u32, protect: u32) -> *mut u8;
+        fn VirtualProtect(addr: *mut u8, size: usize, protect: u32, old: *mut u32) -> i32;
+    }
+    #[cfg(unix)]
+    unsafe extern "C" {
+        fn mmap(addr: *mut u8, len: usize, prot: i32, flags: i32, fd: i32, off: i64) -> *mut u8;
+        fn mprotect(addr: *mut u8, len: usize, prot: i32) -> i32;
+    }
+    impl crate::platform::CodeMemory for Mem {
+        fn install(&mut self, code: &[u8]) -> Option<NonNull<u8>> {
+            unsafe {
+                #[cfg(windows)]
+                let p = {
+                    let p = VirtualAlloc(core::ptr::null_mut(), code.len(), 0x3000, 0x04);
+                    core::ptr::copy_nonoverlapping(code.as_ptr(), p, code.len());
+                    let mut old = 0;
+                    VirtualProtect(p, code.len(), 0x20, &mut old);
+                    p
+                };
+                #[cfg(unix)]
+                let p = {
+                    let flags = if cfg!(target_os = "macos") { 0x1002 } else { 0x22 };
+                    let p = mmap(core::ptr::null_mut(), code.len(), 3, flags, -1, 0);
+                    core::ptr::copy_nonoverlapping(code.as_ptr(), p, code.len());
+                    mprotect(p, code.len(), 5);
+                    p
+                };
+                NonNull::new(p)
+            }
+        }
+    }
 }
 
 #[test]
@@ -316,4 +373,81 @@ fn array_holes() {
          console.log(a.length, seen.join(), a.map(v => v + '!').join('|'), 1 in a, 0 in a, b.join('-'), Object.keys(b).join(), [...a].length, a[0] === undefined, JSON.stringify(a), a.filter(() => true).length, a.indexOf(undefined), a.includes(undefined))",
         &["3 1 |x!| true false --3 2 3 true [null,\"x\",null] 1 -1 true"],
     );
+}
+
+#[test]
+#[ignore]
+fn dump_bytecode() {
+    let src = "function sum(n) { let s = 0; for (let i = 0; i < n; i++) { s += i * 2 - (i % 7); } return s; } sum(3)";
+    let mut doc = crate::html::parse("<html><body></body></html>");
+    let mut rt = Runtime::new();
+    rt.execute(src, &mut doc).unwrap();
+    let name = rt.interp.interner.intern("sum");
+    let genv = rt.interp.global_env.clone();
+    let f = rt.interp.lookup(name, &genv).ok().unwrap();
+    if let value::Value::Obj(o) = f {
+        if let value::Class::Function(value::Func::Closure(c)) = &o.borrow().class {
+            let code = c.def.code.get().unwrap().clone().unwrap();
+            let mut out = String::new();
+            for (i, op) in code.ops.iter().enumerate() {
+                out.push_str(&alloc::format!("{i:3} {op:?}
+"));
+            }
+            panic!("BYTECODE
+{out}");
+        }
+    }
+}
+
+#[test]
+fn value_layout_is_fixed() {
+    use value::Value;
+    assert_eq!(Value::SIZE, 24);
+    let raw = |v: &Value| -> [u8; 24] { unsafe { core::mem::transmute_copy(v) } };
+    let n = raw(&Value::Num(1.5));
+    assert_eq!(n[0], Value::TAG_NUM);
+    assert_eq!(f64::from_le_bytes(n[8..16].try_into().unwrap()), 1.5);
+    let b = raw(&Value::Bool(true));
+    assert_eq!((b[0], b[8]), (Value::TAG_BOOL, 1));
+    assert_eq!(raw(&Value::Undefined)[0], Value::TAG_UNDEFINED);
+    assert_eq!(raw(&Value::Null)[0], Value::TAG_NULL);
+    assert!(raw(&Value::str("x"))[0] > Value::TAG_LAST_PLAIN);
+}
+
+#[test]
+#[cfg(all(feature = "jit", target_arch = "x86_64", any(windows, unix)))]
+fn native_tier_compiles_and_matches() {
+    let src = "function sum(n) { let s = 0; for (let i = 0; i < n; i++) { s += i * 2 - (i % 7); if (s > 1e15) break; } return s; }
+               function cmp(a, b) { let c = 0; for (let i = 0; i < 100; i++) { if (a < b) c++; if (a >= b) c--; if (a === b) c += 10; if (!(a != b)) c += 100; a += 0.5; } return c; }
+               function nan() { let x = 0 / 0, k = 0; while (k < 3) { if (x) k += 100; if (!x) k++; } return k; }
+               console.log(sum(100000), cmp(1, 30), nan(), -sum(3))";
+    let expect = run_tier(src, vm::Tier::Bytecode);
+    assert_eq!(expect, ["9999600005 126 3 -3"]);
+    let mut doc = crate::html::parse("<html><body></body></html>");
+    let mut rt = Runtime::new();
+    rt.interp.tier = vm::Tier::Native;
+    rt.interp.jit.threshold = 1;
+    rt.set_code_memory(alloc::boxed::Box::new(test_exec_mem::Mem));
+    rt.execute(src, &mut doc).unwrap();
+    let logs: Vec<String> = rt.logs().into_iter().map(|l| l.strip_prefix("log: ").map(|s| s.to_string()).unwrap_or(l)).collect();
+    assert_eq!(logs, expect);
+    let st = rt.vm_stats();
+    assert!(st.native_compiled >= 3, "{st:?}");
+}
+
+#[test]
+#[ignore]
+#[cfg(all(feature = "jit", target_arch = "x86_64", any(windows, unix)))]
+fn native_debug() {
+    let mut doc = crate::html::parse("<html><body></body></html>");
+    let mut rt = Runtime::new();
+    rt.interp.tier = vm::Tier::Native;
+    rt.interp.jit.threshold = 1;
+    rt.set_code_memory(alloc::boxed::Box::new(test_exec_mem::Mem));
+    let mut out = String::new();
+    for s in ["function a(){ let k=0; for (let i=0;i<10;i++) k+=i; return k } console.log(a())", "function b(){ let k=0; for (let i=0;i<10;i++) k+=i; return k } console.log(b())", "function c(x){ let k=0; while (k < 3) { k++ } return k } console.log(c())"] {
+        rt.execute(s, &mut doc).unwrap();
+        out.push_str(&alloc::format!("{:?} {:?}\n", rt.logs().last(), rt.vm_stats()));
+    }
+    panic!("{out}");
 }

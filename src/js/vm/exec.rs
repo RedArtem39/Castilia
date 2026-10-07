@@ -8,7 +8,7 @@ use crate::js::{
 use alloc::{boxed::Box, format, rc::Rc, string::String, vec, vec::Vec};
 use core::cell::RefCell;
 
-enum Step {
+pub(crate) enum Step {
     Call(Box<Frame>),
     Ret(Value),
     Yield(Value),
@@ -416,12 +416,40 @@ impl Interp {
     }
 
     /// Execute instructions until the frame calls, returns or suspends.
+    /// Execute instructions until the frame calls, returns or suspends.
     fn exec_frame(&mut self, f: &mut Frame) -> Result<Step, Ctl> {
+        #[cfg(feature = "jit")]
+        if self.tier == super::Tier::Native {
+            if let Some(r) = self.jit_enter(f) {
+                return r;
+            }
+        }
         let code = f.code.clone();
         let ops = &code.ops[..];
         loop {
             let op = ops[f.pc];
             f.pc += 1;
+            #[cfg(feature = "jit")]
+            let at = f.pc;
+            if let Some(step) = self.exec_op(f, &code, op)? {
+                return Ok(step);
+            }
+            // hot loop in an interpreted function: switch to native code at the loop header
+            #[cfg(feature = "jit")]
+            if let Op::Jump(t) = op {
+                if (t as usize) < at && self.tier == super::Tier::Native {
+                    if let Some(r) = self.jit_enter(f) {
+                        return r;
+                    }
+                }
+            }
+        }
+    }
+
+    /// Execute one instruction (`f.pc` already points past it). `Some` when the frame must call,
+    /// return or suspend. Shared by the interpreter loop and the native tier's slow paths.
+    #[inline(always)]
+    pub(crate) fn exec_op(&mut self, f: &mut Frame, code: &Code, op: Op) -> Result<Option<Step>, Ctl> {
             match op {
                 Op::Nop | Op::Debugger => {}
                 Op::Undef => f.stack.push(Value::Undefined),
@@ -460,6 +488,18 @@ impl Interp {
                 }
                 Op::GetReg(r) => f.stack.push(f.regs[r as usize].clone()),
                 Op::SetReg(r) => f.regs[r as usize] = Self::pop(f),
+                Op::IncReg(r) | Op::DecReg(r) => {
+                    let d = if matches!(op, Op::IncReg(_)) { 1.0 } else { -1.0 };
+                    let slot = &mut f.regs[r as usize];
+                    let n = match slot {
+                        Value::Num(n) => *n,
+                        other => {
+                            let v = other.clone();
+                            self.to_number(&v)?
+                        }
+                    };
+                    f.regs[r as usize] = Value::Num(n + d);
+                }
                 Op::PutReg(r) => f.regs[r as usize] = f.stack.last().cloned().unwrap_or(Value::Undefined),
                 Op::GetName(n) => {
                     let v = self.lookup(n, &f.env)?;
@@ -747,6 +787,13 @@ impl Interp {
                             BinOp::Ge => Value::Bool(a >= b),
                             BinOp::StrictEq | BinOp::Eq => Value::Bool(a == b),
                             BinOp::StrictNe | BinOp::Ne => Value::Bool(a != b),
+                            BinOp::Mod if *b != 0.0 && a.is_finite() && b.is_finite() => Value::Num(a % b),
+                            BinOp::BitAnd => Value::Num((to_int32(*a) & to_int32(*b)) as f64),
+                            BinOp::BitOr => Value::Num((to_int32(*a) | to_int32(*b)) as f64),
+                            BinOp::BitXor => Value::Num((to_int32(*a) ^ to_int32(*b)) as f64),
+                            BinOp::Shl => Value::Num(to_int32(*a).wrapping_shl(to_uint32(*b) & 31) as f64),
+                            BinOp::Shr => Value::Num((to_int32(*a) >> (to_uint32(*b) & 31)) as f64),
+                            BinOp::UShr => Value::Num((to_uint32(*a) >> (to_uint32(*b) & 31)) as f64),
                             _ => self.binary_op(op, &l, &r)?,
                         },
                         _ => match op {
@@ -833,7 +880,7 @@ impl Interp {
                 Op::InitMethod(i, kind) => {
                     let kv = Self::pop(f);
                     let key = self.to_key(&kv)?;
-                    let Some(Value::Obj(o)) = f.stack.last().cloned() else { continue };
+                    let Some(Value::Obj(o)) = f.stack.last().cloned() else { return Ok(None) };
                     let def = code.funcs[i as usize].clone();
                     if kind == 0 {
                         let name = crate::js::interp::key_to_name(&key);
@@ -893,14 +940,10 @@ impl Interp {
                     }
                 }
                 Op::Call(argc, d) => {
-                    if let Some(step) = self.op_call(f, &code, argc, Some(d))? {
-                        return Ok(step);
-                    }
+                    return self.op_call(f, code, argc, Some(d));
                 }
                 Op::CallEval(argc) => {
-                    if let Some(step) = self.op_call(f, &code, argc, None)? {
-                        return Ok(step);
-                    }
+                    return self.op_call(f, code, argc, None);
                 }
                 Op::CallSpread(d) => {
                     let arr = Self::pop(f);
@@ -908,11 +951,11 @@ impl Interp {
                     let func = Self::pop(f);
                     let this = Self::pop(f);
                     if !matches!(&func, Value::Obj(o) if o.is_callable()) {
-                        let desc = self.callee_text(&code, d);
+                        let desc = self.callee_text(code, d);
                         return Err(self.error_ctl("TypeError", &format!("{desc} is not a function")));
                     }
                     match self.inline_call(&func, this, args)? {
-                        Ok(frame) => return Ok(Step::Call(frame)),
+                        Ok(frame) => return Ok(Some(Step::Call(frame))),
                         Err((this, args)) => {
                             let v = self.call(&func, this, &args)?;
                             f.stack.push(v);
@@ -924,11 +967,11 @@ impl Interp {
                     let args = f.stack.split_off(start);
                     let func = Self::pop(f);
                     if !matches!(&func, Value::Obj(o) if o.is_callable()) {
-                        let desc = self.callee_text(&code, d);
+                        let desc = self.callee_text(code, d);
                         return Err(self.error_ctl("TypeError", &format!("{desc} is not a constructor")));
                     }
                     if let Some(frame) = self.inline_construct(&func, &args)? {
-                        return Ok(Step::Call(frame));
+                        return Ok(Some(Step::Call(frame)));
                     }
                     let v = self.construct(&func, &args, None)?;
                     f.stack.push(v);
@@ -938,7 +981,7 @@ impl Interp {
                     let args = self.array_values(&arr);
                     let func = Self::pop(f);
                     if !matches!(&func, Value::Obj(o) if o.is_callable()) {
-                        let desc = self.callee_text(&code, d);
+                        let desc = self.callee_text(code, d);
                         return Err(self.error_ctl("TypeError", &format!("{desc} is not a constructor")));
                     }
                     let v = self.construct(&func, &args, None)?;
@@ -1040,7 +1083,7 @@ impl Interp {
                     Completion::Throw(e) => return Err(Ctl::Throw(e)),
                     Completion::Return(v) => {
                         if let Some(v) = Self::do_return(f, v) {
-                            return Ok(Step::Ret(v));
+                            return Ok(Some(Step::Ret(v)));
                         }
                     }
                     Completion::Jump(t, packed) => Self::do_leave(f, t, packed),
@@ -1049,7 +1092,7 @@ impl Interp {
                 Op::Return => {
                     let v = Self::pop(f);
                     if let Some(v) = Self::do_return(f, v) {
-                        return Ok(Step::Ret(v));
+                        return Ok(Some(Step::Ret(v)));
                     }
                 }
                 Op::GetIter(r) => {
@@ -1156,10 +1199,10 @@ impl Interp {
                         }
                     }
                 }
-                Op::GenStart => return Ok(Step::Yield(Value::Undefined)),
+                Op::GenStart => return Ok(Some(Step::Yield(Value::Undefined))),
                 Op::Yield => {
                     let v = Self::pop(f);
-                    return Ok(Step::Yield(v));
+                    return Ok(Some(Step::Yield(v)));
                 }
                 Op::YieldStar(r, t) => {
                     let r = r as usize;
@@ -1191,9 +1234,9 @@ impl Interp {
                             let m = if matches!(iter, Value::Obj(_)) && !matches!(f.regs[r + 1], Value::Num(_)) { self.get_v(&iter, &Key::str("return"))? } else { Value::Undefined };
                             if m.is_nullish() {
                                 if let Some(v) = Self::do_return(f, received) {
-                                    return Ok(Step::Ret(v));
+                                    return Ok(Some(Step::Ret(v)));
                                 }
-                                continue;
+                                return Ok(None);
                             }
                             let res = self.call(&m, iter, &[received])?;
                             if !matches!(res, Value::Obj(_)) {
@@ -1203,13 +1246,13 @@ impl Interp {
                             if done.truthy() {
                                 let v = self.get_v(&res, &self.names.value.clone())?;
                                 if let Some(v) = Self::do_return(f, v) {
-                                    return Ok(Step::Ret(v));
+                                    return Ok(Some(Step::Ret(v)));
                                 }
-                                continue;
+                                return Ok(None);
                             }
                             f.pc -= 1;
                             f.yield_raw = true;
-                            return Ok(Step::Yield(res));
+                            return Ok(Some(Step::Yield(res)));
                         }
                     };
                     if !matches!(res, Value::Obj(_)) {
@@ -1223,12 +1266,12 @@ impl Interp {
                     } else {
                         f.pc -= 1;
                         f.yield_raw = true;
-                        return Ok(Step::Yield(res));
+                        return Ok(Some(Step::Yield(res)));
                     }
                 }
                 Op::Await => {
                     let v = Self::pop(f);
-                    return Ok(Step::Await(v));
+                    return Ok(Some(Step::Await(v)));
                 }
                 Op::ImportCall => {
                     let s = Self::pop(f);
@@ -1244,7 +1287,7 @@ impl Interp {
                     }
                 }
             }
-        }
+        Ok(None)
     }
 
     fn op_call(&mut self, f: &mut Frame, code: &Code, argc: u32, d: Option<u32>) -> Result<Option<Step>, Ctl> {

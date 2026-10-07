@@ -1021,10 +1021,7 @@ impl Compiler {
     fn stmt(&mut self, s: &Stmt) -> CResult {
         let labels = core::mem::take(&mut self.pending_labels);
         match s {
-            Stmt::Expr(e) => {
-                self.expr(e)?;
-                self.emit(Op::Pop);
-            }
+            Stmt::Expr(e) => self.expr_discard(e)?,
             Stmt::Var(kind, decls) => {
                 for (pat, init) in decls {
                     match init {
@@ -1240,8 +1237,7 @@ impl Compiler {
             self.emit(Op::CopyScope);
         }
         if let Some(u) = update {
-            self.expr(u)?;
-            self.emit(Op::Pop);
+            self.expr_discard(u)?;
         }
         self.emit(Op::Jump(top));
         let end_inner = self.here();
@@ -1794,6 +1790,51 @@ impl Compiler {
                 self.emit(Op::ImportMeta);
             }
         }
+        Ok(())
+    }
+
+    /// Evaluate for side effects only (expression statements, `for` updates).
+    fn expr_discard(&mut self, e: &Expr) -> CResult {
+        match e {
+            Expr::Update { inc, target, .. } => {
+                if let Expr::Ident(n) = &**target {
+                    if let Some((Store::Reg(r), k)) = self.resolve(*n) {
+                        if k != 2 {
+                            self.emit(if *inc { Op::IncReg(r) } else { Op::DecReg(r) });
+                            return Ok(());
+                        }
+                    }
+                }
+            }
+            Expr::Assign(AssignOp::Assign, target, value) => {
+                if let Pat::Ident(n) = &**target {
+                    if let Some((Store::Reg(r), k)) = self.resolve(*n) {
+                        if k != 2 {
+                            self.expr_named(value, Some(*n))?;
+                            self.emit(Op::SetReg(r));
+                            return Ok(());
+                        }
+                    }
+                }
+            }
+            Expr::Assign(AssignOp::Bin(bop), target, value) if *bop != BinOp::In => {
+                if let Pat::Ident(n) = &**target {
+                    if let Some((Store::Reg(r), k)) = self.resolve(*n) {
+                        if k != 2 {
+                            self.emit(Op::GetReg(r));
+                            self.expr(value)?;
+                            self.emit(Op::Bin(*bop));
+                            self.emit(Op::SetReg(r));
+                            return Ok(());
+                        }
+                    }
+                }
+            }
+            Expr::Paren(inner) => return self.expr_discard(inner),
+            _ => {}
+        }
+        self.expr(e)?;
+        self.emit(Op::Pop);
         Ok(())
     }
 

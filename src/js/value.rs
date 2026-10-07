@@ -12,7 +12,10 @@ use core::cell::{Ref, RefCell, RefMut};
 
 pub type JsStr = Rc<str>;
 
+/// A JS value. The layout is fixed (`tag: u8` at offset 0, payload at offset 8) because the
+/// native tier reads and writes numbers and booleans in place; see [`Value::TAG_NUM`].
 #[derive(Clone)]
+#[repr(C, u8)]
 pub enum Value {
     Undefined,
     Null,
@@ -386,6 +389,15 @@ pub enum Class {
 }
 
 impl Value {
+    pub const TAG_UNDEFINED: u8 = 0;
+    pub const TAG_NULL: u8 = 1;
+    pub const TAG_BOOL: u8 = 2;
+    pub const TAG_NUM: u8 = 3;
+    /// Tags above this own heap references (cloning/dropping needs Rust code).
+    pub const TAG_LAST_PLAIN: u8 = 3;
+    pub const PAYLOAD_OFFSET: usize = 8;
+    pub const SIZE: usize = core::mem::size_of::<Value>();
+
     pub fn str(s: &str) -> Value {
         Value::Str(Rc::from(s))
     }

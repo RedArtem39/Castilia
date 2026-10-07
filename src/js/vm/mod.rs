@@ -45,6 +45,9 @@ pub enum Op {
     GetReg(u32),
     SetReg(u32),
     PutReg(u32),
+    /// `r++` / `r--` as a statement (ToNumber then ±1).
+    IncReg(u32),
+    DecReg(u32),
     // named bindings (scope chain, `with`, global object)
     GetName(Name),
     TypeofName(Name),
@@ -823,4 +826,8 @@ pub struct VmStats {
     pub compiled: usize,
     pub fallbacks: usize,
     pub native_compiled: usize,
+    /// Native compilation attempts that failed (unsupported code, no executable memory).
+    pub native_failed: usize,
+    /// Hot functions skipped because the runtime has no executable memory.
+    pub native_no_memory: usize,
 }

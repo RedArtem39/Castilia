@@ -1,5 +1,7 @@
 //! Run scripts against an HTML document and print console output.
 //! Usage: jsrun [--html file.html] script.js ... [-e 'expression']
+#[path = "common/codemem.rs"]
+mod codemem;
 #[path = "common/memlimit.rs"]
 mod memlimit;
 #[global_allocator]
@@ -60,7 +62,7 @@ fn real_main() {
         let _ = path;
     }
     let started = std::time::Instant::now();
-    let mut page = Page::load(doc, "", PageOptions { url: Some("http://localhost/".into()), host: Some(Box::new(FileHost(root))), config, ..Default::default() }, |_| Err("no loader".into()));
+    let mut page = Page::load(doc, "", PageOptions { url: Some("http://localhost/".into()), host: Some(Box::new(FileHost(root))), config, code_memory: Some(Box::new(codemem::HostCodeMemory)), ..Default::default() }, |_| Err("no loader".into()));
     eprintln!("scripts: executed={} errors={:?} ({:?})", page.scripts.executed, page.scripts.errors, started.elapsed());
     eprintln!("vm: {:?} gc: {:?}", page.vm_stats(), page.gc_stats());
     if let Some(e) = expr {
