@@ -351,7 +351,7 @@ fn copy_within(it: &mut Interp, c: &Call) -> Res {
 // ---- accessors ----
 
 fn slice(it: &mut Interp, c: &Call) -> Res {
-    let items = list(it, c)?;
+    let items = list_raw(it, c)?;
     let len = items.len();
     let s = rel_arg(it, c, 0, len, 0)?;
     let e = rel_arg(it, c, 1, len, len)?;
@@ -359,10 +359,19 @@ fn slice(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn concat(it: &mut Interp, c: &Call) -> Res {
-    let mut out = list(it, c)?;
+    let mut out = list_raw(it, c)?;
     for a in c.args {
         match a {
-            Value::Obj(o) if o.is_array() => out.extend(it.array_like_to_vec(a)?),
+            Value::Obj(o) if o.is_array() => {
+                let raw = match &o.borrow().class {
+                    Class::Array(v) => Some(v.clone()),
+                    _ => None,
+                };
+                match raw {
+                    Some(v) => out.extend(v),
+                    None => out.extend(it.array_like_to_vec(a)?),
+                }
+            }
             v => out.push(v.clone()),
         }
     }
