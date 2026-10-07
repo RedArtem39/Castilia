@@ -1,124 +1,124 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="2447" viewBox="0 0 1000 2447">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="2447" viewBox="0 0 1200 2447">
 <rect width="100%" height="100%" fill="white"/>
-<rect x="10" y="8" width="980" height="2430" rx="0" fill="#ffffff" fill-opacity="1"/>
-<polygon points="55,128 945,128 945,127 55,127" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="108" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="32" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Marked</text>
-<text x="87" y="201" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⚡ built for speed</text>
-<text x="76.953125" y="201" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<text x="87" y="229" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⬇️ low-level compiler for parsing markdown without caching or blocking for long periods of time</text>
-<text x="76.953125" y="229" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<text x="87" y="257" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⚖️ light-weight while implementing all markdown features from the supported flavors &amp; specifications</text>
-<text x="76.953125" y="257" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<text x="87" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">🛠️ easily adaptable with</text>
-<a href="https://marked.js.org/using_advanced#extensions"><text x="281.8697" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">custom extensions</text></a>
-<text x="76.953125" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<text x="87" y="313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">🌐 works in a browser, on a server, or from a command line interface (CLI)</text>
-<text x="76.953125" y="313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<polygon points="55,382 945,382 945,381 55,381" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="367" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Demo</text>
-<text x="55" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Check out the</text>
-<a href="https://marked.js.org/demo/"><text x="158.17188" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">demo page</text></a>
-<text x="242.67969" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">to see Marked in action ⛹️</text>
-<polygon points="55,484 945,484 945,483 55,483" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="469" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Docs</text>
-<text x="55" y="518" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Our</text>
-<a href="https://marked.js.org"><text x="86.11719" y="518" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">documentation pages</text></a>
-<text x="243.5625" y="518" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">are also rendered using marked 💯</text>
-<text x="55" y="558" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Also read about:</text>
-<a href="https://marked.js.org/using_advanced"><text x="87" y="598" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Options</text></a>
-<text x="76.953125" y="598" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<a href="https://marked.js.org/using_pro"><text x="87" y="626" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Extensibility</text></a>
-<text x="76.953125" y="626" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
-<polygon points="55,694 945,694 945,693 55,693" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="680" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Compatibility</text>
-<text x="55" y="728" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js:</text>
-<text x="122.5625" y="728" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Only</text>
-<a href="https://nodejs.org/en/about/releases/"><text x="159.90625" y="728" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">current and LTS</text></a>
-<text x="277.89063" y="728" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js versions are supported. End of life Node.js versions may become incompatible with</text>
-<text x="55" y="752" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Marked at any point in time.</text>
-<text x="55" y="792" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Browser:</text>
-<a href="https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility"><text x="128.79688" y="792" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Baseline Widely Available</text></a>
-<polygon points="55,860 945,860 945,859 55,859" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="846" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Installation</text>
-<text x="55" y="894" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">CLI:</text>
-<rect x="55" y="916" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c1"><rect x="55" y="916.4" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c1)">
-<text x="71" y="947" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">npm install -g marked</text>
+<rect x="110" y="8" width="980" height="2430" rx="0" fill="#ffffff" fill-opacity="1"/>
+<polygon points="155,128 1045,128 1045,127 155,127" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="108" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="32" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Marked</text>
+<text x="187" y="201" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⚡ built for speed</text>
+<text x="176.95313" y="201" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<text x="187" y="229" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⬇️ low-level compiler for parsing markdown without caching or blocking for long periods of time</text>
+<text x="176.95313" y="229" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<text x="187" y="257" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">⚖️ light-weight while implementing all markdown features from the supported flavors &amp; specifications</text>
+<text x="176.95313" y="257" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<text x="187" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">🛠️ easily adaptable with</text>
+<a href="https://marked.js.org/using_advanced#extensions"><text x="381.8697" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">custom extensions</text></a>
+<text x="176.95313" y="285" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<text x="187" y="313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">🌐 works in a browser, on a server, or from a command line interface (CLI)</text>
+<text x="176.95313" y="313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<polygon points="155,382 1045,382 1045,381 155,381" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="367" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Demo</text>
+<text x="155" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Check out the</text>
+<a href="https://marked.js.org/demo/"><text x="258.17188" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">demo page</text></a>
+<text x="342.6797" y="415" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">to see Marked in action ⛹️</text>
+<polygon points="155,484 1045,484 1045,483 155,483" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="469" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Docs</text>
+<text x="155" y="517" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Our</text>
+<a href="https://marked.js.org"><text x="186.11719" y="517" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">documentation pages</text></a>
+<text x="343.5625" y="517" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">are also rendered using marked 💯</text>
+<text x="155" y="557" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Also read about:</text>
+<a href="https://marked.js.org/using_advanced"><text x="187" y="597" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Options</text></a>
+<text x="176.95313" y="597" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<a href="https://marked.js.org/using_pro"><text x="187" y="625" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Extensibility</text></a>
+<text x="176.95313" y="625" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">•</text>
+<polygon points="155,694 1045,694 1045,693 155,693" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="679" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Compatibility</text>
+<text x="155" y="727" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js:</text>
+<text x="222.5625" y="727" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Only</text>
+<a href="https://nodejs.org/en/about/releases/"><text x="259.90625" y="727" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">current and LTS</text></a>
+<text x="377.89063" y="727" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js versions are supported. End of life Node.js versions may become incompatible with</text>
+<text x="155" y="751" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Marked at any point in time.</text>
+<text x="155" y="791" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Browser:</text>
+<a href="https://developer.mozilla.org/en-US/docs/Glossary/Baseline/Compatibility"><text x="228.79688" y="791" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">Baseline Widely Available</text></a>
+<polygon points="155,860 1045,860 1045,859 155,859" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="845" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Installation</text>
+<text x="155" y="893" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">CLI:</text>
+<rect x="155" y="916" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c1"><rect x="155" y="916.4" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c1)">
+<text x="171" y="946" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">npm install -g marked</text>
 </g>
-<text x="55" y="1002" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">In-browser:</text>
-<rect x="55" y="1024" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c2"><rect x="55" y="1024.12" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c2)">
-<text x="71" y="1055" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">npm install marked</text>
+<text x="155" y="1001" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">In-browser:</text>
+<rect x="155" y="1024" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c2"><rect x="155" y="1024.12" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c2)">
+<text x="171" y="1054" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">npm install marked</text>
 </g>
-<polygon points="55,1138 945,1138 945,1137 55,1137" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="1123" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Usage</text>
-<text x="55" y="1182" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Warning: 🚨 Marked does not</text>
-<a href="https://marked.js.org/using_advanced#options"><text x="339.89413" y="1182" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">sanitize</text></a>
-<text x="418.81015" y="1182" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">the output HTML. Please use a sanitize library, like</text>
-<a href="https://github.com/cure53/DOMPurify"><text x="55" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">DOMPurify</text></a>
-<text x="163.89648" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">(recommended),</text>
-<a href="https://github.com/apostrophecms/sanitize-html"><text x="325.03906" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">sanitize-html</text></a>
-<text x="452.83203" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">or</text>
-<a href="https://github.com/bevacqua/insane"><text x="478.38867" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">insane</text></a>
-<text x="547.3047" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">on the</text>
-<text x="612.85156" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="italic" fill="#1f2328" fill-opacity="1" xml:space="preserve">output</text>
-<text x="680.5957" y="1207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">HTML! 🚨</text>
-<rect x="55" y="1228" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c3"><rect x="55" y="1228.0399" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c3)">
-<text x="71" y="1259" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">DOMPurify.sanitize(marked.parse(`&lt;img src=&quot;x&quot; onerror=&quot;alert(&apos;not happening&apos;)&quot;&gt;`));</text>
+<polygon points="155,1138 1045,1138 1045,1137 155,1137" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="1123" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Usage</text>
+<text x="155" y="1181" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Warning: 🚨 Marked does not</text>
+<a href="https://marked.js.org/using_advanced#options"><text x="439.89413" y="1181" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">sanitize</text></a>
+<text x="518.8102" y="1181" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">the output HTML. Please use a sanitize library, like</text>
+<a href="https://github.com/cure53/DOMPurify"><text x="155" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">DOMPurify</text></a>
+<text x="263.89648" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">(recommended),</text>
+<a href="https://github.com/apostrophecms/sanitize-html"><text x="425.03906" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">sanitize-html</text></a>
+<text x="552.83203" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">or</text>
+<a href="https://github.com/bevacqua/insane"><text x="578.3887" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#0969da" fill-opacity="1" xml:space="preserve">insane</text></a>
+<text x="647.3047" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">on the</text>
+<text x="712.85156" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="italic" fill="#1f2328" fill-opacity="1" xml:space="preserve">output</text>
+<text x="780.5957" y="1206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="20" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">HTML! 🚨</text>
+<rect x="155" y="1228" width="890" height="52" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c3"><rect x="155" y="1228.0399" width="890" height="51.72" rx="6"/></clipPath><g clip-path="url(#c3)">
+<text x="171" y="1258" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">DOMPurify.sanitize(marked.parse(`&lt;img src=&quot;x&quot; onerror=&quot;alert(&apos;not happening&apos;)&quot;&gt;`));</text>
 </g>
-<text x="55" y="1313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">CLI</text>
-<rect x="55" y="1336" width="890" height="150" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c4"><rect x="55" y="1335.7599" width="890" height="150.32" rx="6"/></clipPath><g clip-path="url(#c4)">
-<text x="71" y="1367" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve"># Example with stdin input</text>
-<text x="71" y="1386" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ marked -o hello.html</text>
-<text x="71" y="1406" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">hello world</text>
-<text x="71" y="1426" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">^D</text>
-<text x="71" y="1445" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ cat hello.html</text>
-<text x="71" y="1465" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;p&gt;hello world&lt;/p&gt;</text>
+<text x="155" y="1313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">CLI</text>
+<rect x="155" y="1336" width="890" height="150" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c4"><rect x="155" y="1335.7599" width="890" height="150.32" rx="6"/></clipPath><g clip-path="url(#c4)">
+<text x="171" y="1366" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve"># Example with stdin input</text>
+<text x="171" y="1385" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ marked -o hello.html</text>
+<text x="171" y="1405" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">hello world</text>
+<text x="171" y="1425" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">^D</text>
+<text x="171" y="1445" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ cat hello.html</text>
+<text x="171" y="1464" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;p&gt;hello world&lt;/p&gt;</text>
 </g>
-<rect x="55" y="1502" width="890" height="72" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c5"><rect x="55" y="1502.0798" width="890" height="71.44" rx="6"/></clipPath><g clip-path="url(#c5)">
-<text x="71" y="1533" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve"># Print all options</text>
-<text x="71" y="1553" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ marked --help</text>
+<rect x="155" y="1502" width="890" height="72" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c5"><rect x="155" y="1502.0798" width="890" height="71.44" rx="6"/></clipPath><g clip-path="url(#c5)">
+<text x="171" y="1532" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve"># Print all options</text>
+<text x="171" y="1552" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">$ marked --help</text>
 </g>
-<text x="55" y="1607" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js</text>
-<rect x="55" y="1630" width="890" height="91" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c6"><rect x="55" y="1629.5198" width="890" height="91.16" rx="6"/></clipPath><g clip-path="url(#c6)">
-<text x="71" y="1660" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">import { marked } from &apos;marked&apos;;</text>
-<text x="71" y="1680" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">const html = marked.parse(&apos;# Marked in Node.js&apos;);</text>
-<text x="71" y="1700" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">console.log(html);</text>
+<text x="155" y="1607" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Node.js</text>
+<rect x="155" y="1630" width="890" height="91" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c6"><rect x="155" y="1629.5198" width="890" height="91.16" rx="6"/></clipPath><g clip-path="url(#c6)">
+<text x="171" y="1660" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">import { marked } from &apos;marked&apos;;</text>
+<text x="171" y="1679" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">const html = marked.parse(&apos;# Marked in Node.js&apos;);</text>
+<text x="171" y="1699" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">console.log(html);</text>
 </g>
-<text x="55" y="1754" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Browser</text>
-<rect x="55" y="1777" width="890" height="327" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c7"><rect x="55" y="1776.6798" width="890" height="327.80002" rx="6"/></clipPath><g clip-path="url(#c7)">
-<text x="71" y="1808" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;!doctype html&gt;</text>
-<text x="71" y="1827" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;html&gt;</text>
-<text x="71" y="1847" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;head&gt;</text>
-<text x="71" y="1867" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;meta charset=&quot;utf-8&quot;/&gt;</text>
-<text x="71" y="1886" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;title&gt;Marked in the browser&lt;/title&gt;</text>
-<text x="71" y="1906" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/head&gt;</text>
-<text x="71" y="1926" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;body&gt;</text>
-<text x="71" y="1946" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;div id=&quot;content&quot;&gt;&lt;/div&gt;</text>
-<text x="71" y="1965" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js&quot;&gt;&lt;/script&gt;</text>
-<text x="71" y="1985" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;script&gt;</text>
-<text x="71" y="2005" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">    document.getElementById(&apos;content&apos;).innerHTML =</text>
-<text x="71" y="2024" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">      marked.parse(&apos;# Marked in the browser\n\nRendered by **marked**.&apos;);</text>
-<text x="71" y="2044" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;/script&gt;</text>
-<text x="71" y="2064" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/body&gt;</text>
-<text x="71" y="2084" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/html&gt;</text>
+<text x="155" y="1754" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Browser</text>
+<rect x="155" y="1777" width="890" height="327" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c7"><rect x="155" y="1776.6798" width="890" height="327.80002" rx="6"/></clipPath><g clip-path="url(#c7)">
+<text x="171" y="1807" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;!doctype html&gt;</text>
+<text x="171" y="1826" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;html&gt;</text>
+<text x="171" y="1846" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;head&gt;</text>
+<text x="171" y="1866" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;meta charset=&quot;utf-8&quot;/&gt;</text>
+<text x="171" y="1886" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;title&gt;Marked in the browser&lt;/title&gt;</text>
+<text x="171" y="1905" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/head&gt;</text>
+<text x="171" y="1925" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;body&gt;</text>
+<text x="171" y="1945" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;div id=&quot;content&quot;&gt;&lt;/div&gt;</text>
+<text x="171" y="1964" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;script src=&quot;https://cdn.jsdelivr.net/npm/marked/lib/marked.umd.js&quot;&gt;&lt;/script&gt;</text>
+<text x="171" y="1984" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;script&gt;</text>
+<text x="171" y="2004" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">    document.getElementById(&apos;content&apos;).innerHTML =</text>
+<text x="171" y="2024" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">      marked.parse(&apos;# Marked in the browser\n\nRendered by **marked**.&apos;);</text>
+<text x="171" y="2043" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  &lt;/script&gt;</text>
+<text x="171" y="2063" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/body&gt;</text>
+<text x="171" y="2083" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/html&gt;</text>
 </g>
-<text x="55" y="2138" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">or import esm module</text>
-<rect x="55" y="2160" width="890" height="131" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c8"><rect x="55" y="2160.4797" width="890" height="130.6" rx="6"/></clipPath><g clip-path="url(#c8)">
-<text x="71" y="2191" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;script type=&quot;module&quot;&gt;</text>
-<text x="71" y="2211" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  import { marked } from &quot;https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js&quot;;</text>
-<text x="71" y="2231" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  document.getElementById(&apos;content&apos;).innerHTML =</text>
-<text x="71" y="2250" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">    marked.parse(&apos;# Marked in the browser\n\nRendered by **marked**.&apos;);</text>
-<text x="71" y="2270" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/script&gt;</text>
+<text x="155" y="2137" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">or import esm module</text>
+<rect x="155" y="2160" width="890" height="131" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c8"><rect x="155" y="2160.4797" width="890" height="130.6" rx="6"/></clipPath><g clip-path="url(#c8)">
+<text x="171" y="2190" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;script type=&quot;module&quot;&gt;</text>
+<text x="171" y="2210" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  import { marked } from &quot;https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js&quot;;</text>
+<text x="171" y="2230" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">  document.getElementById(&apos;content&apos;).innerHTML =</text>
+<text x="171" y="2250" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">    marked.parse(&apos;# Marked in the browser\n\nRendered by **marked**.&apos;);</text>
+<text x="171" y="2269" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="13.6" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">&lt;/script&gt;</text>
 </g>
-<polygon points="55,2353 945,2353 945,2352 55,2352" fill="#d1d9e0" fill-opacity="0.7019608"/>
-<text x="55" y="2339" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">License</text>
-<text x="55" y="2387" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Copyright (c) 2018+, MarkedJS. (MIT License) Copyright (c) 2011-2018, Christopher Jeffrey. (MIT License)</text>
-<a href="https://marked.js.org"><image x="885" y="53" width="60" height="60" preserveAspectRatio="none" opacity="1" href="https://marked.js.org/img/logo-black.svg"/></a>
+<polygon points="155,2353 1045,2353 1045,2352 155,2352" fill="#d1d9e0" fill-opacity="0.7019608"/>
+<text x="155" y="2338" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="600" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">License</text>
+<text x="155" y="2386" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#1f2328" fill-opacity="1" xml:space="preserve">Copyright (c) 2018+, MarkedJS. (MIT License) Copyright (c) 2011-2018, Christopher Jeffrey. (MIT License)</text>
+<a href="https://marked.js.org"><image x="985" y="53" width="60" height="60" preserveAspectRatio="none" opacity="1" href="https://marked.js.org/img/logo-black.svg"/></a>
 </svg>

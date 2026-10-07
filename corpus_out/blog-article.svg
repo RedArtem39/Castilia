@@ -1,67 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="1439" viewBox="0 0 1000 1439">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="1440" viewBox="0 0 1200 1440">
 <rect width="100%" height="100%" fill="#ffffff"/>
-<text x="156" y="117" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="36" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">How the layout engine works</text>
-<text x="156" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Jane Doe</text>
-<text x="219.82031" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">·</text>
-<text x="228.37207" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">March 3, 2024</text>
-<text x="321.7578" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">·</text>
-<text x="330.30957" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">8 min read</text>
-<text x="156" y="207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet,</text>
-<a href="#"><text x="357.85156" y="207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve" text-decoration="underline">consectetur adipiscing elit</text></a>
-<text x="541.0625" y="207" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">, sed do eiusmod tempor incididunt ut</text>
-<text x="156" y="232" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</text>
-<text x="156" y="258" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">laboris nisi ut aliquip ex ea commodo consequat.</text>
-<text x="156" y="313" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">A section heading</text>
-<text x="156" y="362" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</text>
-<text x="156" y="387" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id</text>
-<text x="156" y="413" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">est laborum.</text>
-<rect x="156" y="444" width="688" height="42" rx="0" fill="#fafafa" fill-opacity="1"/>
-<polygon points="156,444 156,486 160,486 160,444" fill="#dddddd" fill-opacity="1"/>
-<text x="176" y="470" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#444444" fill-opacity="1" xml:space="preserve">Simplicity is prerequisite for reliability. — Edsger W. Dijkstra</text>
-<rect x="156" y="510" width="688" height="170" rx="6" fill="#f6f8fa" fill-opacity="1"/>
-<clipPath id="c1"><rect x="156" y="509.72" width="688" height="170.138" rx="6"/></clipPath><g clip-path="url(#c1)">
-<text x="172" y="541" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">fn layout(node: &amp;Node) -&gt; Size {</text>
-<text x="172" y="560" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    let mut h = 0.0;</text>
-<text x="172" y="580" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    for child in &amp;node.children {</text>
-<text x="172" y="600" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">        h += layout(child).height;</text>
-<text x="172" y="620" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    }</text>
-<text x="172" y="639" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    Size { width: 100.0, height: h }</text>
-<text x="172" y="659" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">}</text>
+<text x="256" y="117" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="36" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">How the layout engine works</text>
+<text x="256" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Jane Doe</text>
+<text x="319.8203" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">·</text>
+<text x="328.37207" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">March 3, 2024</text>
+<text x="421.7578" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">·</text>
+<text x="430.30957" y="150" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">8 min read</text>
+<text x="256" y="206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Lorem ipsum dolor sit amet,</text>
+<a href="#"><text x="457.85156" y="206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve" text-decoration="underline">consectetur adipiscing elit</text></a>
+<text x="641.0625" y="206" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">, sed do eiusmod tempor incididunt ut</text>
+<text x="256" y="232" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco</text>
+<text x="256" y="257" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">laboris nisi ut aliquip ex ea commodo consequat.</text>
+<text x="256" y="312" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="24" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">A section heading</text>
+<text x="256" y="361" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</text>
+<text x="256" y="387" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id</text>
+<text x="256" y="413" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">est laborum.</text>
+<rect x="256" y="444" width="688" height="42" rx="0" fill="#fafafa" fill-opacity="1"/>
+<polygon points="256,444 256,486 260,486 260,444" fill="#dddddd" fill-opacity="1"/>
+<text x="276" y="470" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#444444" fill-opacity="1" xml:space="preserve">Simplicity is prerequisite for reliability. — Edsger W. Dijkstra</text>
+<rect x="256" y="510" width="688" height="170" rx="6" fill="#f6f8fa" fill-opacity="1"/>
+<clipPath id="c1"><rect x="256" y="509.72003" width="688" height="170.23601" rx="6"/></clipPath><g clip-path="url(#c1)">
+<text x="272" y="540" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">fn layout(node: &amp;Node) -&gt; Size {</text>
+<text x="272" y="559" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    let mut h = 0.0;</text>
+<text x="272" y="579" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    for child in &amp;node.children {</text>
+<text x="272" y="599" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">        h += layout(child).height;</text>
+<text x="272" y="619" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    }</text>
+<text x="272" y="638" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">    Size { width: 100.0, height: h }</text>
+<text x="272" y="658" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="12.24" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">}</text>
 </g>
-<rect x="199" y="697" width="114" height="20" rx="4" fill="#f0f0f0" fill-opacity="1"/>
-<text x="156" y="712" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Inline</text>
-<text x="203.73532" y="712" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="14.4" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">code samples</text>
-<text x="317.255" y="712" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">look like this, and lists are common too:</text>
-<text x="196" y="757" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">First item with some text</text>
-<text x="185.95313" y="757" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
-<text x="196" y="783" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Second item</text>
-<text x="236" y="809" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Nested one</text>
-<text x="218.21094" y="809" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">1.</text>
-<text x="236" y="834" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Nested two</text>
-<text x="218.21094" y="834" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">2.</text>
-<text x="185.95313" y="783" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
-<text x="196" y="860" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Third item</text>
-<text x="185.95313" y="860" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
-<defs><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="156" y1="989.0579" x2="844" y2="989.0579"><stop offset="0" stop-color="#74ebd5" stop-opacity="1"/><stop offset="1" stop-color="#acb6e5" stop-opacity="1"/></linearGradient></defs>
-<rect x="156" y="899.0579" width="688" height="180" rx="6" fill="url(#g2)"/>
-<text x="400.58652" y="1102" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.6" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Figure 1. A colourful placeholder.</text>
-<rect x="156" y="1142" width="54" height="25" rx="12.5" fill="#eeeeff" fill-opacity="1"/>
-<a href="#"><text x="166" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">layout</text></a>
-<rect x="216" y="1142" width="39" height="25" rx="12.5" fill="#eeeeff" fill-opacity="1"/>
-<a href="#"><text x="226.15625" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">css</text></a>
-<rect x="261" y="1142" width="42" height="25" rx="12.5" fill="#eeeeff" fill-opacity="1"/>
-<a href="#"><text x="271.35626" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">rust</text></a>
-<rect x="156.5" y="1205.5" width="687" height="97" rx="7.5" fill="none" stroke="#e5e5e5" stroke-opacity="1" stroke-width="1"/>
-<defs><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="173" y1="1221.8579" x2="237" y2="1285.8579"><stop offset="0" stop-color="#f6d365" stop-opacity="1"/><stop offset="1" stop-color="#fda085" stop-opacity="1"/></linearGradient></defs>
-<rect x="173" y="1221.8579" width="64" height="64" rx="25000" fill="url(#g3)"/>
-<text x="253" y="1247" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Jane Doe</text>
-<text x="253" y="1272" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Writes about engines and compilers.</text>
-<polygon points="0,1351 1000,1351 1000,1352 0,1352" fill="#e5e5e5" fill-opacity="1"/>
-<text x="385.0461" y="1400" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14.4" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">© 2024 My Blog. All rights reserved.</text>
-<rect x="0" y="0" width="1000" height="51" rx="0" fill="#ffffff" fill-opacity="1"/>
-<polygon points="0,51 1000,51 1000,50 0,50" fill="#e5e5e5" fill-opacity="1"/>
-<a href="#"><text x="156" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">My Blog</text></a>
-<a href="#"><text x="697.27344" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Posts</text></a>
-<a href="#"><text x="753.28906" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">About</text></a>
-<a href="#"><text x="811.10156" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">RSS</text></a>
+<rect x="299" y="696" width="114" height="21" rx="4" fill="#f0f0f0" fill-opacity="1"/>
+<text x="256" y="712" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Inline</text>
+<text x="303.73532" y="712" letter-spacing="0" font-family="DejaVu Sans Mono, monospace" font-size="14.4" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">code samples</text>
+<text x="417.255" y="712" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">look like this, and lists are common too:</text>
+<text x="296" y="757" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">First item with some text</text>
+<text x="285.95313" y="757" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
+<text x="296" y="783" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Second item</text>
+<text x="336" y="808" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Nested one</text>
+<text x="318.21094" y="808" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">1.</text>
+<text x="336" y="834" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Nested two</text>
+<text x="318.21094" y="834" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">2.</text>
+<text x="285.95313" y="783" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
+<text x="296" y="860" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Third item</text>
+<text x="285.95313" y="860" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">•</text>
+<defs><linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="256" y1="989.15594" x2="944" y2="989.15594"><stop offset="0" stop-color="#74ebd5" stop-opacity="1"/><stop offset="1" stop-color="#acb6e5" stop-opacity="1"/></linearGradient></defs>
+<rect x="256" y="899.15594" width="688" height="180" rx="6" fill="url(#g2)"/>
+<text x="500.58652" y="1102" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="13.6" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Figure 1. A colourful placeholder.</text>
+<rect x="256" y="1143" width="54" height="24" rx="12" fill="#eeeeff" fill-opacity="1"/>
+<a href="#"><text x="266" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">layout</text></a>
+<rect x="316" y="1143" width="39" height="24" rx="12" fill="#eeeeff" fill-opacity="1"/>
+<a href="#"><text x="326.15625" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">css</text></a>
+<rect x="361" y="1143" width="42" height="24" rx="12" fill="#eeeeff" fill-opacity="1"/>
+<a href="#"><text x="371.35626" y="1159" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="12.8" font-weight="400" font-style="normal" fill="#0a58ca" fill-opacity="1" xml:space="preserve">rust</text></a>
+<rect x="256.5" y="1205.5" width="687" height="97" rx="7.5" fill="none" stroke="#e5e5e5" stroke-opacity="1" stroke-width="1"/>
+<defs><linearGradient id="g3" gradientUnits="userSpaceOnUse" x1="273" y1="1222.3959" x2="337" y2="1286.3959"><stop offset="0" stop-color="#f6d365" stop-opacity="1"/><stop offset="1" stop-color="#fda085" stop-opacity="1"/></linearGradient></defs>
+<rect x="273" y="1222.3959" width="64" height="64" rx="25000" fill="url(#g3)"/>
+<text x="353" y="1247" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Jane Doe</text>
+<text x="353" y="1272" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">Writes about engines and compilers.</text>
+<polygon points="0,1351 1200,1351 1200,1352 0,1352" fill="#e5e5e5" fill-opacity="1"/>
+<text x="485.0461" y="1400" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="14.4" font-weight="400" font-style="normal" fill="#666666" fill-opacity="1" xml:space="preserve">© 2024 My Blog. All rights reserved.</text>
+<rect x="0" y="0" width="1200" height="51" rx="0" fill="#ffffff" fill-opacity="1"/>
+<polygon points="0,51 1200,51 1200,50 0,50" fill="#e5e5e5" fill-opacity="1"/>
+<a href="#"><text x="256" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="700" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">My Blog</text></a>
+<a href="#"><text x="797.27344" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">Posts</text></a>
+<a href="#"><text x="853.28906" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">About</text></a>
+<a href="#"><text x="911.10156" y="30" letter-spacing="0" font-family="Liberation Sans, sans-serif" font-size="16" font-weight="400" font-style="normal" fill="#222222" fill-opacity="1" xml:space="preserve">RSS</text></a>
 </svg>
