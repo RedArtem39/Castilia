@@ -181,6 +181,8 @@ pub enum ArgElem {
 
 pub enum Expr {
     Num(f64),
+    /// BigInt literal digits (radix prefix allowed).
+    BigInt(JsStr),
     Str(JsStr),
     Bool(bool),
     Null,

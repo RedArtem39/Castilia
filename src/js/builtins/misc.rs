@@ -42,6 +42,7 @@ pub fn inspect(it: &mut Interp, v: &Value, depth: usize, top: bool, seen: &mut V
             }
         }
         Value::Sym(s) => format!("Symbol({})", s.0.desc.as_deref().unwrap_or("")),
+        Value::BigInt(b) => format!("{}n", b.to_string_radix(10)),
         Value::Obj(o) => {
             if seen.contains(&o.id()) {
                 return "[Circular *1]".into();

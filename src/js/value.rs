@@ -24,6 +24,7 @@ pub enum Value {
     Str(JsStr),
     Obj(Obj),
     Sym(Sym),
+    BigInt(Rc<super::bigint::BigInt>),
 }
 
 #[derive(Clone)]
@@ -260,6 +261,7 @@ pub enum MapKey {
     Str(JsStr),
     Obj(usize),
     Sym(u32),
+    Big(String),
 }
 
 pub fn map_key(v: &Value) -> MapKey {
@@ -274,6 +276,7 @@ pub fn map_key(v: &Value) -> MapKey {
         Value::Str(s) => MapKey::Str(s.clone()),
         Value::Obj(o) => MapKey::Obj(o.id()),
         Value::Sym(s) => MapKey::Sym(s.0.id),
+        Value::BigInt(b) => MapKey::Big(b.to_string_radix(16)),
     }
 }
 
@@ -373,6 +376,8 @@ pub enum Class {
     Promise(Box<PromiseData>),
     Generator(Box<GenData>),
     Proxy { target: Obj, handler: Obj },
+    /// `Object(1n)` wrapper.
+    BigInt(Rc<super::bigint::BigInt>),
     /// A DOM node wrapper.
     Node(usize),
     Window,
@@ -422,6 +427,7 @@ impl Value {
             Value::Bool(b) => *b,
             Value::Num(n) => *n != 0.0 && !n.is_nan(),
             Value::Str(s) => !s.is_empty(),
+            Value::BigInt(b) => !b.is_zero(),
             _ => true,
         }
     }
@@ -433,6 +439,7 @@ impl Value {
             Value::Num(_) => "number",
             Value::Str(_) => "string",
             Value::Sym(_) => "symbol",
+            Value::BigInt(_) => "bigint",
             Value::Obj(o) => {
                 if o.is_callable() {
                     "function"
@@ -477,6 +484,7 @@ pub fn strict_equals(a: &Value, b: &Value) -> bool {
         (Value::Str(x), Value::Str(y)) => x == y,
         (Value::Obj(x), Value::Obj(y)) => x.ptr_eq(y),
         (Value::Sym(x), Value::Sym(y)) => x.0.id == y.0.id,
+        (Value::BigInt(x), Value::BigInt(y)) => x == y,
         _ => false,
     }
 }

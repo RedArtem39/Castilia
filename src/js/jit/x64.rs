@@ -239,7 +239,7 @@ const MIN_INLINE_SHARE: f64 = 0.4;
 fn inlinable(op: &Op) -> bool {
     matches!(
         op,
-        Op::Int(_) | Op::Undef | Op::Null | Op::True | Op::False | Op::Const(_) | Op::GetReg(_) | Op::SetReg(_) | Op::PutReg(_) | Op::IncReg(_) | Op::DecReg(_) | Op::Pop | Op::Dup | Op::Pos | Op::Inc | Op::Dec | Op::Neg | Op::Not | Op::Jump(_) | Op::JumpIfFalse(_) | Op::JumpIfTrue(_) | Op::Nop
+        Op::Int(_) | Op::Undef | Op::Null | Op::True | Op::False | Op::Const(_) | Op::GetReg(_) | Op::SetReg(_) | Op::PutReg(_) | Op::IncReg(_) | Op::DecReg(_) | Op::Pop | Op::Dup | Op::Pos | Op::ToNumeric | Op::Inc | Op::Dec | Op::Neg | Op::Not | Op::Jump(_) | Op::JumpIfFalse(_) | Op::JumpIfTrue(_) | Op::Nop
     ) || matches!(op, Op::Bin(b) if matches!(b, BinOp::Add | BinOp::Sub | BinOp::Mul | BinOp::Div | BinOp::Lt | BinOp::Le | BinOp::Gt | BinOp::Ge | BinOp::StrictEq | BinOp::StrictNe | BinOp::Eq | BinOp::Ne))
 }
 
@@ -360,13 +360,13 @@ pub fn compile(code: &Code) -> Option<(Vec<u8>, Vec<u32>)> {
                 a.mov_store(Mem { disp: PAYLOAD, ..push_slot() }, RCX);
                 a.inc_r13();
             }
-            Op::Pos | Op::Inc | Op::Dec | Op::Neg => {
+            Op::Pos | Op::ToNumeric | Op::Inc | Op::Dec | Op::Neg => {
                 a.sp3();
                 a.cmp_byte_imm(top(0), TAG_NUM);
                 a.jcc(CC_NE, Target::Label(slow));
                 let p = Mem { disp: -VSIZE + PAYLOAD, ..push_slot() };
                 match op {
-                    Op::Pos => {}
+                    Op::Pos | Op::ToNumeric => {}
                     Op::Neg => {
                         a.mov_load(RCX, p);
                         a.mov_imm64(RDX, 1u64 << 63);

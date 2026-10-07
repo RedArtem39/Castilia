@@ -477,6 +477,11 @@ impl Interp {
                 Op::SetReg(r) => f.regs[r as usize] = Self::pop(f),
                 Op::IncReg(r) | Op::DecReg(r) => {
                     let d = if matches!(op, Op::IncReg(_)) { 1.0 } else { -1.0 };
+                    if let Value::BigInt(b) = &f.regs[r as usize] {
+                        let one = crate::js::bigint::BigInt::from_i64(d as i64);
+                        f.regs[r as usize] = Value::BigInt(Rc::new(b.add(&one)));
+                        return Ok(None);
+                    }
                     let slot = &mut f.regs[r as usize];
                     let n = match slot {
                         Value::Num(n) => *n,
@@ -799,11 +804,26 @@ impl Interp {
                 }
                 Op::Neg => {
                     let v = Self::pop(f);
-                    let n = match v {
-                        Value::Num(n) => n,
-                        other => self.to_number(&other)?,
+                    let r = match v {
+                        Value::Num(n) => Value::Num(-n),
+                        Value::BigInt(b) => Value::BigInt(Rc::new(b.neg())),
+                        other => match self.to_primitive(&other, "number")? {
+                            Value::BigInt(b) => Value::BigInt(Rc::new(b.neg())),
+                            p => Value::Num(-self.to_number(&p)?),
+                        },
                     };
-                    f.stack.push(Value::Num(-n));
+                    f.stack.push(r);
+                }
+                Op::ToNumeric => {
+                    let v = Self::pop(f);
+                    let r = match v {
+                        Value::Num(_) | Value::BigInt(_) => v,
+                        other => match self.to_primitive(&other, "number")? {
+                            b @ Value::BigInt(_) => b,
+                            p => Value::Num(self.to_number(&p)?),
+                        },
+                    };
+                    f.stack.push(r);
                 }
                 Op::Pos => {
                     let v = Self::pop(f);
@@ -819,8 +839,12 @@ impl Interp {
                 }
                 Op::BitNot => {
                     let v = Self::pop(f);
-                    let n = self.to_number(&v)?;
-                    f.stack.push(Value::Num(!to_int32(n) as f64));
+                    if let Value::BigInt(b) = &v {
+                        f.stack.push(Value::BigInt(Rc::new(b.not())));
+                    } else {
+                        let n = self.to_number(&v)?;
+                        f.stack.push(Value::Num(!to_int32(n) as f64));
+                    }
                 }
                 Op::TypeOf => {
                     let v = Self::pop(f);
@@ -829,6 +853,11 @@ impl Interp {
                 Op::Inc | Op::Dec => {
                     let d = if op == Op::Inc { 1.0 } else { -1.0 };
                     let v = Self::pop(f);
+                    if let Value::BigInt(b) = &v {
+                        let one = crate::js::bigint::BigInt::from_i64(d as i64);
+                        f.stack.push(Value::BigInt(Rc::new(b.add(&one))));
+                        return Ok(None);
+                    }
                     let n = match v {
                         Value::Num(n) => n,
                         other => self.to_number(&other)?,

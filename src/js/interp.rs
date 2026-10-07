@@ -1373,6 +1373,10 @@ impl Interp {
     pub fn eval(&mut self, e: &Expr, env: &Env) -> Res {
         match e {
             Expr::Num(n) => Ok(Value::Num(*n)),
+            Expr::BigInt(d) => match super::bigint::BigInt::parse(d) {
+                Some(b) => Ok(Value::BigInt(Rc::new(b))),
+                None => Err(self.error_ctl("SyntaxError", "Invalid BigInt literal")),
+            },
             Expr::Str(s) => Ok(Value::Str(s.clone())),
             Expr::Bool(b) => Ok(Value::Bool(*b)),
             Expr::Null => Ok(Value::Null),
@@ -1449,6 +1453,12 @@ impl Interp {
                     Expr::Ident(_) | Expr::Dot { .. } | Expr::Member { .. } | Expr::Paren(_) | Expr::PrivateMember { .. } => self.eval(target, env)?,
                     _ => return Err(self.error_ctl("SyntaxError", "Invalid left-hand side expression in postfix operation")),
                 };
+                if let Value::BigInt(b) = &old {
+                    let one = super::bigint::BigInt::from_i64(if *inc { 1 } else { -1 });
+                    let new = Value::BigInt(Rc::new(b.add(&one)));
+                    self.assign_to_expr(target, new.clone(), env)?;
+                    return Ok(if *prefix { new } else { old });
+                }
                 let n = self.to_number(&old)?;
                 let new = if *inc { n + 1.0 } else { n - 1.0 };
                 self.assign_to_expr(target, Value::Num(new), env)?;
@@ -1809,6 +1819,9 @@ impl Interp {
             UnOp::Not => Ok(Value::Bool(!self.eval(x, env)?.truthy())),
             UnOp::Neg => {
                 let v = self.eval(x, env)?;
+                if let Value::BigInt(b) = &v {
+                    return Ok(Value::BigInt(Rc::new(b.neg())));
+                }
                 Ok(Value::Num(-self.to_number(&v)?))
             }
             UnOp::Plus => {
@@ -1817,6 +1830,9 @@ impl Interp {
             }
             UnOp::BitNot => {
                 let v = self.eval(x, env)?;
+                if let Value::BigInt(b) = &v {
+                    return Ok(Value::BigInt(Rc::new(b.not())));
+                }
                 let n = self.to_number(&v)?;
                 Ok(Value::Num(!to_int32(n) as f64))
             }

@@ -17,6 +17,8 @@ pub enum Tok {
     Private(JsStr),
     Punct(&'static str),
     Regex(JsStr, JsStr),
+    /// BigInt literal digits (with radix prefix), without the `n`.
+    BigInt(JsStr),
     Eof,
 }
 
@@ -152,7 +154,7 @@ impl Lexer {
             }
         };
         self.prev_regex_ok = match &tok {
-            Tok::Num(_) | Tok::Str(_) | Tok::Template(..) | Tok::Regex(..) | Tok::Private(_) => false,
+            Tok::Num(_) | Tok::BigInt(_) | Tok::Str(_) | Tok::Template(..) | Tok::Regex(..) | Tok::Private(_) => false,
             Tok::Ident(s) => !self.prev_dot && REGEX_KEYWORDS.contains(&&**s),
             // after `)`, `]`, `}` and postfix `++`/`--` a slash divides
             Tok::Punct(p) => !matches!(*p, ")" | "]" | "}" | "++" | "--"),
@@ -245,7 +247,9 @@ impl Lexer {
                     i += 1;
                 }
                 if i < b.len() && b[i] == b'n' {
-                    i += 1;
+                    let text: String = r[..i].chars().filter(|c| *c != '_').collect();
+                    self.pos += i + 1;
+                    return Ok(Tok::BigInt(Rc::from(text)));
                 }
                 self.pos += i;
                 return Ok(Tok::Num(v));
@@ -286,7 +290,8 @@ impl Lexer {
             }
         }
         if i < b.len() && b[i] == b'n' {
-            i += 1;
+            self.pos += i + 1;
+            return Ok(Tok::BigInt(Rc::from(text)));
         }
         self.pos += i;
         let t = if text.starts_with('.') { format!("0{text}") } else { text };

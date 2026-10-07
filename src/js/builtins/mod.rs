@@ -175,6 +175,7 @@ pub fn new_interp() -> Interp {
     array::setup(&mut it);
     string::setup(&mut it);
     number::setup(&mut it);
+    number::setup_bigint(&mut it);
     json::setup(&mut it);
     date::setup(&mut it);
     collections::setup(&mut it);

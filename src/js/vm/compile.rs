@@ -344,7 +344,7 @@ impl Analysis {
 
     fn expr(&mut self, e: &Expr, nested: bool) {
         match e {
-            Expr::Num(_) | Expr::Str(_) | Expr::Bool(_) | Expr::Null | Expr::This | Expr::Regex(..) | Expr::NewTarget | Expr::SuperDot(_) | Expr::ImportMeta => {}
+            Expr::Num(_) | Expr::BigInt(_) | Expr::Str(_) | Expr::Bool(_) | Expr::Null | Expr::This | Expr::Regex(..) | Expr::NewTarget | Expr::SuperDot(_) | Expr::ImportMeta => {}
             Expr::Ident(n) => self.name(*n, nested),
             Expr::Template(_, xs) => {
                 for x in xs {
@@ -1550,6 +1550,10 @@ impl Compiler {
                 }
             }
             Expr::Str(s) => self.push_str(s),
+            Expr::BigInt(d) => match crate::js::bigint::BigInt::parse(d) {
+                Some(b) => self.push_const(Value::BigInt(Rc::new(b))),
+                None => self.throw_error(2, "Invalid BigInt literal"),
+            },
             Expr::Bool(b) => {
                 self.emit(if *b { Op::True } else { Op::False });
             }
@@ -1987,7 +1991,7 @@ impl Compiler {
             Expr::Paren(inner) => return self.update(inc, prefix, inner),
             Expr::Ident(n) => {
                 self.load_name(*n);
-                self.emit(Op::Pos);
+                self.emit(Op::ToNumeric);
                 if !prefix {
                     self.emit(Op::Dup);
                 }
@@ -2002,7 +2006,7 @@ impl Compiler {
                 self.expr(obj)?;
                 self.emit(Op::Dup);
                 self.emit(Op::GetProp(k));
-                self.emit(Op::Pos);
+                self.emit(Op::ToNumeric);
                 if !prefix {
                     self.emit(Op::Dup);
                     self.emit(Op::Rot3);
@@ -2019,7 +2023,7 @@ impl Compiler {
                 self.emit(Op::ToKey);
                 self.emit(Op::Dup2);
                 self.emit(Op::GetElem);
-                self.emit(Op::Pos);
+                self.emit(Op::ToNumeric);
                 if !prefix {
                     self.emit(Op::Dup);
                     self.emit(Op::Rot4);

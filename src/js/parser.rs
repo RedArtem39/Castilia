@@ -1645,6 +1645,10 @@ impl<'i> Parser<'i> {
                 self.advance()?;
                 Ok(Expr::Num(n))
             }
+            Tok::BigInt(d) => {
+                self.advance()?;
+                Ok(Expr::BigInt(d))
+            }
             Tok::Str(s) => {
                 self.advance()?;
                 Ok(Expr::Str(s))
@@ -1862,6 +1866,7 @@ impl Stmt {
 fn describe(t: &Tok) -> String {
     match t {
         Tok::Num(n) => format!("number {n}"),
+        Tok::BigInt(d) => format!("bigint {d}n"),
         Tok::Str(s) => format!("string '{}'", s.chars().take(20).collect::<String>()),
         Tok::Template(..) => "template".to_string(),
         Tok::Ident(s) => format!("'{s}'"),

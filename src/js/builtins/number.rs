@@ -602,3 +602,76 @@ fn uri_decode(it: &mut Interp, c: &Call, reserved: &str) -> Res {
         Err(_) => Err(it.error_ctl("URIError", "URI malformed")),
     }
 }
+
+// ---------------------------------------------------------------------------
+// BigInt
+// ---------------------------------------------------------------------------
+
+use crate::js::bigint::BigInt;
+
+fn to_bigint(it: &mut Interp, v: &Value) -> Res<BigInt> {
+    let p = it.to_primitive(v, "number")?;
+    match &p {
+        Value::BigInt(b) => Ok((**b).clone()),
+        Value::Bool(b) => Ok(BigInt::from_i64(*b as i64)),
+        Value::Str(s) => BigInt::parse(s).ok_or_else(|| it.error_ctl("SyntaxError", &alloc::format!("Cannot convert {s} to a BigInt"))),
+        Value::Num(n) => BigInt::from_f64(*n).ok_or_else(|| it.error_ctl("RangeError", &alloc::format!("The number {} cannot be converted to a BigInt because it is not an integer", num_to_string(*n)))),
+        other => {
+            let d = it.describe(other);
+            Err(it.error_ctl("TypeError", &alloc::format!("Cannot convert {d} to a BigInt")))
+        }
+    }
+}
+
+fn this_bigint(it: &mut Interp, c: &Call) -> Res<BigInt> {
+    match &c.this {
+        Value::BigInt(b) => Ok((**b).clone()),
+        Value::Obj(o) => match &o.borrow().class {
+            Class::BigInt(b) => Ok((**b).clone()),
+            _ => Err(it.error_ctl("TypeError", "BigInt.prototype method called on incompatible receiver")),
+        },
+        _ => Err(it.error_ctl("TypeError", "BigInt.prototype method called on incompatible receiver")),
+    }
+}
+
+pub fn setup_bigint(it: &mut Interp) {
+    let op = it.protos().object.clone();
+    let proto = it.alloc(Object::new(Some(op), Class::Plain));
+    let ctor = it.make_ctor(
+        "BigInt",
+        1,
+        |it, c| {
+            if c.new_target.is_some() {
+                return it.type_error("BigInt is not a constructor");
+            }
+            Ok(Value::BigInt(Rc::new(to_bigint(it, &c.arg(0))?)))
+        },
+        &proto,
+    );
+    it.def_method(&ctor, "asUintN", 2, |it, c| {
+        let bits = it.to_number(&c.arg(0))?.clamp(0.0, 1e6) as usize;
+        let b = to_bigint(it, &c.arg(1))?;
+        Ok(Value::BigInt(Rc::new(b.as_uint_n(bits))))
+    });
+    it.def_method(&ctor, "asIntN", 2, |it, c| {
+        let bits = it.to_number(&c.arg(0))?.clamp(0.0, 1e6) as usize;
+        let b = to_bigint(it, &c.arg(1))?;
+        Ok(Value::BigInt(Rc::new(b.as_int_n(bits))))
+    });
+    it.def_method(&proto, "toString", 0, |it, c| {
+        let b = this_bigint(it, c)?;
+        let radix = match c.arg(0) {
+            Value::Undefined => 10,
+            v => it.to_number(&v)? as u32,
+        };
+        if !(2..=36).contains(&radix) {
+            return Err(it.error_ctl("RangeError", "toString() radix must be between 2 and 36"));
+        }
+        Ok(Value::string(b.to_string_radix(radix)))
+    });
+    it.def_method(&proto, "toLocaleString", 0, |it, c| Ok(Value::string(this_bigint(it, c)?.to_string_radix(10))));
+    it.def_method(&proto, "valueOf", 0, |it, c| Ok(Value::BigInt(Rc::new(this_bigint(it, c)?))));
+    let tag = it.wk().to_string_tag.clone();
+    it.define_data(&proto, Key::Y(tag.0.id), Value::str("BigInt"), CONFIGURABLE);
+    it.protos.as_mut().expect("realm").extra.insert("BigInt", proto);
+}

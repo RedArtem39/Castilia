@@ -451,3 +451,14 @@ fn native_debug() {
     }
     panic!("{out}");
 }
+
+#[test]
+fn bigint() {
+    check(
+        "const a = 2n ** 64n, b = BigInt('0xff'), c = -7n; let d = 5n; d++;
+         console.log(typeof a, String(a), b.toString(16), c / 2n, c % 2n, a > 1e19, 10n == 10, 10n === 10, d, -c, ~1n, 1n << 70n, BigInt.asIntN(8, 255n), BigInt.asUintN(64, -1n), [3n, 1n, 2n].sort().join())",
+        &["bigint 18446744073709551616 ff -3n -1n true true false 6n 7n -2n 1180591620717411303424n -1n 18446744073709551615n 1,2,3"],
+    );
+    check("try { 1n + 1 } catch (e) { console.log(e instanceof TypeError) } try { JSON.stringify({a: 1n}) } catch (e) { console.log(e.message) }", &["true", "Do not know how to serialize a BigInt"]);
+    check_vm("function f(){ let x = 0n; for (let i = 0n; i < 10n; i++) x += i * i; return x } console.log(f(), typeof f())", &["285n bigint"]);
+}

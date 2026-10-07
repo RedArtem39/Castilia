@@ -365,6 +365,7 @@ fn ser(it: &mut Interp, st: &mut S, holder: &Value, key: Key, out: &mut String, 
         Value::Num(n) => out.push_str(&if n.is_finite() { num_to_string(*n) } else { "null".to_string() }),
         Value::Str(s) => quote(s, out),
         Value::Undefined | Value::Sym(_) => return Ok(false),
+        Value::BigInt(_) => return Err(it.error_ctl("TypeError", "Do not know how to serialize a BigInt")),
         Value::Obj(o) => {
             if o.is_callable() {
                 return Ok(false);

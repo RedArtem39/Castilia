@@ -471,6 +471,7 @@ pub fn class_tag(it: &mut Interp, v: &Value) -> Res<String> {
                 Class::Date(_) => "Date",
                 Class::RegExp(_) => "RegExp",
                 Class::Arguments => "Arguments",
+                Class::BigInt(_) => "BigInt",
                 _ => "Object",
             }
             .to_string()
@@ -479,6 +480,7 @@ pub fn class_tag(it: &mut Interp, v: &Value) -> Res<String> {
         Value::Num(_) => "Number".to_string(),
         Value::Str(_) => "String".to_string(),
         Value::Sym(_) => "Symbol".to_string(),
+        Value::BigInt(_) => "BigInt".to_string(),
     })
 }
 

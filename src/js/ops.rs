@@ -94,6 +94,7 @@ impl Interp {
             Value::Num(n) => num_to_string(*n),
             Value::Str(s) => format!("\"{s}\""),
             Value::Sym(_) => "Symbol()".to_string(),
+            Value::BigInt(b) => alloc::format!("{}n", b.to_string_radix(10)),
             Value::Obj(o) => {
                 if o.is_callable() {
                     "function".to_string()
@@ -427,6 +428,10 @@ impl Interp {
                 let p = self.protos().symbol.clone();
                 self.get_obj(&p, key, v)
             }
+            Value::BigInt(_) => match self.protos().extra.get("BigInt").cloned() {
+                Some(p) => self.get_obj(&p, key, v),
+                None => Ok(Value::Undefined),
+            },
             Value::Undefined | Value::Null => {
                 let k = match key {
                     Key::S(s) => s.to_string(),
@@ -702,6 +707,7 @@ impl Interp {
             Value::Null => Rc::from("null"),
             Value::Bool(b) => Rc::from(if *b { "true" } else { "false" }),
             Value::Num(n) => Rc::from(num_to_string(*n)),
+            Value::BigInt(b) => Rc::from(b.to_string_radix(10)),
             Value::Sym(_) => return Err(self.error_ctl("TypeError", "Cannot convert a Symbol value to a string")),
             Value::Obj(_) => {
                 let p = self.to_primitive(v, "string")?;
@@ -725,6 +731,7 @@ impl Interp {
             Value::Bool(b) => *b as u8 as f64,
             Value::Str(s) => str_to_num(s),
             Value::Sym(_) => return Err(self.error_ctl("TypeError", "Cannot convert a Symbol value to a number")),
+            Value::BigInt(_) => return Err(self.error_ctl("TypeError", "Cannot convert a BigInt value to a number")),
             Value::Obj(_) => {
                 let p = self.to_primitive(v, "number")?;
                 return self.to_number(&p);
@@ -740,6 +747,10 @@ impl Interp {
             Value::Num(n) => Ok(self.alloc(Object::new(Some(self.protos().number.clone()), Class::Num(*n)))),
             Value::Str(s) => Ok(self.alloc(Object::new(Some(self.protos().string.clone()), Class::Str(s.clone())))),
             Value::Sym(s) => Ok(self.alloc(Object::new(Some(self.protos().symbol.clone()), Class::Symbol(s.clone())))),
+            Value::BigInt(b) => {
+                let proto = self.protos().extra.get("BigInt").cloned();
+                Ok(self.alloc(Object::new(proto, Class::BigInt(b.clone()))))
+            }
         }
     }
 
@@ -753,6 +764,8 @@ impl Interp {
 
     pub fn loose_equals(&mut self, a: &Value, b: &Value) -> Res<bool> {
         Ok(match (a, b) {
+            (Value::BigInt(x), Value::Num(n)) | (Value::Num(n), Value::BigInt(x)) => x.cmp_f64(*n) == Some(core::cmp::Ordering::Equal),
+            (Value::BigInt(x), Value::Str(s)) | (Value::Str(s), Value::BigInt(x)) => super::bigint::BigInt::parse(s).is_some_and(|y| **x == y),
             (Value::Undefined | Value::Null, Value::Undefined | Value::Null) => true,
             (Value::Undefined | Value::Null, _) | (_, Value::Undefined | Value::Null) => false,
             (Value::Num(_), Value::Str(s)) => strict_equals(a, &Value::Num(str_to_num(s))),
@@ -772,8 +785,87 @@ impl Interp {
         })
     }
 
+    /// Operators with a BigInt operand (after primitive conversion).
+    fn bigint_op(&mut self, op: BinOp, l: &Value, r: &Value) -> Option<Res> {
+        use super::bigint::BigInt;
+        use BinOp::*;
+        let (lb, rb) = (matches!(l, Value::BigInt(_)), matches!(r, Value::BigInt(_)));
+        if !lb && !rb {
+            return None;
+        }
+        let big = |b: BigInt| Value::BigInt(Rc::new(b));
+        if matches!(op, Lt | Gt | Le | Ge) {
+            let ord = match (l, r) {
+                (Value::BigInt(a), Value::BigInt(b)) => Some(a.cmp(b)),
+                (Value::BigInt(a), other) => match other {
+                    Value::Str(s) => BigInt::parse(s).map(|b| a.cmp(&b)),
+                    v => self.to_number(v).ok().and_then(|n| a.cmp_f64(n)),
+                },
+                (other, Value::BigInt(b)) => match other {
+                    Value::Str(s) => BigInt::parse(s).map(|a| a.cmp(b)),
+                    v => self.to_number(v).ok().and_then(|n| b.cmp_f64(n).map(|o| o.reverse())),
+                },
+                _ => None,
+            };
+            return Some(Ok(Value::Bool(match ord {
+                None => false,
+                Some(o) => match op {
+                    Lt => o.is_lt(),
+                    Gt => o.is_gt(),
+                    Le => o.is_le(),
+                    _ => o.is_ge(),
+                },
+            })));
+        }
+        if matches!(op, Eq | Ne | StrictEq | StrictNe | In | InstanceOf) {
+            return None;
+        }
+        if op == Add && (matches!(l, Value::Str(_)) || matches!(r, Value::Str(_))) {
+            return None;
+        }
+        let (Value::BigInt(a), Value::BigInt(b)) = (l, r) else {
+            return Some(Err(self.error_ctl("TypeError", "Cannot mix BigInt and other types, use explicit conversions")));
+        };
+        let shift = |b: &BigInt| -> i64 { b.to_f64().clamp(-1e9, 1e9) as i64 };
+        Some(match op {
+            Add => Ok(big(a.add(b))),
+            Sub => Ok(big(a.sub(b))),
+            Mul => Ok(big(a.mul(b))),
+            Div | Mod => match a.divrem(b) {
+                Some((q, rem)) => Ok(big(if op == Div { q } else { rem })),
+                None => Err(self.error_ctl("RangeError", "Division by zero")),
+            },
+            Exp => match a.pow(b) {
+                Some(p) => Ok(big(p)),
+                None => Err(self.error_ctl("RangeError", "Maximum BigInt size exceeded")),
+            },
+            BitAnd => Ok(big(a.bitop(b, b'&'))),
+            BitOr => Ok(big(a.bitop(b, b'|'))),
+            BitXor => Ok(big(a.bitop(b, b'^'))),
+            Shl => Ok(big(a.shl(shift(b)))),
+            Shr => Ok(big(a.shr(shift(b)))),
+            _ => Err(self.error_ctl("TypeError", "BigInts have no unsigned right shift, use >> instead")),
+        })
+    }
+
     pub fn binary_op(&mut self, op: BinOp, l: &Value, r: &Value) -> Res {
         use BinOp::*;
+        if matches!(l, Value::BigInt(_)) || matches!(r, Value::BigInt(_)) {
+            if let Some(res) = self.bigint_op(op, l, r) {
+                return res;
+            }
+        } else if matches!(l, Value::Obj(_)) || matches!(r, Value::Obj(_)) {
+            // `Object(1n) + 1n` and friends: decide after primitive conversion
+            if !matches!(op, Eq | Ne | StrictEq | StrictNe | In | InstanceOf) {
+                let lp = self.to_primitive(l, if op == Add { "default" } else { "number" })?;
+                let rp = self.to_primitive(r, if op == Add { "default" } else { "number" })?;
+                if matches!(lp, Value::BigInt(_)) || matches!(rp, Value::BigInt(_)) {
+                    if let Some(res) = self.bigint_op(op, &lp, &rp) {
+                        return res;
+                    }
+                }
+            }
+        }
         // number fast path
         if let (Value::Num(a), Value::Num(b)) = (l, r) {
             let (a, b) = (*a, *b);

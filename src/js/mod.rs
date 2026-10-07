@@ -1,5 +1,6 @@
 //! ECMAScript engine: lexer, parser, tree-walking interpreter and the DOM bindings.
 pub mod ast;
+pub mod bigint;
 pub mod builtins;
 pub mod dom;
 pub mod dom_extra;

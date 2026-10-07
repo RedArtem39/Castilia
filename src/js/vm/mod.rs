@@ -118,6 +118,8 @@ pub enum Op {
     Bin(BinOp),
     Neg,
     Pos,
+    /// ToNumeric: numbers and BigInts pass, everything else becomes a number (`x++`).
+    ToNumeric,
     Not,
     BitNot,
     TypeOf,
