@@ -120,6 +120,15 @@ impl Page {
             .filter_map(|(id, node)| (node.tag() == Some("script")).then_some(id))
             .collect();
         page.scripts.skipped += scripts.len().saturating_sub(MAX_SCRIPTS);
+        // import maps apply to every module regardless of position
+        for &id in &scripts {
+            let n = &page.document.nodes[id];
+            if n.attribute("type").is_some_and(|t| t.trim().eq_ignore_ascii_case("importmap")) {
+                let json = page.document.text_content(id).unwrap_or_default();
+                page.runtime.add_import_map(&json, &mut page.document);
+            }
+        }
+        let mut modules: Vec<(usize, String, String)> = Vec::new();
         for id in scripts.into_iter().take(MAX_SCRIPTS) {
             if !page.document.is_connected(id) {
                 continue;
@@ -151,9 +160,25 @@ impl Page {
             if source.trim().is_empty() {
                 continue;
             }
+            if kind == "module" {
+                let base = page.runtime.url().to_string();
+                let url = match page.document.nodes[id].attribute("src") {
+                    Some(src) => crate::js::url::resolve(&base, src).unwrap_or_else(|| src.to_string()),
+                    None => format!("{base}#inline-module-{id}"),
+                };
+                modules.push((id, url, source));
+                continue;
+            }
             match page.runtime.run_script(&source, Some(id), &mut page.document) {
                 Ok(()) => page.scripts.executed += 1,
                 Err(error) => page.scripts.errors.push(format!("script node {id}: {error}")),
+            }
+        }
+        // module scripts are deferred: they run after parsing, in document order
+        for (id, url, source) in modules {
+            match page.runtime.run_module(&url, Some(&source), &mut page.document) {
+                Ok(()) => page.scripts.executed += 1,
+                Err(error) => page.scripts.errors.push(format!("module script node {id} ({url}): {error}")),
             }
         }
         page.runtime.dom_content_loaded(&mut page.document);

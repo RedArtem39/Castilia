@@ -8,6 +8,7 @@ pub mod events;
 pub mod window;
 pub mod interp;
 pub mod lexer;
+pub mod modules;
 pub mod ops;
 pub mod parser;
 pub mod regex;
@@ -89,6 +90,42 @@ impl Runtime {
             it.run_microtasks();
             r
         })
+    }
+
+    /// Run an ES module entry point (dependencies are fetched through the host or preloaded).
+    pub fn run_module(&mut self, url: &str, source: Option<&str>, document: &mut Document) -> Result<(), String> {
+        self.with(document, |it| {
+            it.ticks = 0;
+            let r = match source {
+                Some(src) => {
+                    it.module_sources.insert(String::from(url), String::from(src));
+                    it.load_module(url).map(|_| ())
+                }
+                None => it.load_module(url).map(|_| ()),
+            };
+            it.run_microtasks();
+            match r {
+                Ok(()) => Ok(()),
+                Err(value::Ctl::Throw(e)) => Err(it.error_text(&e)),
+                Err(_) => Ok(()),
+            }
+        })
+    }
+
+    pub fn add_import_map(&mut self, json: &str, document: &mut Document) {
+        self.with(document, |it| {
+            let code = alloc::format!("__setImportMap(JSON.parse({}))", {
+                let mut q = String::new();
+                builtins::json::quote(json, &mut q);
+                q
+            });
+            let _ = it.eval_script(&code);
+        });
+    }
+
+    /// Make a module's source available without fetching it.
+    pub fn preload_module(&mut self, url: &str, source: &str) {
+        self.interp.module_sources.insert(String::from(url), String::from(source));
     }
 
     pub fn execute(&mut self, source: &str, document: &mut Document) -> Result<(), String> {
@@ -283,10 +320,6 @@ impl interp::Interp {
             Err(value::Ctl::Throw(v)) => Err(self.error_text(&v)),
             Err(_) => Ok(()),
         }
-    }
-
-    pub fn dynamic_import(&mut self, _spec: &value::Value) -> value::Res {
-        self.type_error("dynamic import is not supported")
     }
 
     pub fn new_regexp(&mut self, pattern: &str, flags: &str) -> value::Res {

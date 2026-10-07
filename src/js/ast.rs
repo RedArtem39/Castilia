@@ -254,6 +254,7 @@ pub enum Stmt {
     ForIn { head: ForHead, obj: Expr, body: Box<Stmt> },
     ForOf { head: ForHead, iter: Expr, body: Box<Stmt>, is_await: bool },
     While(Expr, Box<Stmt>),
+    With(Expr, Box<Stmt>),
     DoWhile(Box<Stmt>, Expr),
     Break(Option<Name>),
     Continue(Option<Name>),

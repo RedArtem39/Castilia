@@ -79,6 +79,7 @@ pub fn new_interp() -> Interp {
     let global_env = Rc::new(Scope {
         vars: RefCell::new(BTreeMap::new()),
         parent: None,
+        with_obj: None,
         func: Some(FuncCtx { this: RefCell::new(Some(Value::Obj(global.clone()))), callee: None, new_target: Value::Undefined, home: None, is_global: true, strict: false }),
     });
     let mk = |id: u32, d: &str| Sym(Rc::new(SymData { id, desc: Some(Rc::from(d)) }));
@@ -138,6 +139,9 @@ pub fn new_interp() -> Interp {
         host: super::dom::HostSlot::default(),
         dom: super::dom::DomState::default(),
         modules: BTreeMap::new(),
+        module_sources: BTreeMap::new(),
+        module_urls: Vec::new(),
+        import_map: BTreeMap::new(),
         array_values_native: true,
         join_stack: Vec::new(),
         console_indent: 0,

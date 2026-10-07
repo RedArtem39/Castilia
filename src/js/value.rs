@@ -370,6 +370,8 @@ pub enum Class {
     Document,
     /// Arguments object (array-like).
     Arguments,
+    /// Holder for a module's top-level environment (used by namespace getters).
+    ModuleEnv(Env),
 }
 
 impl Value {

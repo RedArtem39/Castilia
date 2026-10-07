@@ -31,6 +31,8 @@ pub struct Scope {
     pub vars: RefCell<BTreeMap<Name, Var>>,
     pub parent: Option<Env>,
     pub func: Option<FuncCtx>,
+    /// Object environment record introduced by a `with` statement.
+    pub with_obj: Option<Obj>,
 }
 
 pub type Env = Rc<Scope>;
@@ -130,6 +132,9 @@ pub struct Interp {
     pub host: super::dom::HostSlot,
     pub dom: super::dom::DomState,
     pub modules: BTreeMap<String, Obj>,
+    pub module_sources: BTreeMap<String, String>,
+    pub module_urls: Vec<String>,
+    pub import_map: BTreeMap<String, String>,
     pub array_values_native: bool,
     pub join_stack: Vec<usize>,
     pub console_indent: usize,
@@ -202,16 +207,30 @@ impl Interp {
     // -----------------------------------------------------------------------
 
     pub fn new_scope(&self, parent: &Env, func: Option<FuncCtx>) -> Env {
-        Rc::new(Scope { vars: RefCell::new(BTreeMap::new()), parent: Some(parent.clone()), func })
+        Rc::new(Scope { vars: RefCell::new(BTreeMap::new()), parent: Some(parent.clone()), func, with_obj: None })
     }
 
     pub fn declare(&self, env: &Env, name: Name, kind: u8, v: Value, init: bool) {
         env.vars.borrow_mut().insert(name, Var { v, kind, init });
     }
 
+    fn with_has(&mut self, cur: &Env, name: Name) -> Res<Option<Obj>> {
+        if let Some(o) = &cur.with_obj {
+            let key = Key::S(self.interner.get(name).clone());
+            if self.has_property(o, &key)? {
+                return Ok(Some(o.clone()));
+            }
+        }
+        Ok(None)
+    }
+
     pub fn lookup(&mut self, name: Name, env: &Env) -> Res {
         let mut cur = env;
         loop {
+            if let Some(o) = self.with_has(cur, name)? {
+                let key = Key::S(self.interner.get(name).clone());
+                return self.get_obj(&o, &key, &Value::Obj(o.clone()));
+            }
             if let Some(var) = cur.vars.borrow().get(&name) {
                 if !var.init {
                     let n = self.interner.get(name).clone();
@@ -238,6 +257,10 @@ impl Interp {
     pub fn lookup_typeof(&mut self, name: Name, env: &Env) -> Res {
         let mut cur = env;
         loop {
+            if let Some(o) = self.with_has(cur, name)? {
+                let key = Key::S(self.interner.get(name).clone());
+                return self.get_obj(&o, &key, &Value::Obj(o.clone()));
+            }
             if let Some(var) = cur.vars.borrow().get(&name) {
                 if !var.init {
                     return Ok(Value::Undefined);
@@ -260,6 +283,10 @@ impl Interp {
     pub fn assign_var(&mut self, name: Name, v: Value, env: &Env) -> Res<()> {
         let mut cur = env;
         loop {
+            if let Some(o) = self.with_has(cur, name)? {
+                let key = Key::S(self.interner.get(name).clone());
+                return self.set_v(&Value::Obj(o), key, v);
+            }
             {
                 let mut vars = cur.vars.borrow_mut();
                 if let Some(var) = vars.get_mut(&name) {
@@ -354,7 +381,7 @@ impl Interp {
         Ok(last)
     }
 
-    fn hoist_block(&mut self, b: &Block, env: &Env, global: bool) -> Res<()> {
+    pub(crate) fn hoist_block(&mut self, b: &Block, env: &Env, global: bool) -> Res<()> {
         for (n, k) in &b.lets {
             if global {
                 // top-level let/const/class live in the global lexical scope
@@ -821,6 +848,12 @@ impl Interp {
             Stmt::For { .. } | Stmt::ForIn { .. } | Stmt::ForOf { .. } | Stmt::While(..) | Stmt::DoWhile(..) => {
                 let ls = core::mem::take(labels);
                 self.exec_loop(s, env, &ls)
+            }
+            Stmt::With(obj, body) => {
+                let v = self.eval(obj, env)?;
+                let o = self.to_object(&v)?;
+                let scope = Rc::new(Scope { vars: RefCell::new(BTreeMap::new()), parent: Some(env.clone()), func: None, with_obj: Some(o) });
+                self.exec(body, &scope, &mut Vec::new())
             }
             Stmt::Break(l) => Err(Ctl::Break(*l)),
             Stmt::Continue(l) => Err(Ctl::Continue(*l)),
@@ -1477,11 +1510,11 @@ impl Interp {
             }
             Expr::ImportCall(spec) => {
                 let s = self.eval(spec, env)?;
-                self.dynamic_import(&s)
+                self.dynamic_import_value(&s)
             }
             Expr::ImportMeta => {
                 let o = self.new_object();
-                let url = self.dom.base_url.clone();
+                let url = self.current_module_url();
                 self.define_data(&o, Key::str("url"), Value::string(url), ALL);
                 Ok(Value::Obj(o))
             }

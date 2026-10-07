@@ -148,6 +148,7 @@ pub fn setup(it: &mut Interp) {
         let items: Vec<Value> = data.into_iter().map(|(k, v)| it.new_array(vec![Value::string(k), Value::string(v)])).collect();
         Ok(it.new_array(items))
     });
+    it.global_fn("__setImportMap", 1, super::modules::set_import_map);
     it.global_fn("__navigate", 1, |it, c| {
         let u = it.arg_str(c, 0)?;
         let abs = it.url_resolve(&u);
@@ -160,7 +161,7 @@ pub fn setup(it: &mut Interp) {
         Ok(it.new_array(v))
     });
     // hide the bridges from enumeration
-    for n in ["__parseURL", "__setURLPart", "__hostFetch", "__formData", "__navigate", "__randomBytes"] {
+    for n in ["__parseURL", "__setURLPart", "__hostFetch", "__formData", "__navigate", "__randomBytes", "__setImportMap"] {
         if let Some(p) = it.own_prop(&g, &Key::str(n)) {
             if let Slot::Data(v) = p.slot {
                 it.define_data(&g, Key::str(n), v, HIDDEN);

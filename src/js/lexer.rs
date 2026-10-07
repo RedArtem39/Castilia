@@ -393,35 +393,28 @@ impl Lexer {
         Ok(Tok::Template(strs, exprs))
     }
 
-    /// Scan to the `}` closing a `${` expression; returns its index.
+    /// Scan to the `}` closing a `${` expression; returns its index. Uses the real tokenizer so
+    /// strings, regex literals, nested templates and comments are all handled consistently.
     fn skip_expr(&mut self) -> Result<usize, String> {
+        let saved = self.prev_regex_ok;
+        self.prev_regex_ok = true;
         let mut depth = 0usize;
-        loop {
-            let r = self.rest();
-            let Some(c) = r.chars().next() else { return self.err("unterminated template expression") };
-            match c {
-                '{' => {
-                    depth += 1;
-                    self.pos += 1;
-                }
-                '}' => {
+        let result = loop {
+            let t = self.next()?;
+            match t.tok {
+                Tok::Eof => break self.err("unterminated template expression"),
+                Tok::Punct("{") => depth += 1,
+                Tok::Punct("}") => {
                     if depth == 0 {
-                        return Ok(self.pos);
+                        break Ok(t.start);
                     }
                     depth -= 1;
-                    self.pos += 1;
                 }
-                '"' | '\'' => {
-                    self.string(c)?;
-                }
-                '`' => {
-                    self.template()?;
-                }
-                '/' if r.starts_with("//") => self.pos += r.find('\n').unwrap_or(r.len()),
-                '/' if r.starts_with("/*") => self.pos += r[2..].find("*/").map_or(r.len(), |e| e + 4),
-                _ => self.pos += c.len_utf8(),
+                _ => {}
             }
-        }
+        };
+        self.prev_regex_ok = saved;
+        result
     }
 
     fn regex(&mut self) -> Result<Tok, String> {

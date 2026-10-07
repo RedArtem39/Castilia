@@ -398,7 +398,14 @@ impl<'i> Parser<'i> {
                     self.semicolon()?;
                     Ok(Stmt::Empty)
                 }
-                "with" => self.err("'with' is not supported"),
+                "with" => {
+                    self.advance()?;
+                    self.expect_punct("(")?;
+                    let obj = self.expression()?;
+                    self.expect_punct(")")?;
+                    let body = self.statement()?;
+                    Ok(Stmt::With(obj, Box::new(body)))
+                }
                 "import" => {
                     let next = self.peek()?;
                     if matches!(next.tok, Tok::Punct("(") | Tok::Punct(".")) {
