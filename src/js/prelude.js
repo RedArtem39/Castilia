@@ -610,20 +610,57 @@
   hide(Document.prototype, 'evaluate', function () { return emptyXPath(); });
 
   // ---- Observers ----------------------------------------------------------------
+  // Intersection is computed from the laid-out boxes against the viewport (expanded by rootMargin);
+  // targets are checked once layout exists and again after every layout (__afterLayout).
+  const intersectionObservers = new Set();
+  const hasLayout = () => { const d = document.documentElement; return !!d && d.getBoundingClientRect().width > 0; };
+  const ioRect = (x, y, w, h) => ({ x, y, width: w, height: h, top: y, left: x, right: x + w, bottom: y + h });
+  const marginPx = (v, size) => { v = String(v).trim(); const n = parseFloat(v) || 0; return v.endsWith('%') ? n * size / 100 : n; };
   class IntersectionObserver {
-    constructor(cb, opts) { this._cb = cb; this.root = (opts && opts.root) || null; this.rootMargin = (opts && opts.rootMargin) || '0px'; this.thresholds = [0]; this._t = new Set(); }
+    constructor(cb, opts) {
+      opts = opts || {};
+      this._cb = cb; this.root = opts.root || null; this.rootMargin = opts.rootMargin || '0px';
+      const th = opts.threshold === undefined ? [0] : [].concat(opts.threshold);
+      this.thresholds = th.map(Number).sort((a, b) => a - b);
+      this._t = new Map();
+      intersectionObservers.add(this);
+    }
     observe(el) {
-      if (this._t.has(el)) return;
-      this._t.add(el);
-      setTimeout(() => {
-        if (!this._t.has(el)) return;
-        const r = el.getBoundingClientRect();
-        this._cb([{ target: el, isIntersecting: true, intersectionRatio: 1, boundingClientRect: r, intersectionRect: r, rootBounds: null, time: performance.now() }], this);
-      }, 0);
+      if (!el || this._t.has(el)) return;
+      this._t.set(el, undefined);
+      setTimeout(() => { if (hasLayout()) this._check(); }, 0);
     }
     unobserve(el) { this._t.delete(el); }
     disconnect() { this._t.clear(); }
     takeRecords() { return []; }
+    _check() {
+      const vw = innerWidth, vh = innerHeight;
+      const m = this.rootMargin.split(/\s+/);
+      const [mt, mr, mb, ml] = [m[0], m[1] ?? m[0], m[2] ?? m[0], m[3] ?? m[1] ?? m[0]];
+      let root = { top: -marginPx(mt, vh), left: -marginPx(ml, vw), bottom: vh + marginPx(mb, vh), right: vw + marginPx(mr, vw) };
+      if (this.root && this.root.getBoundingClientRect) {
+        const rr = this.root.getBoundingClientRect();
+        root = { top: rr.top - marginPx(mt, rr.height), left: rr.left - marginPx(ml, rr.width), bottom: rr.bottom + marginPx(mb, rr.height), right: rr.right + marginPx(mr, rr.width) };
+      }
+      const rootBounds = ioRect(root.left, root.top, root.right - root.left, root.bottom - root.top);
+      const entries = [];
+      for (const [el, last] of this._t) {
+        const r = el.getBoundingClientRect();
+        const connected = el.isConnected !== false;
+        const top = Math.max(r.top, root.top), left = Math.max(r.left, root.left);
+        const bottom = Math.min(r.bottom, root.bottom), right = Math.min(r.right, root.right);
+        const touching = connected && bottom >= top && right >= left && (r.width > 0 || r.height > 0 || r.top >= root.top);
+        const area = r.width * r.height;
+        const ratio = !touching ? 0 : area > 0 ? Math.max(0, (right - left) * (bottom - top)) / area : 1;
+        const isIntersecting = touching && (this.thresholds[0] === 0 ? true : ratio >= this.thresholds[0]);
+        const state = isIntersecting + ':' + this.thresholds.filter((t) => ratio >= t).length;
+        if (state === last) continue;
+        this._t.set(el, state);
+        const ir = touching ? ioRect(left, top, Math.max(0, right - left), Math.max(0, bottom - top)) : ioRect(0, 0, 0, 0);
+        entries.push({ target: el, isIntersecting, intersectionRatio: ratio, boundingClientRect: r, intersectionRect: ir, rootBounds, time: performance.now() });
+      }
+      if (entries.length) this._cb(entries, this);
+    }
   }
   expose('IntersectionObserver', IntersectionObserver);
   // Sizes are reported once after observe() and again by __afterLayout() (called by the page after
@@ -662,6 +699,7 @@
   expose('ResizeObserver', ResizeObserver);
   hide(G, '__afterLayout', () => {
     for (const o of Array.from(resizeObservers)) { try { o._check(); } catch (e) { reportError(e); } }
+    for (const o of Array.from(intersectionObservers)) { if (o._t.size) { try { o._check(); } catch (e) { reportError(e); } } }
   });
   expose('PerformanceObserver', class PerformanceObserver { constructor(cb) {} observe() {} disconnect() {} takeRecords() { return []; } static get supportedEntryTypes() { return []; } });
 
