@@ -138,6 +138,7 @@ pub struct Interp {
     pub array_values_native: bool,
     pub join_stack: Vec<usize>,
     pub console_indent: usize,
+    pub loaded_links: Vec<usize>,
     pub last_prevented: bool,
     pub dispatch_count: usize,
     pub history_state: BTreeMap<usize, Value>,

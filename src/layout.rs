@@ -97,6 +97,42 @@ pub trait FontMetrics {
     }
 }
 
+/// Wraps host font metrics and adds intrinsic image sizes learned after fetching images.
+pub struct WithImageSizes<'a, F: ?Sized> {
+    pub inner: &'a F,
+    pub sizes: &'a alloc::collections::BTreeMap<String, (f32, f32)>,
+}
+
+impl<F: FontMetrics + ?Sized> FontMetrics for WithImageSizes<'_, F> {
+    fn text_width(&self, text: &str, size: f32) -> f32 {
+        self.inner.text_width(text, size)
+    }
+    fn line_height(&self, size: f32) -> f32 {
+        self.inner.line_height(size)
+    }
+    fn text_width_font(&self, text: &str, font: &Font) -> f32 {
+        self.inner.text_width_font(text, font)
+    }
+    fn ascent(&self, font: &Font) -> f32 {
+        self.inner.ascent(font)
+    }
+    fn line_height_font(&self, font: &Font) -> f32 {
+        self.inner.line_height_font(font)
+    }
+    fn avg_char_width(&self, font: &Font) -> f32 {
+        self.inner.avg_char_width(font)
+    }
+    fn max_char_width(&self, font: &Font) -> f32 {
+        self.inner.max_char_width(font)
+    }
+    fn descent(&self, font: &Font) -> f32 {
+        self.inner.descent(font)
+    }
+    fn image_size(&self, src: &str) -> Option<(f32, f32)> {
+        self.sizes.get(src).copied().or_else(|| self.inner.image_size(src))
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Command {
     FillRect {

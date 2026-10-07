@@ -6,23 +6,97 @@ use crate::{
     page::Page,
     render_document,
 };
-use alloc::{string::String, vec::Vec};
+use alloc::{boxed::Box, string::String, vec::Vec};
 
 const MAX_HTML_BYTES: usize = 8 * 1024 * 1024;
 const MAX_CSS_BYTES: usize = 2 * 1024 * 1024;
 const MAX_STYLESHEETS: usize = 16;
-const MAX_JS_BYTES: usize = 256 * 1024;
+const MAX_JS_BYTES: usize = 2 * 1024 * 1024;
+const MAX_FETCH_BYTES: usize = 4 * 1024 * 1024;
+const MAX_IMAGE_PROBE_BYTES: usize = 512 * 1024;
+const MAX_IMAGE_PROBES: usize = 64;
 
 pub struct Response {
     pub final_url: String,
     pub body: Vec<u8>,
+    /// `Content-Type` header value, used for charset detection.
+    pub content_type: Option<String>,
+    /// HTTP status (defaults to 200 for adapters that only report success).
+    pub status: u16,
+    /// Response headers (lowercase names) when the adapter exposes them.
+    pub headers: Vec<(String, String)>,
+}
+
+impl Response {
+    pub fn new(final_url: String, body: Vec<u8>) -> Response {
+        Response { final_url, body, content_type: None, status: 200, headers: Vec::new() }
+    }
 }
 
 /// A platform adapter implements HTTP(S), redirects, URL resolution and TLS.
-/// It must not return more than the requested byte limit.
+/// It should truncate bodies at the requested byte limit rather than fail.
 pub trait Fetcher {
     fn get(&mut self, url: &str, max_bytes: usize) -> Result<Response, String>;
     fn resolve(&self, base: &str, reference: &str) -> Result<String, String>;
+    /// Arbitrary requests for `fetch()`/`XMLHttpRequest` made by scripts. Adapters that only
+    /// implement GET can leave the default.
+    fn request(&mut self, method: &str, url: &str, _headers: &[(String, String)], _body: Option<&str>, max_bytes: usize) -> Result<Response, String> {
+        if method.eq_ignore_ascii_case("GET") {
+            self.get(url, max_bytes)
+        } else {
+            Err(String::from("only GET requests are supported"))
+        }
+    }
+}
+
+/// Bridges a [`Fetcher`] to the script runtime's [`Host`](crate::js::Host).
+///
+/// The fetcher is borrowed through a raw pointer so that the (`'static`) host can live inside the
+/// page; it is only valid while the caller keeps the fetcher alive and must be cleared with
+/// `Page::clear_host` before the fetcher goes away.
+struct BorrowedHost {
+    fetcher: *mut (dyn Fetcher + 'static),
+}
+
+impl crate::js::Host for BorrowedHost {
+    fn fetch(&mut self, method: &str, url: &str, headers: &[(String, String)], body: Option<&str>) -> Option<crate::js::HostResponse> {
+        // SAFETY: the pointer is created from a live `&mut F` in `load_page_mode`, used only while that
+        // function is running (scripts execute synchronously inside it), and cleared before it returns.
+        let fetcher = unsafe { &mut *self.fetcher };
+        let r = fetcher.request(method, url, headers, body, MAX_FETCH_BYTES).ok()?;
+        let cs = r.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+        Some(crate::js::HostResponse {
+            status: r.status,
+            status_text: String::new(),
+            url: r.final_url,
+            headers: {
+                let mut h = r.headers;
+                if let Some(ct) = r.content_type {
+                    if !h.iter().any(|(k, _)| k == "content-type") {
+                        h.push((String::from("content-type"), ct));
+                    }
+                }
+                h
+            },
+            body: crate::encoding::decode_resource(&r.body, cs),
+        })
+    }
+
+    fn navigate(&mut self, _url: &str) {}
+}
+
+/// A [`Host`](crate::js::Host) that forwards to a shared fetcher; use it with `Page::set_host` to keep
+/// scripts connected after loading.
+pub struct SharedFetcherHost<F: Fetcher> {
+    pub fetcher: alloc::rc::Rc<core::cell::RefCell<F>>,
+}
+
+impl<F: Fetcher> crate::js::Host for SharedFetcherHost<F> {
+    fn fetch(&mut self, method: &str, url: &str, headers: &[(String, String)], body: Option<&str>) -> Option<crate::js::HostResponse> {
+        let r = self.fetcher.borrow_mut().request(method, url, headers, body, MAX_FETCH_BYTES).ok()?;
+        let cs = r.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+        Some(crate::js::HostResponse { status: r.status, status_text: String::new(), url: r.final_url, headers: r.headers, body: crate::encoding::decode_resource(&r.body, cs) })
+    }
 }
 
 #[derive(Debug)]
@@ -147,8 +221,39 @@ pub fn load_reader_page(
     load_page_mode(fetcher, url, width, fonts, true)
 }
 
-fn load_page_mode(
-    fetcher: &mut impl Fetcher,
+fn fetch_css_text<F: Fetcher>(fetcher: &mut F, url: &str) -> Option<String> {
+    let r = fetcher.get(url, MAX_CSS_BYTES).ok()?;
+    let cs = r.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+    Some(crate::encoding::decode_resource(&r.body, cs))
+}
+
+/// Fetch images and read their pixel dimensions from the file headers.
+fn probe_images<F: Fetcher>(fetcher: &mut F, base: &str, sources: &[String]) -> alloc::collections::BTreeMap<String, (f32, f32)> {
+    let mut sizes = alloc::collections::BTreeMap::new();
+    let mut fetched = 0;
+    for src in sources {
+        if src.starts_with("data:") {
+            if let Some((w, h)) = crate::image::decode_data_url(src).and_then(|b| crate::image::probe_size(&b)) {
+                sizes.insert(src.clone(), (w as f32, h as f32));
+            }
+            continue;
+        }
+        if fetched >= MAX_IMAGE_PROBES {
+            break;
+        }
+        let Ok(url) = fetcher.resolve(base, src) else { continue };
+        fetched += 1;
+        if let Ok(r) = fetcher.get(&url, MAX_IMAGE_PROBE_BYTES) {
+            if let Some((w, h)) = crate::image::probe_size(&r.body) {
+                sizes.insert(src.clone(), (w as f32, h as f32));
+            }
+        }
+    }
+    sizes
+}
+
+fn load_page_mode<F: Fetcher>(
+    fetcher: &mut F,
     url: &str,
     width: f32,
     fonts: &impl FontMetrics,
@@ -159,14 +264,10 @@ fn load_page_mode(
         return Err(String::from("HTML exceeds size limit"));
     }
     let html_bytes = response.body.len();
-    let html_source = String::from_utf8_lossy(&response.body);
+    let transport = response.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+    let html_source = crate::encoding::decode(&response.body, transport);
     let mut warnings = Vec::new();
-    if matches!(html_source, alloc::borrow::Cow::Owned(_)) {
-        warnings.push(String::from(
-            "HTML contains invalid UTF-8; replacement characters were used",
-        ));
-    }
-    let document = html::parse(&html_source);
+    let mut document = html::parse(&html_source);
     let base = document
         .nodes
         .iter()
@@ -174,19 +275,25 @@ fn load_page_mode(
         .and_then(|node| node.attribute("href"))
         .and_then(|href| fetcher.resolve(&response.final_url, href).ok())
         .unwrap_or_else(|| response.final_url.clone());
-    let mut external_css = String::new();
+    let external_css = String::new();
     let mut link_css: alloc::collections::BTreeMap<usize, String> = alloc::collections::BTreeMap::new();
     let mut css_bytes = 0;
     let mut linked_stylesheets = 0;
     let mut loaded_stylesheets = 0;
-    for (node_id, node) in document.nodes.iter().enumerate() {
-        if node.tag() == Some("style") {
-            for &child in &node.children {
-                if let NodeKind::Text(text) = &document.nodes[child].kind {
-                    css_bytes += text.len();
-                }
+    let node_count = document.nodes.len();
+    for node_id in 0..node_count {
+        if document.nodes[node_id].tag() == Some("style") {
+            let text = document.text_content(node_id).unwrap_or_default();
+            css_bytes += text.len();
+            if text.contains("@import") || text.contains("url(") {
+                let processed = {
+                    let mut fetch = |u: &str| fetch_css_text(fetcher, u);
+                    crate::cssload::process(&text, &base, &mut fetch)
+                };
+                document.set_text_content(node_id, &processed);
             }
         }
+        let node = &document.nodes[node_id];
         if node.tag() == Some("link")
             && node.attribute("rel").is_some_and(|rel| {
                 rel.split_whitespace()
@@ -207,12 +314,14 @@ fn load_page_mode(
             };
             match fetcher.get(&css_url, MAX_CSS_BYTES) {
                 Ok(sheet) if sheet.body.len() <= MAX_CSS_BYTES => {
-                    let text = String::from_utf8_lossy(&sheet.body);
-                    if matches!(text, alloc::borrow::Cow::Owned(_)) {
-                        warnings.push(alloc::format!("stylesheet is not valid UTF-8: {css_url}"));
-                    }
+                    let cs = sheet.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+                    let text = crate::encoding::decode_resource(&sheet.body, cs);
                     css_bytes += sheet.body.len();
-                    link_css.insert(node_id, text.into_owned());
+                    let processed = {
+                        let mut fetch = |u: &str| fetch_css_text(fetcher, u);
+                        crate::cssload::process(&text, &sheet.final_url, &mut fetch)
+                    };
+                    link_css.insert(node_id, processed);
                     loaded_stylesheets += 1;
                 }
                 Ok(_) => warnings.push(alloc::format!("stylesheet too large: {css_url}")),
@@ -239,19 +348,34 @@ fn load_page_mode(
         let reading_document = reader_document(&document);
         (render_document(&reading_document, &css::parse(""), Viewport::new(width, 768.0), fonts), None)
     } else {
-        let page = Page::from_document_with_loader(document, &external_css, |src| {
-            let url = fetcher.resolve(&base, src)?;
+        let fetcher_ptr: *mut F = fetcher;
+        // SAFETY: erases the borrow's lifetime; the pointer is only dereferenced while this function
+        // runs and the host holding it is dropped (`clear_host`) before returning.
+        let erased: *mut (dyn Fetcher + 'static) = unsafe { core::mem::transmute::<*mut (dyn Fetcher + '_), *mut (dyn Fetcher + 'static)>(fetcher_ptr as *mut (dyn Fetcher + '_)) };
+        let options = crate::page::PageOptions {
+            url: Some(response.final_url.clone()),
+            host: Some(Box::new(BorrowedHost { fetcher: erased })),
+            viewport: Some((width, 768.0)),
+            document_base: Some(base.clone()),
+            link_css: link_css.clone(),
+        };
+        let base_for_scripts = base.clone();
+        let mut page = Page::load(document, &external_css, options, |src| {
+            // SAFETY: see `BorrowedHost`; scripts run synchronously inside `Page::load`.
+            let fetcher = unsafe { &mut *fetcher_ptr };
+            let url = fetcher.resolve(&base_for_scripts, src)?;
             let response = fetcher.get(&url, MAX_JS_BYTES)?;
-            if response.body.len() > MAX_JS_BYTES {
-                return Err(String::from("script exceeds size limit"));
-            }
-            String::from_utf8(response.body).map_err(|_| String::from("script is not valid UTF-8"))
+            let cs = response.content_type.as_deref().and_then(crate::encoding::charset_from_content_type);
+            Ok(crate::encoding::decode_resource(&response.body, cs))
         });
-        let mut page = page;
-        for (id, text) in &link_css {
-            page.set_link_stylesheet(*id, text.clone());
+        page.clear_host();
+        let mut display = page.render(width, fonts);
+        // Probe image sizes so layout can use intrinsic dimensions, then lay out again.
+        let sizes = probe_images(fetcher, &base, &Page::image_sources(&display));
+        if !sizes.is_empty() {
+            page.set_image_sizes(sizes);
+            display = page.render(width, fonts);
         }
-        let display = page.render(width, fonts);
         (display, Some(page))
     };
     let scripts_executed = page.as_ref().map_or(0, |p| p.scripts.executed);
@@ -399,10 +523,7 @@ mod tests {
             } else {
                 return Err(String::from("not found"));
             };
-            Ok(Response {
-                final_url: String::from(url),
-                body,
-            })
+            Ok(Response::new(String::from(url), body))
         }
         fn resolve(&self, base: &str, reference: &str) -> Result<String, String> {
             if reference.starts_with('/') {

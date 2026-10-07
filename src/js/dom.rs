@@ -94,6 +94,8 @@ pub struct DomState {
     pub computed: BTreeMap<usize, Vec<(String, String)>>,
     pub user_agent: String,
     pub dirty: bool,
+    pub doc_base: Option<String>,
+    pub new_sheets: Vec<(NodeId, String)>,
 }
 
 impl Default for DomState {
@@ -121,6 +123,8 @@ impl Default for DomState {
             computed: BTreeMap::new(),
             user_agent: String::from("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Castilia/0.1"),
             dirty: false,
+            doc_base: None,
+            new_sheets: Vec::new(),
         }
     }
 }
@@ -306,7 +310,7 @@ impl Interp {
     }
 
     pub fn url_resolve(&self, rel: &str) -> String {
-        let base = Url::parse(&self.dom.base_url, None);
+        let base = Url::parse(self.dom.doc_base.as_deref().unwrap_or(&self.dom.base_url), None);
         match Url::parse(rel, base.as_ref()) {
             Some(u) => u.href(),
             None => rel.to_string(),
@@ -426,6 +430,17 @@ impl Interp {
             }
             stack.extend(doc.nodes[n].children.iter().rev().copied());
         }
+        let mut links = Vec::new();
+        let mut st = vec![id];
+        while let Some(n) = st.pop() {
+            if doc.nodes[n].tag() == Some("link") && doc.nodes[n].attribute("rel").is_some_and(|r| r.split_whitespace().any(|t| t.eq_ignore_ascii_case("stylesheet"))) {
+                links.push(n);
+            }
+            st.extend(doc.nodes[n].children.iter().rev().copied());
+        }
+        for l in links {
+            self.load_stylesheet_link(l);
+        }
         // scripts created through innerHTML never execute (per spec); only DOM-API inserted ones do.
         if self.parsing_html_scripts {
             return Ok(());
@@ -434,6 +449,26 @@ impl Interp {
             self.maybe_run_script(s)?;
         }
         Ok(())
+    }
+
+    /// Fetch a script-inserted `<link rel=stylesheet>` through the host and queue it for the page.
+    pub fn load_stylesheet_link(&mut self, id: NodeId) {
+        let Some(href) = self.attr(id, "href") else { return };
+        if self.loaded_links.contains(&id) {
+            return;
+        }
+        self.loaded_links.push(id);
+        let url = self.url_resolve(&href);
+        let Some(r) = self.host_fetch("GET", &url, &[], None) else { return };
+        if r.status >= 400 {
+            return;
+        }
+        let css = {
+            let mut fetch = |u: &str| self.host_fetch("GET", u, &[], None).filter(|r| r.status < 400).map(|r| r.body);
+            crate::cssload::process(&r.body, &url, &mut fetch)
+        };
+        self.dom.new_sheets.push((id, css));
+        self.dom.dirty = true;
     }
 
     pub fn maybe_run_script(&mut self, id: NodeId) -> Res<()> {

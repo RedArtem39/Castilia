@@ -9,8 +9,10 @@ extern crate alloc;
 
 pub mod color;
 pub mod css;
+pub mod cssload;
 mod css_values;
 pub mod dom;
+pub mod encoding;
 mod entities;
 pub mod html;
 pub mod image;

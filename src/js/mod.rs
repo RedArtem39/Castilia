@@ -64,6 +64,19 @@ impl Runtime {
         &self.interp.dom.base_url
     }
 
+    pub fn clear_host(&mut self) {
+        self.interp.host.host = None;
+    }
+
+    pub fn set_document_base(&mut self, base: &str) {
+        self.interp.dom.doc_base = Some(String::from(base));
+    }
+
+    /// Stylesheets for `<link>` elements inserted by scripts since the last call.
+    pub fn take_new_sheets(&mut self) -> Vec<(NodeId, String)> {
+        core::mem::take(&mut self.interp.dom.new_sheets)
+    }
+
     pub fn set_viewport(&mut self, w: f32, h: f32) {
         self.interp.dom.viewport = (w, h);
     }

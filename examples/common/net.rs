@@ -19,26 +19,43 @@ impl HostFetcher {
     }
 }
 
+impl HostFetcher {
+    fn read(&mut self, mut response: ureq::http::Response<ureq::Body>, max_bytes: usize) -> Result<Response, String> {
+        use std::io::Read;
+        let final_url = response.get_uri().to_string();
+        let status = response.status().as_u16();
+        let content_type = response.headers().get("content-type").and_then(|v| v.to_str().ok()).map(|s| s.to_string());
+        let headers: Vec<(String, String)> = response.headers().iter().filter_map(|(k, v)| Some((k.as_str().to_ascii_lowercase(), v.to_str().ok()?.to_string()))).collect();
+        // truncate at the limit instead of failing
+        let mut body = Vec::new();
+        response.body_mut().as_reader().take(max_bytes as u64 + 1).read_to_end(&mut body).map_err(|e| e.to_string())?;
+        body.truncate(max_bytes);
+        Ok(Response { final_url, body, content_type, status, headers })
+    }
+}
+
 impl Fetcher for HostFetcher {
     fn get(&mut self, url: &str, max_bytes: usize) -> Result<Response, String> {
         let parsed = Url::parse(url).map_err(|error| error.to_string())?;
         if !matches!(parsed.scheme(), "http" | "https") {
             return Err(String::from("only HTTP and HTTPS URLs are supported"));
         }
-        let mut response = self
-            .agent
-            .get(url)
-            .call()
-            .map_err(|error| error.to_string())?;
-        let final_url = response.get_uri().to_string();
-        let limit = u64::try_from(max_bytes).map_err(|error| error.to_string())?;
-        let body = response
-            .body_mut()
-            .with_config()
-            .limit(limit)
-            .read_to_vec()
-            .map_err(|error| error.to_string())?;
-        Ok(Response { final_url, body })
+        let response = self.agent.get(url).call().map_err(|error| error.to_string())?;
+        self.read(response, max_bytes)
+    }
+
+    fn request(&mut self, method: &str, url: &str, headers: &[(String, String)], body: Option<&str>, max_bytes: usize) -> Result<Response, String> {
+        let parsed = Url::parse(url).map_err(|error| error.to_string())?;
+        if !matches!(parsed.scheme(), "http" | "https") {
+            return Err(String::from("only HTTP and HTTPS URLs are supported"));
+        }
+        let mut builder = ureq::http::Request::builder().method(method).uri(url);
+        for (k, v) in headers {
+            builder = builder.header(k.as_str(), v.as_str());
+        }
+        let req = builder.body(body.unwrap_or("").to_string()).map_err(|e| e.to_string())?;
+        let response = self.agent.run(req).map_err(|error| error.to_string())?;
+        self.read(response, max_bytes)
     }
 
     fn resolve(&self, base: &str, reference: &str) -> Result<String, String> {

@@ -145,6 +145,7 @@ pub fn new_interp() -> Interp {
         array_values_native: true,
         join_stack: Vec::new(),
         console_indent: 0,
+        loaded_links: Vec::new(),
         last_prevented: false,
         dispatch_count: 0,
         history_state: BTreeMap::new(),

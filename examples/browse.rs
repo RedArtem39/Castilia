@@ -3,89 +3,11 @@ mod font;
 #[path = "common/net.rs"]
 mod net;
 
-use base64::Engine;
-use castilia::{
-    Command, DisplayList,
-    network::{ImageResource, fetch_images, load_page, load_reader_page},
-};
-use std::{env, fmt::Write, fs};
+#[path = "common/svg.rs"]
+mod svg;
 
-fn escape(input: &str) -> String {
-    input
-        .replace('&', "&amp;")
-        .replace('<', "&lt;")
-        .replace('>', "&gt;")
-        .replace('"', "&quot;")
-        .replace('\'', "&apos;")
-}
-
-fn svg(list: &DisplayList, images: &[ImageResource]) -> String {
-    let mut output = format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" viewBox=\"0 0 {} {}\">\n<rect width=\"100%\" height=\"100%\" fill=\"white\"/>\n",
-        list.width,
-        list.height.max(1.0),
-        list.width,
-        list.height.max(1.0)
-    );
-    for command in &list.commands {
-        match command {
-            Command::FillRect { rect, color } => {
-                writeln!(
-                    output,
-                    "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"#{color:06x}\"/>",
-                    rect.x, rect.y, rect.width, rect.height
-                )
-                .unwrap();
-            }
-            Command::Text {
-                x,
-                y,
-                text,
-                size,
-                color,
-                link,
-            } => {
-                if let Some(link) = link {
-                    write!(output, "<a href=\"{}\">", escape(link)).unwrap();
-                }
-                write!(output, "<text x=\"{}\" y=\"{}\" font-family=\"sans-serif\" font-size=\"{}\" fill=\"#{color:06x}\">{}</text>", x, y + size * 0.9, size, escape(text)).unwrap();
-                if link.is_some() {
-                    output.push_str("</a>");
-                }
-                output.push('\n');
-            }
-            Command::Image { rect, src, link } => {
-                if let Some(link) = link {
-                    write!(output, "<a href=\"{}\">", escape(link)).unwrap();
-                }
-                let data = images.iter().find(|image| image.url == *src).map(|image| {
-                    format!(
-                        "data:{};base64,{}",
-                        image.mime,
-                        base64::engine::general_purpose::STANDARD.encode(&image.bytes)
-                    )
-                });
-                let href = data.as_deref().unwrap_or(src);
-                write!(
-                    output,
-                    "<image x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" href=\"{}\"/>",
-                    rect.x,
-                    rect.y,
-                    rect.width,
-                    rect.height,
-                    escape(href)
-                )
-                .unwrap();
-                if link.is_some() {
-                    output.push_str("</a>");
-                }
-                output.push('\n');
-            }
-        }
-    }
-    output.push_str("</svg>\n");
-    output
-}
+use castilia::network::{fetch_images, load_page, load_reader_page};
+use std::{env, fs};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<_> = env::args().collect();
@@ -106,7 +28,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         load_page(&mut fetcher, &args[url_index], 800.0, &fonts)?
     };
     let images = fetch_images(&mut fetcher, &page.display, 16);
-    fs::write(&args[output_index], svg(&page.display, &images.resources))?;
+    let resources: Vec<svg::Resource> = images.resources.iter().map(|r| svg::Resource { url: &r.url, mime: r.mime, bytes: &r.bytes }).collect();
+    fs::write(&args[output_index], svg::to_svg(&page.display, &fonts, &resources, 768.0))?;
     println!("URL: {}", page.url);
     println!(
         "HTML: {} bytes, CSS: {} bytes ({} of {} linked sheets loaded)",

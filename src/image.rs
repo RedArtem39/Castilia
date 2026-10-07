@@ -152,3 +152,49 @@ mod tests {
         assert_eq!(probe_size(b"<svg viewBox='0 0 100 50' width='200'>"), Some((200, 100)));
     }
 }
+
+/// Decode the payload of a `data:` URL (base64 or percent-encoded) into bytes.
+pub fn decode_data_url(url: &str) -> Option<Vec<u8>> {
+    let rest = url.strip_prefix("data:")?;
+    let (meta, data) = rest.split_once(',')?;
+    if meta.ends_with(";base64") {
+        const B64: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        let mut vals = Vec::new();
+        for ch in data.bytes() {
+            if let Some(v) = B64.iter().position(|b| *b == ch) {
+                vals.push(v as u32);
+            }
+        }
+        let mut out = Vec::new();
+        for chunk in vals.chunks(4) {
+            let mut n = 0u32;
+            for (i, v) in chunk.iter().enumerate() {
+                n |= v << (18 - 6 * i);
+            }
+            out.push((n >> 16) as u8);
+            if chunk.len() > 2 {
+                out.push((n >> 8) as u8);
+            }
+            if chunk.len() > 3 {
+                out.push(n as u8);
+            }
+        }
+        Some(out)
+    } else {
+        let b = data.as_bytes();
+        let mut out = Vec::new();
+        let mut i = 0;
+        while i < b.len() {
+            if b[i] == b'%' && i + 2 < b.len() + 0 && i + 2 <= b.len() - 1 {
+                if let Some(v) = core::str::from_utf8(&b[i + 1..i + 3]).ok().and_then(|h| u8::from_str_radix(h, 16).ok()) {
+                    out.push(v);
+                    i += 3;
+                    continue;
+                }
+            }
+            out.push(b[i]);
+            i += 1;
+        }
+        Some(out)
+    }
+}

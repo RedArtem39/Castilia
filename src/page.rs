@@ -39,6 +39,10 @@ pub struct PageOptions {
     pub host: Option<Box<dyn Host>>,
     /// Viewport used for `innerWidth`/`matchMedia` while scripts run.
     pub viewport: Option<(f32, f32)>,
+    /// Base for resolving relative URLs in scripts (`<base href>`); defaults to `url`.
+    pub document_base: Option<String>,
+    /// Text of `<link rel=stylesheet>` elements, applied in document order.
+    pub link_css: BTreeMap<NodeId, String>,
 }
 
 /// Document and JS state live together so DOM changes can be rendered again.
@@ -51,6 +55,7 @@ pub struct Page {
     runtime: Runtime,
     pub scripts: ScriptReport,
     layout_rects: RefCell<Option<BTreeMap<usize, [f32; 4]>>>,
+    image_sizes: BTreeMap<String, (f32, f32)>,
 }
 
 fn event_class(name: &str) -> (&'static str, bool, bool) {
@@ -102,6 +107,7 @@ impl Page {
             runtime: Runtime::new(),
             scripts: ScriptReport::default(),
             layout_rects: RefCell::new(None),
+            image_sizes: BTreeMap::new(),
         };
         if let Some(url) = &options.url {
             page.runtime.set_url(url);
@@ -112,6 +118,10 @@ impl Page {
         if let Some((w, h)) = options.viewport {
             page.runtime.set_viewport(w, h);
         }
+        if let Some(b) = &options.document_base {
+            page.runtime.set_document_base(b);
+        }
+        page.link_css = options.link_css;
         let scripts: Vec<usize> = page
             .document
             .nodes
@@ -185,7 +195,37 @@ impl Page {
         page.runtime.advance(&mut page.document, SETTLE_MS, SETTLE_FIRES);
         page.runtime.load(&mut page.document);
         page.runtime.advance(&mut page.document, 100.0, 500);
+        page.absorb_sheets();
         page
+    }
+
+    /// Stop using the host given at load time (it may borrow resources that are about to go away).
+    pub fn clear_host(&mut self) {
+        self.runtime.clear_host();
+    }
+
+    /// Record intrinsic image sizes (keyed by `src` as written in the document) used by layout.
+    pub fn set_image_sizes(&mut self, sizes: BTreeMap<String, (f32, f32)>) {
+        self.image_sizes = sizes;
+    }
+
+    /// `src` values of images (and CSS background images) found in a display list.
+    pub fn image_sources(display: &DisplayList) -> Vec<String> {
+        let mut out: Vec<String> = Vec::new();
+        for c in &display.commands {
+            if let crate::layout::Command::Image { src, .. } = c {
+                if !out.contains(src) {
+                    out.push(src.clone());
+                }
+            }
+        }
+        out
+    }
+
+    fn absorb_sheets(&mut self) {
+        for (id, css) in self.runtime.take_new_sheets() {
+            self.link_css.insert(id, css);
+        }
     }
 
     pub fn set_host(&mut self, host: Box<dyn Host>) {
@@ -228,6 +268,7 @@ impl Page {
     pub fn advance_time(&mut self, ms: f64) -> bool {
         self.sync_layout();
         self.runtime.advance(&mut self.document, ms, 2000);
+        self.absorb_sheets();
         self.runtime.take_dirty()
     }
 
@@ -241,7 +282,9 @@ impl Page {
         }
         self.sync_layout();
         let (class, bubbles, cancelable) = event_class(event);
-        self.runtime.dispatch_event(&mut self.document, node, event, class, bubbles, cancelable, &[])
+        let r = self.runtime.dispatch_event(&mut self.document, node, event, class, bubbles, cancelable, &[]);
+        self.absorb_sheets();
+        r
     }
 
     /// Full pointer interaction at page coordinates: mousedown, mouseup, click, with focus handling.
@@ -364,7 +407,12 @@ impl Page {
 
     pub fn render_viewport(&self, viewport: Viewport, fonts: &impl FontMetrics) -> DisplayList {
         let sheet = self.stylesheet();
-        let list = render_document(&self.document, &sheet, viewport, fonts);
+        let list = if self.image_sizes.is_empty() {
+            render_document(&self.document, &sheet, viewport, fonts)
+        } else {
+            let wrapped = crate::layout::WithImageSizes { inner: fonts, sizes: &self.image_sizes };
+            render_document(&self.document, &sheet, viewport, &wrapped)
+        };
         *self.layout_rects.borrow_mut() = Some(Runtime::rects_from_hits(&self.document, &list.hit_regions));
         list
     }
