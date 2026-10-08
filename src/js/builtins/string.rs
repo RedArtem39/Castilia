@@ -461,10 +461,16 @@ fn setup_regexp(it: &mut Interp) {
         let s = it.arg_str(c, 0)?;
         Ok(Value::Bool(!matches!(exec(it, &rx, &s)?, Value::Null)))
     });
+    // generic: "/" + ToString(this.source) + "/" + ToString(this.flags) for any object
     it.def_method(&proto, "toString", 0, |it, c| {
-        let rx = this_regex(it, c)?;
-        let (s, f) = regex_parts(&Value::Obj(rx)).unwrap();
-        Ok(Value::string(format!("/{s}/{f}")))
+        if !matches!(c.this, Value::Obj(_)) {
+            return it.type_error("RegExp.prototype.toString requires that 'this' be an Object");
+        }
+        let src = it.get_str(&c.this, "source")?;
+        let src = it.to_str(&src)?;
+        let flags = it.get_str(&c.this, "flags")?;
+        let flags = it.to_str(&flags)?;
+        Ok(Value::string(format!("/{src}/{flags}")))
     });
     it.def_method(&proto, "compile", 2, |_, c| Ok(c.this.clone()));
     it.def_getter(&proto, "source", |it, c| match regex_parts(&c.this) {

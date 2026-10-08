@@ -469,6 +469,18 @@
       },
     });
   }
+
+  // Annex B String.prototype HTML methods ("x".bold() === "<b>x</b>")
+  {
+    const SP = String.prototype;
+    const html = (tag, attr) => function (v) {
+      if (this === undefined || this === null) throw new TypeError('String.prototype method called on null or undefined');
+      const a = attr ? ' ' + attr + '="' + String(v).replace(/"/g, '&quot;') + '"' : '';
+      return '<' + tag + a + '>' + String(this) + '</' + tag + '>';
+    };
+    const list = { anchor: ['a', 'name'], big: ['big'], blink: ['blink'], bold: ['b'], fixed: ['tt'], fontcolor: ['font', 'color'], fontsize: ['font', 'size'], italics: ['i'], link: ['a', 'href'], small: ['small'], strike: ['strike'], sub: ['sub'], sup: ['sup'] };
+    for (const [name, [tag, attr]] of Object.entries(list)) if (!SP[name]) hide(SP, name, { [name]: html(tag, attr) }[name]);
+  }
   // ---- assorted platform interfaces scripts test for or construct -------------------------
   if (G.CSSStyleDeclaration) {
     const P = CSSStyleDeclaration.prototype;

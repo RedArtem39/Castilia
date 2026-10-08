@@ -774,12 +774,50 @@ fn side_index(n: &str) -> usize {
     }
 }
 
+/// Computed style of one node, cached until the DOM changes.
+fn node_style(it: &mut Interp, id: usize) -> Option<Rc<crate::css::Style>> {
+    let version = it.dom.version;
+    if it.dom.node_style_cache.0 != version {
+        it.dom.node_style_cache = (version, alloc::collections::BTreeMap::new());
+    }
+    if let Some(s) = it.dom.node_style_cache.1.get(&id) {
+        return Some(s.clone());
+    }
+    let sheet = document_sheet(it)?;
+    let doc = it.dom().ok()?;
+    let (w, h) = it.dom.viewport;
+    let style = Rc::new(crate::css::compute_node_style(doc, &sheet, crate::css::Viewport::new(w, h), id)?);
+    if it.dom.node_style_cache.1.len() < 4096 {
+        it.dom.node_style_cache.1.insert(id, style.clone());
+    }
+    Some(style)
+}
+
+/// The document's author style sheet (re-parsed only when its text changes).
+fn document_sheet(it: &mut Interp) -> Option<Rc<crate::css::StyleSheet>> {
+    let sources = it.dom.style_sources.clone()?;
+    let doc = it.dom().ok()?;
+    let mut css = crate::embedded_css(doc, &sources.0, &sources.1);
+    if let Some(text) = doc.adopted_css.get(&doc.root) {
+        css.push_str(text);
+        css.push('\n');
+    }
+    if let Some((text, sheet)) = &it.dom.style_sheet
+        && *text == css
+    {
+        return Some(sheet.clone());
+    }
+    let sheet = Rc::new(crate::css::parse(&css));
+    it.dom.style_sheet = Some((css, sheet.clone()));
+    Some(sheet)
+}
+
 /// `getComputedStyle` value from the real cascade (None: property not modelled here).
 fn cascaded_value(it: &mut Interp, id: usize, name: &str) -> Option<String> {
     use crate::css::*;
     use crate::css_values::Dim;
-    let styles = document_styles(it)?;
-    let s = styles.nodes.get(id)?.as_deref()?;
+    let styles = node_style(it, id)?;
+    let s: &Style = &styles;
     let rect = it.dom.rects.get(&id).copied();
     Some(match name {
         n if n.starts_with("--") => s.vars.get(n).cloned().unwrap_or_default(),

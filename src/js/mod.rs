@@ -363,6 +363,8 @@ impl Runtime {
 
     pub fn eval_in_page(&mut self, document: &mut Document, source: &str) -> Result<String, String> {
         self.with(document, |it| {
+            // its own task: fresh work budget and deadline
+            it.begin_task();
             let prog = parser::parse_program(source, &mut it.interner, false).map_err(|e| alloc::format!("SyntaxError: {e}"))?;
             match it.run_program(&prog) {
                 Ok(v) => {

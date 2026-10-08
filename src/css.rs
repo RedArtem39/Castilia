@@ -1642,6 +1642,54 @@ pub fn compute_styles_with(doc: &Document, author: &StyleSheet, vp: Viewport, co
     compute_with_rules_ctx(doc, &active, vp, containers)
 }
 
+/// The computed style of one node, cascading only along its ancestor chain (for
+/// `getComputedStyle`; a whole-document cascade is far too slow to run per call).
+pub fn compute_node_style(doc: &Document, author: &StyleSheet, vp: Viewport, id: NodeId) -> Option<Style> {
+    let mut chain = Vec::new();
+    let mut cur = Some(id);
+    while let Some(c) = cur {
+        chain.push(c);
+        cur = doc.nodes.get(c)?.parent;
+        if chain.len() > 4096 {
+            break;
+        }
+    }
+    chain.reverse();
+    let ua = parse_origin(UA_CSS, 0);
+    let active = ActiveRules::new(&[&ua, author], vp);
+    let mut none = Style::initial();
+    none.display = Display::None;
+    let empty = Styles { nodes: Vec::new(), before: Vec::new(), after: Vec::new(), none };
+    let containers = BTreeMap::new();
+    let mut parent: Option<Style> = None;
+    let mut root_font = 16.0;
+    for &n in &chain {
+        let node = &doc.nodes[n];
+        let style = match &node.kind {
+            NodeKind::Document => {
+                let mut s = Style::initial();
+                s.display = Display::Block;
+                s
+            }
+            NodeKind::Element { .. } => {
+                let (s, _, _) = compute_element(doc, n, parent.as_ref(), &active, vp, root_font, &empty, &containers);
+                if node.tag() == Some("html") {
+                    root_font = s.font_size;
+                }
+                s
+            }
+            NodeKind::Text(_) => {
+                let mut s = parent.as_ref().map_or_else(Style::initial, Style::inherit_from);
+                s.display = Display::Inline;
+                s
+            }
+            NodeKind::Comment(_) | NodeKind::Fragment => parent.clone().unwrap_or_else(Style::initial),
+        };
+        parent = Some(style);
+    }
+    parent
+}
+
 pub fn compute_with_rules(doc: &Document, active: &ActiveRules, vp: Viewport) -> Styles {
     compute_with_rules_ctx(doc, active, vp, &BTreeMap::new())
 }

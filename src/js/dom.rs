@@ -102,6 +102,8 @@ pub struct DomState {
     pub style_sources: Option<Rc<(BTreeMap<NodeId, String>, String)>>,
     pub style_sheet: Option<(String, Rc<crate::css::StyleSheet>)>,
     pub style_cache: Option<(u64, Rc<crate::css::Styles>)>,
+    /// Per-node computed styles for `getComputedStyle`, valid for one DOM version.
+    pub node_style_cache: (u64, BTreeMap<usize, Rc<crate::css::Style>>),
     /// Cascade recomputations in this task and in total (both capped; stale styles are used beyond).
     pub style_recomputes: (u32, u32),
 }
@@ -137,6 +139,7 @@ impl Default for DomState {
             style_sources: None,
             style_sheet: None,
             style_cache: None,
+            node_style_cache: (u64::MAX, BTreeMap::new()),
             style_recomputes: (0, 0),
         }
     }
