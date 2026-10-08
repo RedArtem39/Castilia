@@ -104,6 +104,8 @@ impl<F: Fetcher> crate::js::Host for SharedFetcherHost<F> {
 
 #[derive(Debug)]
 pub struct PageReport {
+    /// HTTP status of the document response.
+    pub http_status: u16,
     pub html_bytes: usize,
     pub css_bytes: usize,
     pub dom_nodes: usize,
@@ -508,6 +510,7 @@ fn load_page_mode<F: Fetcher>(
         }
     }
     let report = PageReport {
+        http_status: response.status,
         html_bytes,
         css_bytes,
         dom_nodes,

@@ -110,7 +110,45 @@ pub struct View {
     pub len: usize,
 }
 
+impl TaKind {
+    pub fn is_big(self) -> bool {
+        matches!(self, TaKind::BI64 | TaKind::BU64)
+    }
+}
+
+/// Element value of a BigInt64/BigUint64 slot.
+fn big_value(kind: TaKind, b: &[u8]) -> Value {
+    let raw = u64::from_le_bytes(b[..8].try_into().unwrap_or([0; 8]));
+    let big = if kind == TaKind::BI64 { crate::js::bigint::BigInt::from_i64(raw as i64) } else { crate::js::bigint::BigInt::from_u64(raw) };
+    Value::BigInt(Rc::new(big))
+}
+
 impl View {
+    /// Element as a JS value (BigInt for the 64-bit integer kinds).
+    pub fn get_value(&self, i: usize) -> Option<Value> {
+        if !self.kind.is_big() {
+            return self.get(i).map(Value::Num);
+        }
+        if i >= self.len {
+            return None;
+        }
+        let b = self.bytes.borrow();
+        let at = self.offset + i * 8;
+        b.get(at..at + 8).map(|x| big_value(self.kind, x))
+    }
+
+    /// Store raw 64 bits (BigInt kinds).
+    pub fn set_bits(&self, i: usize, bits: u64) {
+        if i >= self.len {
+            return;
+        }
+        let mut b = self.bytes.borrow_mut();
+        let at = self.offset + i * 8;
+        if let Some(x) = b.get_mut(at..at + 8) {
+            x.copy_from_slice(&bits.to_le_bytes());
+        }
+    }
+
     pub fn get(&self, i: usize) -> Option<f64> {
         if i >= self.len {
             return None;
@@ -303,9 +341,14 @@ fn dv_access(it: &mut Interp, c: &Call, kind: TaKind, set: bool) -> Res {
     let at = off + pos as usize;
     let little = if set { c.arg(2).truthy() } else { c.arg(1).truthy() };
     if set {
-        let n = it.to_number(&c.arg(1))?;
         let mut tmp = [0u8; 8];
-        kind.write(&mut tmp, n);
+        if kind.is_big() {
+            let b = crate::js::builtins::number::to_bigint_strict(it, &c.arg(1))?;
+            tmp = b.to_u64_wrapping().to_le_bytes();
+        } else {
+            let n = it.to_number(&c.arg(1))?;
+            kind.write(&mut tmp, n);
+        }
         if !little {
             tmp[..size].reverse();
         }
@@ -316,6 +359,9 @@ fn dv_access(it: &mut Interp, c: &Call, kind: TaKind, set: bool) -> Res {
         tmp[..size].copy_from_slice(&bytes.borrow()[at..at + size]);
         if !little {
             tmp[..size].reverse();
+        }
+        if kind.is_big() {
+            return Ok(big_value(kind, &tmp));
         }
         Ok(Value::Num(kind.read(&tmp)))
     }

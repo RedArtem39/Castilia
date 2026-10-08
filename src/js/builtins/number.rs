@@ -617,7 +617,16 @@ fn uri_decode(it: &mut Interp, c: &Call, reserved: &str) -> Res {
 
 use crate::js::bigint::BigInt;
 
-fn to_bigint(it: &mut Interp, v: &Value) -> Res<BigInt> {
+/// ToBigInt (typed arrays, DataView): unlike `BigInt()`, Numbers are rejected.
+pub(crate) fn to_bigint_strict(it: &mut Interp, v: &Value) -> Res<BigInt> {
+    let p = it.to_primitive(v, "number")?;
+    if let Value::Num(n) = p {
+        return Err(it.error_ctl("TypeError", &alloc::format!("Cannot convert {} to a BigInt", num_to_string(n))));
+    }
+    to_bigint(it, &p)
+}
+
+pub(crate) fn to_bigint(it: &mut Interp, v: &Value) -> Res<BigInt> {
     let p = it.to_primitive(v, "number")?;
     match &p {
         Value::BigInt(b) => Ok((**b).clone()),

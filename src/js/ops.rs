@@ -124,7 +124,7 @@ impl Interp {
             }
             Class::Typed(v) => {
                 if let Some(i) = key.as_index() {
-                    return v.get(i).map(|n| Prop { slot: Slot::Data(Value::Num(n)), flags: WRITABLE | ENUMERABLE | CONFIGURABLE });
+                    return v.get_value(i).map(|n| Prop { slot: Slot::Data(n), flags: WRITABLE | ENUMERABLE | CONFIGURABLE });
                 }
             }
             Class::Str(s) => {
@@ -459,7 +459,7 @@ impl Interp {
                 Class::Typed(v) => {
                     let i = *n as usize;
                     if i as f64 == *n {
-                        return Ok(v.get(i).map_or(Value::Undefined, Value::Num));
+                        return Ok(v.get_value(i).unwrap_or(Value::Undefined));
                     }
                 }
                 _ => {}
@@ -477,7 +477,9 @@ impl Interp {
 
     pub fn set_member(&mut self, base: &Value, k: &Value, v: Value) -> Res<()> {
         if let (Value::Obj(o), Value::Num(n), Value::Num(x)) = (base, k, &v) {
-            if let Class::Typed(view) = &o.borrow().class {
+            if let Class::Typed(view) = &o.borrow().class
+                && !view.kind.is_big()
+            {
                 let i = *n as usize;
                 if i as f64 == *n {
                     view.set(i, *x);
@@ -527,11 +529,21 @@ impl Interp {
     pub fn set_obj(&mut self, o: &Obj, key: Key, v: Value, receiver: &Value) -> Res<bool> {
         // typed array elements: numeric keys never create properties
         if let Some(i) = key.as_index() {
-            let is_typed = matches!(o.borrow().class, Class::Typed(_));
-            if is_typed {
-                let n = self.to_number(&v)?;
-                if let Class::Typed(view) = &o.borrow().class {
-                    view.set(i, n);
+            let typed = match &o.borrow().class {
+                Class::Typed(view) => Some(view.kind.is_big()),
+                _ => None,
+            };
+            if let Some(big) = typed {
+                if big {
+                    let b = crate::js::builtins::number::to_bigint_strict(self, &v)?;
+                    if let Class::Typed(view) = &o.borrow().class {
+                        view.set_bits(i, b.to_u64_wrapping());
+                    }
+                } else {
+                    let n = self.to_number(&v)?;
+                    if let Class::Typed(view) = &o.borrow().class {
+                        view.set(i, n);
+                    }
                 }
                 return Ok(true);
             }

@@ -65,7 +65,9 @@ fn one_inner(url: &str) {
             // an (almost) empty document or an anti-bot interstitial means the server refused us, not a
             // rendering failure
             let wall = page.page.as_ref().is_some_and(|p| bot_wall(&p.document));
-            let status = if wall { "bot-wall" } else if r.html_bytes < 1024 && chars < 50 { "blocked" } else { "ok" };
+            // an error status with a small page: the server refused this client (TLS/bot filters)
+            let refused = r.http_status >= 400 && r.html_bytes < 20_000 && chars < 800;
+            let status = if wall { "bot-wall" } else if refused || (r.html_bytes < 1024 && chars < 50) { "blocked" } else { "ok" };
             println!(
                 "RESULT {status} ms={} nodes={} cmds={} text={} height={} scripts={} executed={} errors={} html={} chars={chars}",
                 start.elapsed().as_millis(),

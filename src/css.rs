@@ -441,7 +441,7 @@ pub struct Style {
     pub container_type: u8,
     pub container_name: Option<Rc<str>>,
 
-    pub vars: Rc<BTreeMap<String, String>>,
+    pub vars: Rc<crate::css_values::CssVars>,
 }
 
 impl Style {
@@ -551,7 +551,7 @@ impl Style {
             transform_origin: (Dim::pct(50.0), Dim::pct(50.0)),
             container_type: 0,
             container_name: None,
-            vars: Rc::new(BTreeMap::new()),
+            vars: Rc::new(crate::css_values::CssVars::default()),
         }
     }
 
@@ -1782,33 +1782,24 @@ fn build_style(parent: Option<&Style>, decls: &Cascaded, vp: Viewport, root_font
     }
     let _ = tag;
     // Custom properties first.
-    let mut vars: Option<BTreeMap<String, String>> = None;
+    let mut own: BTreeMap<String, Option<String>> = BTreeMap::new();
     for (_, d) in decls {
         if d.name.starts_with("--") {
-            let v = vars.get_or_insert_with(|| (*style.vars).clone());
-            match d.value.trim().to_ascii_lowercase().as_str() {
-                "initial" => {
-                    v.remove(&d.name);
-                }
-                "inherit" | "unset" => {
-                    match parent.and_then(|p| p.vars.get(&d.name)) {
-                        Some(pv) => v.insert(d.name.clone(), pv.clone()),
-                        None => v.remove(&d.name),
-                    };
-                }
-                _ => {
-                    v.insert(d.name.clone(), d.value.clone());
-                }
-            }
+            let value = match d.value.trim().to_ascii_lowercase().as_str() {
+                "initial" => None,
+                "inherit" | "unset" => parent.and_then(|p| p.vars.get(&d.name)).cloned(),
+                _ => Some(d.value.clone()),
+            };
+            own.insert(d.name.clone(), value);
         }
     }
-    if let Some(v) = vars {
-        style.vars = Rc::new(v);
+    if !own.is_empty() {
+        style.vars = Rc::new(crate::css_values::CssVars::child(&style.vars, own));
     }
     let vars = style.vars.clone();
     let init = Style::initial();
     let resolve = |d: &Declaration| -> Option<String> {
-        let v = substitute_vars(&d.value, &vars, 0)?;
+        let v = substitute_vars(&d.value, &*vars, 0)?;
         // an empty substitution is invalid at computed-value time: behaves like `unset`
         if v.trim().is_empty() && d.value.contains("var(") { Some("unset".to_string()) } else { Some(v) }
     };

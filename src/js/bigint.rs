@@ -433,6 +433,11 @@ impl BigInt {
         self.neg().sub(&BigInt::from_i64(1))
     }
 
+    /// The low 64 bits (two's complement), as stored by `BigUint64Array` / `setBigUint64`.
+    pub fn to_u64_wrapping(&self) -> u64 {
+        u64::from_str_radix(&self.as_uint_n(64).to_string_radix(16), 16).unwrap_or(0)
+    }
+
     /// `BigInt.asUintN(bits, x)`
     pub fn as_uint_n(&self, bits: usize) -> BigInt {
         let w = bits.div_ceil(32) + 1;

@@ -400,7 +400,71 @@ pub fn parse_number(value: &str) -> Option<f32> {
 }
 
 /// `var(--x, fallback)` substitution. Returns `None` when a variable is missing and has no fallback.
-pub fn substitute_vars(value: &str, vars: &BTreeMap<String, String>, depth: usize) -> Option<String> {
+/// Custom properties of an element: its own declarations over the parent's scope. Elements that
+/// declare nothing share the parent's scope, so design-token sheets with thousands of variables
+/// are not copied per element.
+#[derive(Debug, Default, PartialEq)]
+pub struct CssVars {
+    parent: Option<Rc<CssVars>>,
+    /// `None`: the variable was reset (`initial`) at this level.
+    own: BTreeMap<String, Option<String>>,
+    depth: u32,
+}
+
+impl CssVars {
+    pub fn get(&self, name: &str) -> Option<&String> {
+        let mut cur = Some(self);
+        while let Some(c) = cur {
+            if let Some(v) = c.own.get(name) {
+                return v.as_ref();
+            }
+            cur = c.parent.as_deref();
+        }
+        None
+    }
+
+    /// A scope with `own` declarations over `parent`; long chains are flattened to keep lookups short.
+    pub fn child(parent: &Rc<CssVars>, own: BTreeMap<String, Option<String>>) -> CssVars {
+        if parent.depth < 24 {
+            return CssVars { parent: Some(parent.clone()), own, depth: parent.depth + 1 };
+        }
+        let mut all = parent.flatten();
+        for (k, v) in own {
+            all.insert(k, v);
+        }
+        CssVars { parent: None, own: all, depth: 0 }
+    }
+
+    fn flatten(&self) -> BTreeMap<String, Option<String>> {
+        let mut out = match &self.parent {
+            Some(p) => p.flatten(),
+            None => BTreeMap::new(),
+        };
+        for (k, v) in &self.own {
+            out.insert(k.clone(), v.clone());
+        }
+        out
+    }
+}
+
+/// Variable lookup for `var()` substitution.
+pub trait VarLookup {
+    fn lookup(&self, name: &str) -> Option<&String>;
+}
+
+impl VarLookup for BTreeMap<String, String> {
+    fn lookup(&self, name: &str) -> Option<&String> {
+        self.get(name)
+    }
+}
+
+impl VarLookup for CssVars {
+    fn lookup(&self, name: &str) -> Option<&String> {
+        self.get(name)
+    }
+}
+
+pub fn substitute_vars<V: VarLookup + ?Sized>(value: &str, vars: &V, depth: usize) -> Option<String> {
     if !value.contains("var(") {
         return Some(value.to_string());
     }
@@ -440,7 +504,7 @@ pub fn substitute_vars(value: &str, vars: &BTreeMap<String, String>, depth: usiz
             Some(i) => (inner[..i].trim(), Some(inner[i + 1..].trim())),
             None => (inner.trim(), None),
         };
-        let replacement = match vars.get(name) {
+        let replacement = match vars.lookup(name) {
             Some(v) => substitute_vars(v, vars, depth + 1)?,
             None => substitute_vars(fallback?, vars, depth + 1)?,
         };
