@@ -147,7 +147,9 @@ impl Page {
                 page.runtime.add_import_map(&json, &mut page.document);
             }
         }
-        let mut modules: Vec<(usize, String, String)> = Vec::new();
+        // deferred scripts run after parsing, in document order: modules and classic `defer` ones
+        // (url is None for classic scripts)
+        let mut modules: Vec<(usize, Option<String>, String)> = Vec::new();
         // the list holds bare node ids: keep those nodes from being collected and reused
         page.runtime.interp.pinned_nodes = scripts.clone();
         for id in scripts.into_iter().take(config.max_scripts) {
@@ -188,10 +190,15 @@ impl Page {
                     Some(src) => crate::js::url::resolve(&base, src).unwrap_or_else(|| src.to_string()),
                     None => format!("{base}#inline-module-{id}"),
                 };
-                modules.push((id, url, source));
+                modules.push((id, Some(url), source));
                 continue;
             }
-            let external = page.document.nodes[id].attribute("src").is_some();
+            let node = &page.document.nodes[id];
+            let external = node.attribute("src").is_some();
+            if external && node.attribute("defer").is_some() && node.attribute("async").is_none() {
+                modules.push((id, None, source));
+                continue;
+            }
             match page.runtime.run_script(&source, Some(id), &mut page.document) {
                 Ok(()) => page.scripts.executed += 1,
                 Err(error) => page.scripts.errors.push(format!("script node {id}: {error}")),
@@ -203,9 +210,16 @@ impl Page {
         }
         // module scripts are deferred: they run after parsing, in document order
         for (id, url, source) in modules {
-            match page.runtime.run_module(&url, Some(&source), &mut page.document) {
+            let r = match &url {
+                Some(url) => page.runtime.run_module(url, Some(&source), &mut page.document),
+                None => page.runtime.run_script(&source, Some(id), &mut page.document),
+            };
+            match r {
                 Ok(()) => page.scripts.executed += 1,
-                Err(error) => page.scripts.errors.push(format!("module script node {id} ({url}): {error}")),
+                Err(error) => page.scripts.errors.push(format!("deferred script node {id} ({}): {error}", url.as_deref().unwrap_or("classic"))),
+            }
+            if url.is_none() {
+                page.runtime.run_pending_scripts(&mut page.document);
             }
         }
         page.runtime.interp.pinned_nodes.clear();
