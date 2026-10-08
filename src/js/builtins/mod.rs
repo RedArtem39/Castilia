@@ -133,6 +133,7 @@ pub fn new_interp() -> Interp {
         now: 0.0,
         doc: core::ptr::null_mut(),
         node_cache: BTreeMap::new(),
+        str_cache: Default::default(),
         dom_gc_next: 20_000,
         pinned_nodes: Vec::new(),
         gen_stack: Vec::new(),

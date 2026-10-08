@@ -145,7 +145,7 @@ fn char_at(it: &mut Interp, c: &Call) -> Res {
     if n < 0.0 {
         return Ok(Value::str(""));
     }
-    Ok(match u16_at(&s, n as usize) {
+    Ok(match it.str_at16(&s, n as usize) {
         Some(u) => Value::string(from_u16(&[u])),
         None => Value::str(""),
     })
@@ -157,7 +157,7 @@ fn char_code_at(it: &mut Interp, c: &Call) -> Res {
     if n < 0.0 {
         return Ok(Value::Num(f64::NAN));
     }
-    Ok(Value::Num(u16_at(&s, n as usize).map_or(f64::NAN, |u| u as f64)))
+    Ok(Value::Num(it.str_at16(&s, n as usize).map_or(f64::NAN, |u| u as f64)))
 }
 
 fn code_point_at(it: &mut Interp, c: &Call) -> Res {
@@ -167,9 +167,9 @@ fn code_point_at(it: &mut Interp, c: &Call) -> Res {
         return Ok(Value::Undefined);
     }
     let i = n as usize;
-    let Some(u) = u16_at(&s, i) else { return Ok(Value::Undefined) };
+    let Some(u) = it.str_at16(&s, i) else { return Ok(Value::Undefined) };
     if (0xD800..0xDC00).contains(&u) {
-        if let Some(l) = u16_at(&s, i + 1) {
+        if let Some(l) = it.str_at16(&s, i + 1) {
             if (0xDC00..0xE000).contains(&l) {
                 return Ok(Value::Num((0x10000 + ((u as u32 - 0xD800) << 10) + (l as u32 - 0xDC00)) as f64));
             }

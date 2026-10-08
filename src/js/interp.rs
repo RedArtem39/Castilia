@@ -177,6 +177,8 @@ pub struct Interp {
     pub now: f64,
     pub doc: *mut Document,
     pub node_cache: BTreeMap<usize, Obj>,
+    /// UTF-16 views of long strings being indexed (see [`super::value::StrCache`]).
+    pub str_cache: super::value::StrCache,
     /// Live node count that triggers the next DOM collection.
     pub dom_gc_next: usize,
     /// Nodes the embedder refers to by id across tasks (never collected while listed).
@@ -580,6 +582,22 @@ impl Interp {
             return Err(self.error_ctl("TypeError", &format!("{} is not a function", self.describe(f))));
         };
         self.call_obj(fo, this, args, None)
+    }
+
+    /// UTF-16 length of a string value (cached for long strings).
+    pub fn str_len16(&mut self, s: &JsStr) -> usize {
+        if s.len() < super::value::STR_CACHE_MIN {
+            return super::value::u16_len(s);
+        }
+        self.str_cache.info(s).len
+    }
+
+    /// UTF-16 code unit `i` of a string value (cached for long strings).
+    pub fn str_at16(&mut self, s: &JsStr, i: usize) -> Option<u16> {
+        if s.len() < super::value::STR_CACHE_MIN {
+            return super::value::u16_at(s, i);
+        }
+        self.str_cache.info(s).at(s, i)
     }
 
     /// True when the host stack used since the task started exceeds the budget.

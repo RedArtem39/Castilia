@@ -408,10 +408,12 @@ impl Interp {
             Value::Str(s) => {
                 if let Key::S(k) = key {
                     if &**k == "length" {
-                        return Ok(Value::Num(u16_len(s) as f64));
+                        let s = s.clone();
+                        return Ok(Value::Num(self.str_len16(&s) as f64));
                     }
                     if let Some(i) = key.as_index() {
-                        return Ok(u16_at(s, i).map_or(Value::Undefined, |u| Value::string(from_u16(&[u]))));
+                        let s = s.clone();
+                        return Ok(self.str_at16(&s, i).map_or(Value::Undefined, |u| Value::string(from_u16(&[u]))));
                     }
                 }
                 let p = self.protos().string.clone();
@@ -468,7 +470,8 @@ impl Interp {
         if let (Value::Str(s), Value::Num(n)) = (base, k) {
             let i = *n as usize;
             if i as f64 == *n {
-                return Ok(u16_at(s, i).map_or(Value::Undefined, |u| Value::string(from_u16(&[u]))));
+                let s = s.clone();
+                return Ok(self.str_at16(&s, i).map_or(Value::Undefined, |u| Value::string(from_u16(&[u]))));
             }
         }
         let key = self.to_key(k)?;

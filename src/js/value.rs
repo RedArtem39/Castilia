@@ -715,6 +715,59 @@ pub fn to_integer(n: f64) -> f64 {
 // UTF-16 string helpers (JS strings are indexed by UTF-16 code units)
 // ---------------------------------------------------------------------------
 
+/// UTF-16 view of a long string, cached per string by the interpreter: `is_ascii` and
+/// `encode_utf16` are linear, and loops like `for (i = 0; i < s.length; i++) s[i]` would
+/// otherwise be quadratic.
+pub struct StrInfo {
+    pub ascii: bool,
+    pub len: usize,
+    pub units: Option<Vec<u16>>,
+}
+
+impl StrInfo {
+    pub fn new(s: &str) -> StrInfo {
+        if s.is_ascii() {
+            StrInfo { ascii: true, len: s.len(), units: None }
+        } else {
+            let units: Vec<u16> = s.encode_utf16().collect();
+            StrInfo { ascii: false, len: units.len(), units: Some(units) }
+        }
+    }
+    pub fn at(&self, s: &str, i: usize) -> Option<u16> {
+        if self.ascii { s.as_bytes().get(i).map(|b| *b as u16) } else { self.units.as_ref()?.get(i).copied() }
+    }
+}
+
+/// Strings shorter than this are scanned directly.
+pub const STR_CACHE_MIN: usize = 64;
+
+/// Direct-mapped cache of [`StrInfo`]; a `Weak` keeps each entry's allocation from being reused
+/// while it is cached, so a pointer match always means the same string.
+pub struct StrCache {
+    slots: Vec<Option<(alloc::rc::Weak<str>, Rc<StrInfo>)>>,
+}
+
+impl Default for StrCache {
+    fn default() -> Self {
+        StrCache { slots: (0..64).map(|_| None).collect() }
+    }
+}
+
+impl StrCache {
+    pub fn info(&mut self, s: &JsStr) -> Rc<StrInfo> {
+        let ptr = Rc::as_ptr(s) as *const u8 as usize;
+        let slot = (ptr >> 4) % self.slots.len();
+        if let Some((w, info)) = &self.slots[slot]
+            && w.upgrade().is_some_and(|live| Rc::ptr_eq(&live, s))
+        {
+            return info.clone();
+        }
+        let info = Rc::new(StrInfo::new(s));
+        self.slots[slot] = Some((Rc::downgrade(s), info.clone()));
+        info
+    }
+}
+
 pub fn u16_len(s: &str) -> usize {
     if s.is_ascii() { s.len() } else { s.encode_utf16().count() }
 }
