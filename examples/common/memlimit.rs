@@ -10,6 +10,10 @@ static LIMIT: AtomicUsize = AtomicUsize::new(1536 << 20);
 static PEAK: AtomicUsize = AtomicUsize::new(0);
 /// `CASTILIA_OOM_TRACE` read once at startup (the allocator itself must not allocate).
 static OOM_TRACE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+/// `CASTILIA_ALLOC_SAMPLE=MB`: print where an allocation happens every that many MB of growth.
+static SAMPLE_EVERY: AtomicUsize = AtomicUsize::new(0);
+static NEXT_SAMPLE: AtomicUsize = AtomicUsize::new(usize::MAX);
+static SAMPLING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// Highest heap usage seen so far (bytes).
 #[allow(dead_code)]
@@ -28,11 +32,38 @@ pub fn init() {
         LIMIT.store(mb << 20, Ordering::Relaxed);
     }
     OOM_TRACE.store(std::env::var_os("CASTILIA_OOM_TRACE").is_some(), Ordering::Relaxed);
+    if let Some(mb) = std::env::var("CASTILIA_ALLOC_SAMPLE").ok().and_then(|v| v.parse::<usize>().ok()) {
+        SAMPLE_EVERY.store(mb << 20, Ordering::Relaxed);
+        NEXT_SAMPLE.store(mb << 20, Ordering::Relaxed);
+    }
+}
+
+fn sample(now: usize) {
+    use std::io::Write;
+    if SAMPLING.swap(true, Ordering::SeqCst) {
+        return;
+    }
+    NEXT_SAMPLE.store(now + SAMPLE_EVERY.load(Ordering::Relaxed), Ordering::Relaxed);
+    let mut lines = Vec::new();
+    backtrace::trace(|frame| {
+        backtrace::resolve_frame(frame, |sym| {
+            let name = sym.name().map(|n| n.to_string()).unwrap_or_default();
+            if name.starts_with("castilia::") && lines.len() < 6 {
+                lines.push(format!("{name}:{}", sym.lineno().unwrap_or(0)));
+            }
+        });
+        lines.len() < 6
+    });
+    let _ = writeln!(std::io::stderr(), "ALLOC {} MB: {}", now >> 20, lines.join(" < "));
+    SAMPLING.store(false, Ordering::SeqCst);
 }
 
 fn over(size: usize) -> bool {
     let now = USED.fetch_add(size, Ordering::Relaxed) + size;
     PEAK.fetch_max(now, Ordering::Relaxed);
+    if now >= NEXT_SAMPLE.load(Ordering::Relaxed) {
+        sample(now);
+    }
     now > LIMIT.load(Ordering::Relaxed)
 }
 
