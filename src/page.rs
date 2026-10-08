@@ -148,8 +148,11 @@ impl Page {
             }
         }
         let mut modules: Vec<(usize, String, String)> = Vec::new();
+        // the list holds bare node ids: keep those nodes from being collected and reused
+        page.runtime.interp.pinned_nodes = scripts.clone();
         for id in scripts.into_iter().take(config.max_scripts) {
-            if !page.document.is_connected(id) {
+            // ids of collected nodes are reused: make sure this is still the script we listed
+            if !page.document.is_connected(id) || page.document.nodes[id].tag() != Some("script") {
                 continue;
             }
             let node = &page.document.nodes[id];
@@ -200,6 +203,7 @@ impl Page {
                 Err(error) => page.scripts.errors.push(format!("module script node {id} ({url}): {error}")),
             }
         }
+        page.runtime.interp.pinned_nodes.clear();
         page.runtime.dom_content_loaded(&mut page.document);
         page.runtime.advance(&mut page.document, config.settle_ms, config.settle_fires);
         page.runtime.load(&mut page.document);
@@ -232,6 +236,9 @@ impl Page {
     }
 
     fn absorb_sheets(&mut self) {
+        // collected <link> nodes may have had their ids reused
+        let doc = &self.document;
+        self.link_css.retain(|id, _| doc.nodes.get(*id).is_some_and(|n| n.tag() == Some("link")));
         let new = self.runtime.take_new_sheets();
         if !new.is_empty() {
             for (id, css) in new {

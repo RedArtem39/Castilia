@@ -430,6 +430,7 @@ impl Interp {
     }
 
     pub fn dom_set_inner_html(&mut self, id: NodeId, src: &str) -> Res<()> {
+        self.maybe_collect_dom_in_native();
         let doc = self.dom()?;
         let removed = core::mem::take(&mut doc.nodes[id].children);
         for &c in &removed {

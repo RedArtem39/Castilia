@@ -311,13 +311,53 @@ fn object_get_proto(it: &mut Interp, c: &Call) -> Res {
     Ok(p.map_or(Value::Null, Value::Obj))
 }
 
+/// Would making `p` the prototype of `o` create a cycle (or change a non-extensible object)?
+fn proto_change_ok(o: &Obj, p: &Option<Obj>) -> bool {
+    let same = match (&o.borrow().proto, p) {
+        (Some(a), Some(b)) => a.ptr_eq(b),
+        (None, None) => true,
+        _ => false,
+    };
+    if same {
+        return true;
+    }
+    if !o.borrow().extensible {
+        return false;
+    }
+    let mut cur = p.clone();
+    let mut steps = 0;
+    while let Some(x) = cur {
+        if x.ptr_eq(o) {
+            return false;
+        }
+        // a Proxy ends the walk (its [[GetPrototypeOf]] is a trap), as in the spec
+        if matches!(x.borrow().class, Class::Proxy { .. }) || steps > 100_000 {
+            break;
+        }
+        steps += 1;
+        cur = x.borrow().proto.clone();
+    }
+    true
+}
+
+fn set_proto_checked(it: &mut Interp, o: &Obj, v: Value, throw: bool) -> Res<bool> {
+    let p = match v {
+        Value::Obj(p) => Some(p),
+        Value::Null => None,
+        _ => return if throw { it.type_error("Object prototype may only be an Object or null") } else { Ok(false) },
+    };
+    if !proto_change_ok(o, &p) {
+        return if throw { it.type_error("Cyclic __proto__ value") } else { Ok(false) };
+    }
+    o.borrow_mut().proto = p;
+    Ok(true)
+}
+
 fn object_set_proto(it: &mut Interp, c: &Call) -> Res {
     if let Value::Obj(o) = c.arg(0) {
-        match c.arg(1) {
-            Value::Obj(p) => o.borrow_mut().proto = Some(p),
-            Value::Null => o.borrow_mut().proto = None,
-            _ => return it.type_error("Object prototype may only be an Object or null"),
-        }
+        set_proto_checked(it, &o, c.arg(1), true)?;
+    } else if !matches!(c.arg(1), Value::Obj(_) | Value::Null) {
+        return it.type_error("Object prototype may only be an Object or null");
     }
     Ok(c.arg(0))
 }
@@ -508,12 +548,10 @@ fn proto_get_proto(it: &mut Interp, c: &Call) -> Res {
     Ok(p.map_or(Value::Null, Value::Obj))
 }
 
-fn proto_set_proto(_: &mut Interp, c: &Call) -> Res {
+fn proto_set_proto(it: &mut Interp, c: &Call) -> Res {
     if let Value::Obj(o) = &c.this {
-        match c.arg(0) {
-            Value::Obj(p) => o.borrow_mut().proto = Some(p),
-            Value::Null => o.borrow_mut().proto = None,
-            _ => {}
+        if matches!(c.arg(0), Value::Obj(_) | Value::Null) {
+            set_proto_checked(it, o, c.arg(0), true)?;
         }
     }
     Ok(Value::Undefined)
@@ -895,8 +933,8 @@ fn setup_reflect(it: &mut Interp) {
     });
     it.def_method(&r, "getPrototypeOf", 1, object_get_proto);
     it.def_method(&r, "setPrototypeOf", 2, |it, c| {
-        object_set_proto(it, c)?;
-        Ok(Value::Bool(true))
+        let Value::Obj(o) = c.arg(0) else { return it.type_error("Reflect.setPrototypeOf called on non-object") };
+        Ok(Value::Bool(set_proto_checked(it, &o, c.arg(1), false)?))
     });
     it.def_method(&r, "getOwnPropertyDescriptor", 2, object_get_own_desc);
     it.def_method(&r, "isExtensible", 1, object_is_extensible);

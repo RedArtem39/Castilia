@@ -73,6 +73,9 @@ pub struct EngineConfig {
     pub max_scripts: usize,
     /// Scripts larger than this (bytes) are skipped.
     pub max_script_bytes: usize,
+    /// Host stack the engine may use below the point where a task starts (bytes); deeper
+    /// recursion throws `RangeError` instead of overflowing. Keep it under the thread's stack size.
+    pub max_stack_bytes: usize,
 }
 
 impl EngineConfig {
@@ -92,6 +95,7 @@ impl EngineConfig {
             trace_errors: false,
             max_scripts: 256,
             max_script_bytes: 24 * 1024 * 1024,
+            max_stack_bytes: 1 << 20,
         }
     }
 

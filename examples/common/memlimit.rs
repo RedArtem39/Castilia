@@ -8,6 +8,8 @@ pub struct Limited;
 static USED: AtomicUsize = AtomicUsize::new(0);
 static LIMIT: AtomicUsize = AtomicUsize::new(1536 << 20);
 static PEAK: AtomicUsize = AtomicUsize::new(0);
+/// `CASTILIA_OOM_TRACE` read once at startup (the allocator itself must not allocate).
+static OOM_TRACE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 /// Highest heap usage seen so far (bytes).
 #[allow(dead_code)]
@@ -25,6 +27,7 @@ pub fn init() {
     if let Some(mb) = std::env::var("CASTILIA_MEM_MB").ok().and_then(|v| v.parse::<usize>().ok()) {
         LIMIT.store(mb << 20, Ordering::Relaxed);
     }
+    OOM_TRACE.store(std::env::var_os("CASTILIA_OOM_TRACE").is_some(), Ordering::Relaxed);
 }
 
 fn over(size: usize) -> bool {
@@ -34,8 +37,26 @@ fn over(size: usize) -> bool {
 }
 
 fn out_of_memory() -> ! {
-    // no allocation here: write directly and leave
     use std::io::Write;
+    // CASTILIA_OOM_TRACE: lift the cap and print where the budget ran out (diagnostics only)
+    static TRACING: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    if OOM_TRACE.load(Ordering::Relaxed) && !TRACING.swap(true, Ordering::SeqCst) {
+        LIMIT.store(usize::MAX, Ordering::Relaxed);
+        let _ = writeln!(std::io::stderr(), "memory limit exceeded at (innermost frames):");
+        let mut n = 0;
+        backtrace::trace(|frame| {
+            backtrace::resolve_frame(frame, |sym| {
+                let name = sym.name().map(|n| n.to_string()).unwrap_or_default();
+                let line = sym.lineno().unwrap_or(0);
+                let file = sym.filename().and_then(|f| f.file_name()).map(|f| f.to_string_lossy().into_owned()).unwrap_or_default();
+                let _ = writeln!(std::io::stderr(), "  {name} ({file}:{line})");
+            });
+            n += 1;
+            n < 80
+        });
+        std::process::exit(3)
+    }
+    // no allocation here: write directly and leave
     let _ = std::io::stderr().write_all(b"memory limit exceeded\n");
     std::process::exit(3)
 }

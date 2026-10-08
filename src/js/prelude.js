@@ -573,12 +573,7 @@
 
   // ---- DOM helpers -----------------------------------------------------------
   class DOMParser {
-    parseFromString(str, type) {
-      const doc = document.implementation.createHTMLDocument('');
-      doc.body.innerHTML = String(str);
-      doc.documentElement = doc.body;
-      return doc;
-    }
+    parseFromString(str, type) { return __parseDocument(String(str), String(type || 'text/html')); }
   }
   expose('DOMParser', DOMParser);
   class XMLSerializer { serializeToString(n) { return n.outerHTML !== undefined ? n.outerHTML : n.textContent; } }
@@ -694,18 +689,29 @@
       while (p.lastChild) p = p.lastChild;
       return p;
     }
+    // the reference node was removed since it was returned: continue from the node that preceded
+    // it (the spec's pre-removing steps, applied lazily)
+    _repair() {
+      const r = this.referenceNode;
+      if (r === this.root || this.root.contains(r)) return;
+      const p = this._prev;
+      if (p && (p === this.root || this.root.contains(p))) { this.referenceNode = p; this.pointerBeforeReferenceNode = false; }
+      else { this.referenceNode = this.root; this.pointerBeforeReferenceNode = true; }
+    }
     nextNode() {
+      this._repair();
       let n = this.referenceNode, before = this.pointerBeforeReferenceNode;
       for (;;) {
         if (before) before = false; else { n = this._following(n); if (!n) return null; }
-        if (acceptNode(this, n) === FILTER_ACCEPT) { this.referenceNode = n; this.pointerBeforeReferenceNode = false; return n; }
+        if (acceptNode(this, n) === FILTER_ACCEPT) { this._prev = this._preceding(n); this.referenceNode = n; this.pointerBeforeReferenceNode = false; return n; }
       }
     }
     previousNode() {
+      this._repair();
       let n = this.referenceNode, before = this.pointerBeforeReferenceNode;
       for (;;) {
         if (!before) before = true; else { n = this._preceding(n); if (!n) return null; }
-        if (acceptNode(this, n) === FILTER_ACCEPT) { this.referenceNode = n; this.pointerBeforeReferenceNode = true; return n; }
+        if (acceptNode(this, n) === FILTER_ACCEPT) { this._prev = this._preceding(n); this.referenceNode = n; this.pointerBeforeReferenceNode = true; return n; }
       }
     }
     detach() {}

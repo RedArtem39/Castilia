@@ -5,6 +5,7 @@ pub mod builtins;
 pub mod dom;
 pub mod dom_extra;
 pub mod dom_setup;
+pub mod domgc;
 pub mod events;
 pub mod gc;
 pub mod window;
@@ -59,6 +60,7 @@ impl Runtime {
         let it = &mut self.interp;
         it.tier = config.tier();
         it.max_depth = config.max_native_depth;
+        it.max_stack = config.max_stack_bytes;
         it.tick_limit = config.task_budget;
         it.max_frames = config.max_frames;
         it.heap.threshold = config.gc_threshold;

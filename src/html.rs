@@ -1267,7 +1267,7 @@ pub fn decode_entities(input: &str, in_attr: bool) -> String {
 // Serialization
 // ---------------------------------------------------------------------------
 
-fn escape_text(input: &str, out: &mut String) {
+pub(crate) fn escape_text(input: &str, out: &mut String) {
     for c in input.chars() {
         match c {
             '&' => out.push_str("&amp;"),

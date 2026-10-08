@@ -283,8 +283,18 @@ fn setup_node(it: &mut Interp, p: &Obj) {
         if matches!(node_kind(it, id), NodeKind::Document) {
             return Ok(Value::Null);
         }
-        let root = it.dom()?.root;
-        Ok(it.wrap(root))
+        let d = it.dom()?;
+        let mut top = id;
+        let mut hops = 0;
+        while let Some(p) = d.nodes[top].parent {
+            top = p;
+            hops += 1;
+            if hops > 100_000 {
+                break;
+            }
+        }
+        let owner = if matches!(d.nodes[top].kind, NodeKind::Document) { top } else { d.root };
+        Ok(it.wrap(owner))
     });
     it.def_getter(p, "isConnected", |it, c| {
         let id = it.this_node(c)?;
@@ -1115,21 +1125,53 @@ fn create_element(it: &mut Interp, tag: &str) -> Res<Value> {
     Ok(it.wrap(id))
 }
 
+/// The document a `Document.prototype` method was called on: the main document, or a separate
+/// one made by `DOMParser` / `createHTMLDocument` (a parentless Document node).
+fn this_doc(it: &mut Interp, c: &Call) -> Res<NodeId> {
+    let main = it.dom()?.root;
+    if let Value::Obj(o) = &c.this
+        && let Class::Node(id) = o.borrow().class
+        && matches!(it.dom()?.nodes.get(id).map(|n| &n.kind), Some(NodeKind::Document))
+    {
+        return Ok(id);
+    }
+    Ok(main)
+}
+
+/// `<html>`, and its `<head>`/`<body>` children, of a separate document.
+fn doc_parts(it: &mut Interp, doc: NodeId) -> Res<(Option<NodeId>, Option<NodeId>, Option<NodeId>)> {
+    let d = it.dom()?;
+    let html = d.nodes[doc].children.iter().copied().find(|&c| d.nodes[c].tag() == Some("html"));
+    let child = |t: &str| html.and_then(|h| d.nodes[h].children.iter().copied().find(|&c| d.nodes[c].tag() == Some(t)));
+    Ok((html, child("head"), child("body")))
+}
+
 fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
     let _ = fragment;
-    it.def_getter(p, "documentElement", |it, _| {
+    it.def_getter(p, "documentElement", |it, c| {
+        let doc = this_doc(it, c)?;
         let d = it.dom()?;
-        let h = d.nodes[d.root].children.iter().copied().find(|&c| d.nodes[c].tag() == Some("html"));
+        let h = d.nodes[doc].children.iter().copied().find(|&c| matches!(d.nodes[c].kind, NodeKind::Element { .. }));
         Ok(opt_wrap(it, h))
     });
-    it.def_getter(p, "head", |it, _| {
+    it.def_getter(p, "head", |it, c| {
+        let doc = this_doc(it, c)?;
+        if doc != it.dom()?.root {
+            let (_, h, _) = doc_parts(it, doc)?;
+            return Ok(opt_wrap(it, h));
+        }
         let h = it.dom()?.head;
         Ok(it.wrap(h))
     });
     it.def_accessor(
         p,
         "body",
-        |it, _| {
+        |it, c| {
+            let doc = this_doc(it, c)?;
+            if doc != it.dom()?.root {
+                let (_, _, b) = doc_parts(it, doc)?;
+                return Ok(opt_wrap(it, b));
+            }
             let b = it.dom()?.body;
             Ok(it.wrap(b))
         },
@@ -1149,9 +1191,10 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
     it.def_accessor(
         p,
         "title",
-        |it, _| {
+        |it, c| {
+            let root = this_doc(it, c)?;
             let d = it.dom()?;
-            let t = by_tag(it, d.root, "title").first().copied();
+            let t = by_tag(it, root, "title").first().copied();
             let s = t.and_then(|t| d.text_content(t)).unwrap_or_default();
             Ok(Value::string(s.split_whitespace().collect::<Vec<_>>().join(" ")))
         },
@@ -1237,13 +1280,13 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
     it.def_method(p, "adoptNode", 1, |_, c| Ok(c.arg(0)));
     it.def_method(p, "getElementsByTagName", 1, |it, c| {
         let t = it.arg_str(c, 0)?.to_ascii_lowercase();
-        let root = it.dom()?.root;
+        let root = this_doc(it, c)?;
         let r = by_tag(it, root, &t);
         Ok(it.node_list(&r))
     });
     it.def_method(p, "getElementsByClassName", 1, |it, c| {
         let s = it.arg_str(c, 0)?;
-        let root = it.dom()?.root;
+        let root = this_doc(it, c)?;
         let r = by_class(it, root, &s);
         Ok(it.node_list(&r))
     });
@@ -1376,22 +1419,16 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
         let o = it.new_object();
         it.def_method(&o, "hasFeature", 0, |_, _| Ok(Value::Bool(true)));
         it.def_method(&o, "createHTMLDocument", 1, |it, c| {
-            // A detached document is approximated by a fragment holder.
-            let t = if c.args.is_empty() { Rc::from("") } else { it.arg_str(c, 0)? };
-            let frag = it.dom()?.push(NodeKind::Fragment, None);
-            let w = it.wrap(frag);
-            if let Value::Obj(o) = &w {
-                let body = it.dom()?.create_element("body");
-                it.dom_insert(frag, body, None)?;
-                let bw = it.wrap(body);
-                it.define_data(o, Key::str("body"), bw, ALL);
-                it.define_data(o, Key::str("title"), Value::Str(t), ALL);
-                for n in ["createElement", "createTextNode", "createComment", "createDocumentFragment"] {
-                    let f = it.get_str(&Value::Obj(it.protos().document.clone()), n)?;
-                    it.define_data(o, Key::str(n), f, HIDDEN);
-                }
+            let title = if c.args.is_empty() { None } else { Some(it.arg_str(c, 0)?) };
+            let mut html = String::from("<!doctype html><html><head>");
+            if let Some(t) = &title {
+                html.push_str("<title>");
+                crate::html::escape_text(t, &mut html);
+                html.push_str("</title>");
             }
-            Ok(w)
+            html.push_str("</head><body></body></html>");
+            let doc = import_document(it, &html)?;
+            Ok(it.wrap(doc))
         });
         Ok(Value::Obj(o))
     });
@@ -1402,6 +1439,21 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
         Ok(v)
     }));
     it.def_method(p, "close", 0, |_, _| Ok(Value::Undefined));
+}
+
+/// Parse `source` as a whole HTML document into a separate (parentless) Document node.
+pub fn import_document(it: &mut Interp, source: &str) -> Res<NodeId> {
+    let parsed = crate::html::parse(source);
+    let d = it.dom()?;
+    let doc = d.push(NodeKind::Document, None);
+    let mut stack: Vec<(NodeId, NodeId)> = parsed.nodes[parsed.root].children.iter().rev().map(|&c| (c, doc)).collect();
+    while let Some((src, parent)) = stack.pop() {
+        let n = d.push(parsed.nodes[src].kind.clone(), Some(parent));
+        for &c in parsed.nodes[src].children.iter().rev() {
+            stack.push((c, n));
+        }
+    }
+    Ok(doc)
 }
 
 fn collection(it: &mut Interp, tag: &str) -> Res {

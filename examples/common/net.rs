@@ -39,8 +39,16 @@ impl HostFetcher {
     }
 }
 
+/// `CASTILIA_BLOCK=a,b`: refuse URLs containing any of these substrings (diagnostics).
+fn blocked(url: &str) -> bool {
+    std::env::var("CASTILIA_BLOCK").is_ok_and(|v| v.split(',').any(|p| !p.is_empty() && url.contains(p)))
+}
+
 impl Fetcher for HostFetcher {
     fn get(&mut self, url: &str, max_bytes: usize) -> Result<Response, String> {
+        if blocked(url) {
+            return Err(String::from("blocked by CASTILIA_BLOCK"));
+        }
         let parsed = Url::parse(url).map_err(|error| error.to_string())?;
         if !matches!(parsed.scheme(), "http" | "https") {
             return Err(String::from("only HTTP and HTTPS URLs are supported"));
@@ -56,6 +64,9 @@ impl Fetcher for HostFetcher {
     }
 
     fn request(&mut self, method: &str, url: &str, headers: &[(String, String)], body: Option<&str>, max_bytes: usize) -> Result<Response, String> {
+        if blocked(url) {
+            return Err(String::from("blocked by CASTILIA_BLOCK"));
+        }
         let parsed = Url::parse(url).map_err(|error| error.to_string())?;
         if !matches!(parsed.scheme(), "http" | "https") {
             return Err(String::from("only HTTP and HTTPS URLs are supported"));

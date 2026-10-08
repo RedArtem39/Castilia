@@ -2016,6 +2016,14 @@ fn setup_custom_elements(it: &mut Interp) {
         }
         Ok(Value::Undefined)
     });
+    // DOMParser: a separate document (XML types are parsed with the HTML parser)
+    let g = it.global.clone();
+    let f = it.new_native("__parseDocument", 2, |it, c| {
+        let s = it.arg_str(c, 0)?;
+        let doc = super::dom_setup::import_document(it, &s)?;
+        Ok(it.wrap(doc))
+    });
+    it.define_data(&g, Key::str("__parseDocument"), Value::Obj(f), HIDDEN);
     // CSSOM bridges: current sheet text of a <style>/<link>, and replacing it after rule edits
     let g = it.global.clone();
     let f = it.new_native("__sheetStamp", 1, |it, c| {

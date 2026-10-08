@@ -402,6 +402,7 @@ impl Interp {
     }
 
     pub fn get_v(&mut self, v: &Value, key: &Key) -> Res {
+        self.check_stack()?;
         match v {
             Value::Obj(o) => self.get_obj(o, key, v),
             Value::Str(s) => {

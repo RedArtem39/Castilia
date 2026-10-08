@@ -59,6 +59,8 @@ pub struct Document {
     /// Sheet text of `<style>`/`<link>` elements whose rules scripts changed through the CSSOM
     /// (`insertRule`/`deleteRule`); replaces the element's own text when styles are collected.
     pub sheet_override: alloc::collections::BTreeMap<NodeId, alloc::string::String>,
+    /// Ids of collected nodes (tombstones) that `push` reuses.
+    pub free: Vec<NodeId>,
 }
 
 impl Document {
@@ -234,6 +236,7 @@ impl Document {
             shadow_roots: alloc::collections::BTreeMap::new(),
             adopted_css: alloc::collections::BTreeMap::new(),
             sheet_override: alloc::collections::BTreeMap::new(),
+            free: Vec::new(),
         };
         document.root = document.push(NodeKind::Document, None);
         let html = document.push(
@@ -261,12 +264,17 @@ impl Document {
     }
 
     pub(crate) fn push(&mut self, kind: NodeKind, parent: Option<NodeId>) -> NodeId {
-        let id = self.nodes.len();
-        self.nodes.push(Node {
-            kind,
-            parent,
-            children: Vec::new(),
-        });
+        let node = Node { kind, parent, children: Vec::new() };
+        let id = match self.free.pop() {
+            Some(id) => {
+                self.nodes[id] = node;
+                id
+            }
+            None => {
+                self.nodes.push(node);
+                self.nodes.len() - 1
+            }
+        };
         if let Some(parent) = parent {
             self.nodes[parent].children.push(id);
         }

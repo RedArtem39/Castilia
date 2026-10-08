@@ -13,13 +13,24 @@ mod net;
 
 #[path = "common/svg.rs"]
 mod svg;
+#[path = "common/sehtrace.rs"]
+mod sehtrace;
 
 use castilia::network::{fetch_images, load_page, load_reader_page};
 use std::{env, fs};
 
 fn main() {
     memlimit::init();
-    let h = std::thread::Builder::new().stack_size(256 << 20).spawn(|| real_main().map_err(|e| e.to_string())).unwrap();
+    let argv: Vec<String> = env::args().collect();
+    if argv.get(1).map(String::as_str) == Some("--resolve") {
+        sehtrace::resolve(&argv[2..]);
+        return;
+    }
+    let stack_mb: usize = std::env::var("CASTILIA_STACK_MB").ok().and_then(|v| v.parse().ok()).unwrap_or(256);
+    let h = std::thread::Builder::new().stack_size(stack_mb << 20).spawn(|| {
+        sehtrace::install_on_this_thread();
+        real_main().map_err(|e| e.to_string())
+    }).unwrap();
     if let Err(e) = h.join().unwrap() {
         eprintln!("error: {e}");
         std::process::exit(1);
@@ -33,6 +44,8 @@ fn real_main() -> Result<(), Box<dyn std::error::Error>> {
         config.exec_mode = m;
     }
     config.max_native_depth = 1000;
+    // the engine thread has a 256 MB stack
+    config.max_stack_bytes = 64 << 20;
     config.trace_errors = env::var("CASTILIA_TRACE").is_ok();
     if env::var("CASTILIA_NO_JS").is_ok() {
         config.max_scripts = 0;

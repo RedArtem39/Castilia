@@ -166,6 +166,9 @@ pub struct Interp {
     pub symbol_registry: BTreeMap<String, Sym>,
     pub depth: usize,
     pub max_depth: usize,
+    /// Stack address when the current task started (0: not inside a task) and the budget below it.
+    pub stack_base: usize,
+    pub max_stack: usize,
     pub ticks: u64,
     pub tick_limit: u64,
     pub microtasks: VecDeque<Job>,
@@ -174,6 +177,10 @@ pub struct Interp {
     pub now: f64,
     pub doc: *mut Document,
     pub node_cache: BTreeMap<usize, Obj>,
+    /// Live node count that triggers the next DOM collection.
+    pub dom_gc_next: usize,
+    /// Nodes the embedder refers to by id across tasks (never collected while listed).
+    pub pinned_nodes: Vec<usize>,
     pub gen_stack: Vec<Vec<Value>>,
     pub logs: Vec<LogEntry>,
     pub names: Names,
@@ -279,10 +286,13 @@ impl Interp {
 
     /// Reset the work budget and tell the host a new task starts.
     pub fn begin_task(&mut self) {
+        let here = 0u8;
+        self.stack_base = &here as *const u8 as usize;
         self.ticks = 0;
         self.next_poll = 0;
         self.heap.task_allocs.set(0);
         self.dom.style_recomputes.0 = 0;
+        self.maybe_collect_dom();
         if let Some(i) = self.interrupt.as_mut() {
             i.task_started();
         }
@@ -568,9 +578,25 @@ impl Interp {
         self.call_obj(fo, this, args, None)
     }
 
+    /// True when the host stack used since the task started exceeds the budget.
+    #[inline]
+    pub fn stack_exhausted(&self) -> bool {
+        let here = 0u8;
+        let sp = &here as *const u8 as usize;
+        self.stack_base != 0 && self.stack_base.saturating_sub(sp) > self.max_stack
+    }
+
+    /// `RangeError` for runaway native recursion (cyclic structures, deep re-entry).
+    pub fn check_stack(&mut self) -> Res<()> {
+        if self.stack_exhausted() {
+            return Err(self.error_ctl("RangeError", "Maximum call stack size exceeded"));
+        }
+        Ok(())
+    }
+
     pub fn call_obj(&mut self, fo: &Obj, this: Value, args: &[Value], new_target: Option<Obj>) -> Res {
         self.depth += 1;
-        if self.depth > self.max_depth {
+        if self.depth > self.max_depth || self.stack_exhausted() {
             self.depth -= 1;
             return Err(self.error_ctl("RangeError", "Maximum call stack size exceeded"));
         }

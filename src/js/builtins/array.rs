@@ -780,6 +780,7 @@ fn with(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn flatten(it: &mut Interp, items: Vec<Value>, depth: f64, out: &mut Vec<Value>) -> Res<()> {
+    it.check_stack()?;
     for v in items {
         match &v {
             Value::Obj(o) if o.is_array() && depth >= 1.0 => {

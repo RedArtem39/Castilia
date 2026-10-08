@@ -506,3 +506,23 @@ fn custom_elements_upgrade_in_shadow_and_when_defined() {
         &["attr a 1", "inner connected function", "late true", "defined Inner"],
     );
 }
+
+#[test]
+fn detached_dom_is_collected_and_reused() {
+    let mut doc = crate::html::parse("<div id=box></div><div id=other>keep</div>");
+    let mut rt = Runtime::new();
+    let src = "var box = document.getElementById('box'); var n = 0; var kept;
+        function step() {
+            box.innerHTML = '<p>x</p>'.repeat(1000);
+            if (n === 3) kept = box.firstChild;
+            if (++n < 80) setTimeout(step, 1);
+            else console.log(kept.textContent, kept.parentNode === null, box.children.length, document.getElementById('other').textContent, document.querySelectorAll('p').length);
+        }
+        step();";
+    rt.execute(src, &mut doc).unwrap();
+    rt.advance(&mut doc, 1000.0, 10000);
+    let logs: Vec<String> = rt.logs();
+    assert_eq!(logs, alloc::vec!["log: x true 1000 keep 1000".to_string()]);
+    // 80 rounds of 1000 nodes would be 80k without collection
+    assert!(doc.nodes.len() < 50_000, "nodes: {}", doc.nodes.len());
+}
