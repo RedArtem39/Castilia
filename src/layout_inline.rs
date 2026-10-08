@@ -547,7 +547,10 @@ impl<'a> Ctx<'a> {
             let a = Args::block(0.0, None);
             let a = Args { shrink: true, ..a };
             let (w, _) = self.replaced_size(bx, s, &a, hpb, 0.0);
-            (w + hpb, w + hpb)
+            // compressible replaced elements (percentage width or max-width) contribute nothing
+            // to min-content (CSS Sizing 3 §5.2.2): `img { width: 100% }` does not widen tracks
+            let compressible = s.width.has_percent() || s.max_width.has_percent();
+            (if compressible { hpb } else { w + hpb }, w + hpb)
         } else {
             let (cmn, cmx) = match s.display {
                 Display::Flex | Display::InlineFlex => self.flex_intrinsic(bx, s),

@@ -123,7 +123,9 @@ impl<'a> Ctx<'a> {
     pub fn replaced_size(&mut self, bx: Bx, s: &Style, a: &Args, hpb: f32, vpb: f32) -> (f32, f32) {
         let tag = self.tag(bx).unwrap_or("");
         let cb_h = a.cb_h;
-        let style_w = if a.shrink && s.width.has_percent() { None } else { s.width.resolve(a.avail_w) }.map(|v| if s.border_box { (v - hpb).max(0.0) } else { v.max(0.0) });
+        // percentages resolve against the containing block; only the intrinsic-size pass (no
+        // available width yet) treats them as auto
+        let style_w = if a.shrink && s.width.has_percent() && a.avail_w <= 0.0 { None } else { s.width.resolve(a.avail_w) }.map(|v| if s.border_box { (v - hpb).max(0.0) } else { v.max(0.0) });
         let style_h = match &s.height {
             Dim::Len(_, pct) if *pct != 0.0 && cb_h.is_none() => None,
             d => d.resolve(cb_h.unwrap_or(0.0)).map(|v| if s.border_box { (v - vpb).max(0.0) } else { v.max(0.0) }),
