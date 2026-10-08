@@ -77,6 +77,9 @@ def classify(o, c):
     if o['status'] == 'bot-wall':
         # an anti-bot interstitial: says nothing about the engine (headless Chromium often gets one too)
         return 'excluded:bot-wall'
+    if o['status'] == 'blocked' and o.get('chars') is not None and 0.5 <= (o['chars'] + 1) / (c['chars'] + 1) <= 2.0:
+        # the server answered both clients the same way (an error page Chromium got too)
+        return 'pass'
     if o['status'] in ('blocked', 'fetch-fail'):
         # Chromium got the page and we did not: a host networking failure (TLS, HTTP/2, bot checks)
         return 'fail:network'
@@ -119,6 +122,8 @@ def main():
 
 def summarize(path):
     recs = [json.loads(l) for l in open(path, encoding='utf-8')]
+    for r in recs:
+        r['verdict'] = classify(r['ours'], r['chrome'])
     counts = {}
     for r in recs:
         counts[r['verdict']] = counts.get(r['verdict'], 0) + 1

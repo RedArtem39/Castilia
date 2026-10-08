@@ -420,6 +420,56 @@
       delete HE[prop];
     }
   }
+
+  // element.attributes is a live NamedNodeMap: length and indices follow the current attributes
+  // (React empties it with `while (attrs.length) el.removeAttributeNode(attrs[0])`)
+  {
+    const maps = new WeakMap();
+    const NNM = G.NamedNodeMap || function NamedNodeMap() { throw new TypeError('Illegal constructor'); };
+    const proto = NNM.prototype;
+    const names = (el) => el.getAttributeNames();
+    Object.assign(proto, {
+      item(i) { const n = names(this._el)[i >>> 0]; return n === undefined ? null : this._el.getAttributeNode(n); },
+      getNamedItem(n) { return this._el.getAttributeNode(String(n)); },
+      getNamedItemNS(ns, n) { return this._el.getAttributeNode(String(n)); },
+      setNamedItem(a) { return this._el.setAttributeNode(a); },
+      setNamedItemNS(a) { return this._el.setAttributeNode(a); },
+      removeNamedItem(n) {
+        const a = this._el.getAttributeNode(String(n));
+        if (!a) throw new DOMException("Failed to execute 'removeNamedItem': no item named '" + n + "'", 'NotFoundError');
+        this._el.removeAttribute(String(n));
+        return a;
+      },
+      removeNamedItemNS(ns, n) { return this.removeNamedItem(n); },
+      *[Symbol.iterator]() { for (const n of names(this._el)) yield this._el.getAttributeNode(n); },
+    });
+    Object.defineProperty(proto, 'length', { configurable: true, get() { return names(this._el).length; } });
+    Object.defineProperty(proto, Symbol.toStringTag, { configurable: true, value: 'NamedNodeMap' });
+    const handler = {
+      get(t, k, r) {
+        if (typeof k === 'string') {
+          if (/^\d+$/.test(k)) return t.item(+k);
+          if (!(k in t) && t._el.hasAttribute(k)) return t._el.getAttributeNode(k);
+        }
+        const v = Reflect.get(t, k, t);
+        return v;
+      },
+      has(t, k) { return typeof k === 'string' && (/^\d+$/.test(k) ? +k < names(t._el).length : k in t || t._el.hasAttribute(k)); },
+      ownKeys(t) { return names(t._el).map((_, i) => String(i)); },
+      getOwnPropertyDescriptor(t, k) {
+        if (typeof k === 'string' && /^\d+$/.test(k) && +k < names(t._el).length) return { value: t.item(+k), enumerable: true, configurable: true, writable: false };
+        return undefined;
+      },
+    };
+    Object.defineProperty(Element.prototype, 'attributes', {
+      configurable: true, enumerable: true,
+      get() {
+        let m = maps.get(this);
+        if (!m) { const t = Object.create(proto); Object.defineProperty(t, '_el', { value: this }); m = new Proxy(t, handler); maps.set(this, m); }
+        return m;
+      },
+    });
+  }
   // ---- assorted platform interfaces scripts test for or construct -------------------------
   if (G.CSSStyleDeclaration) {
     const P = CSSStyleDeclaration.prototype;
@@ -1290,12 +1340,36 @@
       finally { r.releaseLock(); w.releaseLock(); }
     }
     pipeThrough(t, opts) { this.pipeTo(t.writable, opts).catch(() => {}); return t.readable; }
+    // ReadableStreamDefaultTee: one read at a time, chunks go to the branches not canceled, the
+    // source is canceled only when both branches are
     tee() {
-      const r = this.getReader(); const ctrls = [];
-      const pull = () => r.read().then(({ value, done }) => { for (const c of ctrls) { if (done) c.close(); else c.enqueue(value); } });
-      const a = new ReadableStream({ start(c) { ctrls.push(c); }, pull });
-      const b = new ReadableStream({ start(c) { ctrls.push(c); }, pull });
-      return [a, b];
+      const r = this.getReader();
+      const ctrls = [], canceled = [false, false], reasons = [];
+      let reading = false, again = false, finished = false, resolveCancel;
+      const cancelPromise = new Promise((res) => { resolveCancel = res; });
+      const each = (f) => ctrls.forEach((c, i) => { if (!canceled[i]) { try { f(c); } catch (e) {} } });
+      const pull = () => {
+        if (reading) { again = true; return Promise.resolve(); }
+        if (finished) return Promise.resolve();
+        reading = true;
+        r.read().then(({ value, done }) => {
+          reading = false;
+          if (done) { finished = true; each((c) => c.close()); return; }
+          each((c) => c.enqueue(value));
+          if (again) { again = false; pull(); }
+        }, (e) => { reading = false; finished = true; each((c) => c.error(e)); });
+        return Promise.resolve();
+      };
+      const branch = (i) => new ReadableStream({
+        start(c) { ctrls[i] = c; },
+        pull,
+        cancel(reason) {
+          canceled[i] = true; reasons[i] = reason;
+          if (canceled[0] && canceled[1]) resolveCancel(r.cancel(reasons));
+          return cancelPromise;
+        },
+      });
+      return [branch(0), branch(1)];
     }
     values(opts = {}) {
       const r = this.getReader();
