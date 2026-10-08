@@ -117,14 +117,54 @@ pub fn setup_all(it: &mut Interp) {
         ("meta", "HTMLMetaElement", "meta"),
         ("title", "HTMLTitleElement", "title"),
         ("heading", "HTMLHeadingElement", "heading"),
+        ("area", "HTMLAreaElement", "area"),
+        ("base", "HTMLBaseElement", "base"),
+        ("source", "HTMLSourceElement", "source"),
+        ("track", "HTMLTrackElement", "track"),
+        ("embed", "HTMLEmbedElement", "embed"),
+        ("object", "HTMLObjectElement", "object"),
+        ("details", "HTMLDetailsElement", "details"),
+        ("dialog", "HTMLDialogElement", "dialog"),
+        ("fieldset", "HTMLFieldSetElement", "fieldset"),
+        ("legend", "HTMLLegendElement", "legend"),
+        ("optgroup", "HTMLOptGroupElement", "optgroup"),
+        ("output", "HTMLOutputElement", "output"),
+        ("meter", "HTMLMeterElement", "meter"),
+        ("progress", "HTMLProgressElement", "progress"),
+        ("data", "HTMLDataElement", "data"),
+        ("time", "HTMLTimeElement", "time"),
+        ("quote", "HTMLQuoteElement", "quote"),
+        ("mod", "HTMLModElement", "mod"),
+        ("tsection", "HTMLTableSectionElement", "tsection"),
+        ("col", "HTMLTableColElement", "col"),
+        ("caption", "HTMLTableCaptionElement", "caption"),
+        ("br", "HTMLBRElement", "br"),
+        ("hr", "HTMLHRElement", "hr"),
+        ("pre", "HTMLPreElement", "pre"),
+        ("map", "HTMLMapElement", "map"),
+        ("slot", "HTMLSlotElement", "slot"),
+        ("font", "HTMLFontElement", "font"),
+        ("dl", "HTMLDListElement", "dl"),
+        ("picture", "HTMLPictureElement", "picture"),
+        ("menu", "HTMLMenuElement", "menu"),
+        ("param", "HTMLParamElement", "param"),
+        ("frame", "HTMLFrameElement", "frame"),
     ];
+    // <video> and <audio> share HTMLMediaElement
+    let media = it.alloc(Object::new(Some(html_element.clone()), Class::Plain));
+    it.make_ctor("HTMLMediaElement", 0, illegal, &media);
+    it.protos.as_mut().unwrap().extra.insert("media", media.clone());
     for (key, ctor_name, _) in tags {
-        let parent = if *key == "svg" { element.clone() } else { html_element.clone() };
+        let parent = match *key {
+            "svg" => element.clone(),
+            "video" | "audio" => media.clone(),
+            _ => html_element.clone(),
+        };
         let p = it.alloc(Object::new(Some(parent), Class::Plain));
         it.make_ctor(ctor_name, 0, illegal, &p);
         it.protos.as_mut().unwrap().extra.insert(key, p);
     }
-    for extra in ["HTMLUnknownElement", "HTMLBRElement", "HTMLHRElement", "HTMLPreElement", "HTMLQuoteElement", "HTMLDetailsElement", "HTMLDialogElement", "HTMLFieldSetElement", "HTMLLegendElement", "HTMLMapElement", "HTMLMediaElement", "HTMLProgressElement", "HTMLSlotElement", "HTMLSourceElement", "HTMLTableSectionElement", "HTMLTableColElement", "HTMLTableCaptionElement", "HTMLTimeElement", "HTMLOptGroupElement", "HTMLOutputElement", "HTMLMeterElement", "HTMLDataElement", "HTMLEmbedElement", "HTMLObjectElement", "HTMLBaseElement", "SVGSVGElement", "SVGGraphicsElement", "ShadowRoot", "CharacterData", "Attr", "NamedNodeMap", "DOMTokenList", "CSSStyleDeclaration", "Range", "Selection", "XMLDocument", "DocumentType", "CSSStyleSheet", "StyleSheet", "TreeWalker", "NodeIterator", "FormData_", "ValidityState", "File_", "XPathResult"] {
+    for extra in ["HTMLUnknownElement", "SVGSVGElement", "SVGGraphicsElement", "ShadowRoot", "CharacterData", "Attr", "NamedNodeMap", "DOMTokenList", "CSSStyleDeclaration", "Range", "Selection", "XMLDocument", "DocumentType", "CSSStyleSheet", "StyleSheet", "TreeWalker", "NodeIterator", "FormData_", "ValidityState", "File_", "XPathResult"] {
         let p = it.new_object();
         it.make_ctor(extra, 0, illegal, &p);
     }
@@ -645,8 +685,9 @@ fn setup_element(it: &mut Interp, p: &Obj) {
         let id = this_el(it, c)?;
         let n = it.arg_str(c, 0)?;
         let v = it.arg_str(c, 1)?;
+        let old = it.attr(id, &n.to_ascii_lowercase());
         it.dom_set_attr(id, &n, &v)?;
-        it.attribute_changed(id, &n)?;
+        it.attribute_changed(id, &n, old)?;
         Ok(Value::Undefined)
     });
     it.def_method(p, "setAttributeNS", 3, |it, c| {
@@ -659,8 +700,12 @@ fn setup_element(it: &mut Interp, p: &Obj) {
     it.def_method(p, "removeAttribute", 1, |it, c| {
         let id = this_el(it, c)?;
         let n = it.arg_str(c, 0)?;
+        let old = it.attr(id, &n.to_ascii_lowercase());
+        if old.is_none() {
+            return Ok(Value::Undefined);
+        }
         it.dom_remove_attr(id, &n)?;
-        it.attribute_changed(id, &n)?;
+        it.attribute_changed(id, &n, old)?;
         Ok(Value::Undefined)
     });
     it.def_method(p, "removeAttributeNS", 2, |it, c| {
@@ -1485,7 +1530,7 @@ fn doc_write(it: &mut Interp, c: &Call) -> Res {
 
 impl Interp {
     /// Hook for custom element `attributeChangedCallback`.
-    pub fn attribute_changed(&mut self, id: NodeId, name: &str) -> Res<()> {
+    pub fn attribute_changed(&mut self, id: NodeId, name: &str, old: Option<String>) -> Res<()> {
         let tag = self.tag_name(id);
         if !tag.contains('-') {
             return Ok(());
@@ -1509,7 +1554,8 @@ impl Interp {
         let cb = self.get_str(&w, "attributeChangedCallback")?;
         if cb.as_obj().is_some_and(|o| o.is_callable()) {
             let new = self.attr(id, &name.to_ascii_lowercase()).map_or(Value::Null, Value::string);
-            if let Err(Ctl::Throw(e)) = self.call(&cb, w, &[Value::str(name), Value::Null, new]) {
+            let old = old.map_or(Value::Null, Value::string);
+            if let Err(Ctl::Throw(e)) = self.call(&cb, w, &[Value::str(name), old, new]) {
                 self.report_error(&e);
             }
         }

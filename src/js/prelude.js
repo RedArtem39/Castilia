@@ -339,6 +339,87 @@
   for (const [k, v] of [['UNSENT', 0], ['OPENED', 1], ['HEADERS_RECEIVED', 2], ['LOADING', 3], ['DONE', 4]]) { XMLHttpRequest[k] = v; XMLHttpRequest.prototype[k] = v; }
   expose('XMLHttpRequest', XMLHttpRequest);
 
+
+  // Element-specific attributes live on their interfaces' prototypes (as in browsers), not on
+  // HTMLElement.prototype: custom elements (Polymer, Lit, resin sanitizers) inspect `prop in el`.
+  {
+    const HE = HTMLElement.prototype, EL = Element.prototype;
+    const FORMS = ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOutputElement', 'HTMLFieldSetElement', 'HTMLObjectElement'];
+    const LISTED = ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOutputElement', 'HTMLFieldSetElement', 'HTMLObjectElement', 'HTMLLabelElement', 'HTMLLegendElement', 'HTMLOptionElement'];
+    const LINK = ['HTMLAnchorElement', 'HTMLAreaElement'];
+    const URLPARTS = ['hash', 'host', 'hostname', 'origin', 'password', 'pathname', 'port', 'protocol', 'search', 'username', 'toString'];
+    const MEDIA = ['HTMLMediaElement'];
+    const ALIGN = ['HTMLDivElement', 'HTMLParagraphElement', 'HTMLHeadingElement', 'HTMLImageElement', 'HTMLTableElement', 'HTMLTableRowElement', 'HTMLTableCellElement', 'HTMLTableSectionElement', 'HTMLTableColElement', 'HTMLTableCaptionElement', 'HTMLHRElement', 'HTMLLegendElement', 'HTMLIFrameElement', 'HTMLEmbedElement', 'HTMLObjectElement', 'HTMLInputElement'];
+    const map = {
+      abbr: ['HTMLTableCellElement'], headers: ['HTMLTableCellElement'], scope: ['HTMLTableCellElement'], cellIndex: ['HTMLTableCellElement'], colSpan: ['HTMLTableCellElement'], rowSpan: ['HTMLTableCellElement'],
+      cells: ['HTMLTableRowElement'], rowIndex: ['HTMLTableRowElement'], sectionRowIndex: ['HTMLTableRowElement'], insertCell: ['HTMLTableRowElement'], deleteCell: ['HTMLTableRowElement'],
+      tBodies: ['HTMLTableElement'], caption: ['HTMLTableElement'], deleteRow: ['HTMLTableElement', 'HTMLTableSectionElement'], insertRow: ['HTMLTableElement', 'HTMLTableSectionElement'],
+      rows: ['HTMLTableElement', 'HTMLTableSectionElement', 'HTMLTextAreaElement'], cols: ['HTMLTextAreaElement'], wrap: ['HTMLTextAreaElement'],
+      bgColor: ['HTMLBodyElement', 'HTMLTableElement', 'HTMLTableRowElement', 'HTMLTableCellElement'], vAlign: ['HTMLTableCellElement', 'HTMLTableRowElement', 'HTMLTableSectionElement', 'HTMLTableColElement'], span: ['HTMLTableColElement'],
+      align: ALIGN, color: ['HTMLFontElement'], face: ['HTMLFontElement'],
+      accept: ['HTMLInputElement'], indeterminate: ['HTMLInputElement'], files: ['HTMLInputElement'], valueAsNumber: ['HTMLInputElement'], stepUp: ['HTMLInputElement'], stepDown: ['HTMLInputElement'],
+      checked: ['HTMLInputElement'], defaultChecked: ['HTMLInputElement'], pattern: ['HTMLInputElement'], step: ['HTMLInputElement'],
+      max: ['HTMLInputElement', 'HTMLMeterElement', 'HTMLProgressElement'], min: ['HTMLInputElement', 'HTMLMeterElement'],
+      maxLength: ['HTMLInputElement', 'HTMLTextAreaElement'], minLength: ['HTMLInputElement', 'HTMLTextAreaElement'], placeholder: ['HTMLInputElement', 'HTMLTextAreaElement'],
+      readOnly: ['HTMLInputElement', 'HTMLTextAreaElement'], required: ['HTMLInputElement', 'HTMLSelectElement', 'HTMLTextAreaElement'], multiple: ['HTMLInputElement', 'HTMLSelectElement'],
+      size: ['HTMLInputElement', 'HTMLSelectElement', 'HTMLFontElement'], select: ['HTMLInputElement', 'HTMLTextAreaElement'],
+      selectionStart: ['HTMLInputElement', 'HTMLTextAreaElement'], selectionEnd: ['HTMLInputElement', 'HTMLTextAreaElement'], setSelectionRange: ['HTMLInputElement', 'HTMLTextAreaElement'],
+      defaultValue: ['HTMLInputElement', 'HTMLTextAreaElement', 'HTMLOutputElement'],
+      autocomplete: ['HTMLInputElement', 'HTMLFormElement', 'HTMLSelectElement', 'HTMLTextAreaElement'],
+      formAction: ['HTMLInputElement', 'HTMLButtonElement'], formNoValidate: ['HTMLInputElement', 'HTMLButtonElement'],
+      checkValidity: FORMS.concat(['HTMLFormElement']), reportValidity: FORMS.concat(['HTMLFormElement']), setCustomValidity: FORMS, validity: FORMS, validationMessage: FORMS, willValidate: FORMS,
+      labels: ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOutputElement', 'HTMLMeterElement', 'HTMLProgressElement'],
+      form: LISTED, disabled: ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOptionElement', 'HTMLOptGroupElement', 'HTMLFieldSetElement', 'HTMLLinkElement', 'HTMLStyleElement'],
+      value: ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOptionElement', 'HTMLLIElement', 'HTMLMeterElement', 'HTMLProgressElement', 'HTMLOutputElement', 'HTMLDataElement', 'HTMLParamElement'],
+      options: ['HTMLSelectElement'], selectedIndex: ['HTMLSelectElement'], selectedOptions: ['HTMLSelectElement'], length: ['HTMLSelectElement', 'HTMLFormElement'],
+      selected: ['HTMLOptionElement'], defaultSelected: ['HTMLOptionElement'], index: ['HTMLOptionElement'], label: ['HTMLOptionElement', 'HTMLOptGroupElement', 'HTMLTrackElement'],
+      text: ['HTMLAnchorElement', 'HTMLScriptElement', 'HTMLOptionElement', 'HTMLTitleElement', 'HTMLBodyElement'],
+      action: ['HTMLFormElement'], enctype: ['HTMLFormElement'], noValidate: ['HTMLFormElement'], requestSubmit: ['HTMLFormElement'], reset: ['HTMLFormElement'], submit: ['HTMLFormElement'],
+      elements: ['HTMLFormElement', 'HTMLFieldSetElement'],
+      htmlFor: ['HTMLLabelElement', 'HTMLOutputElement', 'HTMLScriptElement'],
+      alt: ['HTMLImageElement', 'HTMLAreaElement', 'HTMLInputElement'], complete: ['HTMLImageElement'], naturalWidth: ['HTMLImageElement'], naturalHeight: ['HTMLImageElement'],
+      isMap: ['HTMLImageElement'], useMap: ['HTMLImageElement', 'HTMLInputElement', 'HTMLObjectElement'], longDesc: ['HTMLImageElement', 'HTMLIFrameElement'],
+      srcset: ['HTMLImageElement', 'HTMLSourceElement'], sizes: ['HTMLImageElement', 'HTMLSourceElement', 'HTMLLinkElement'], decoding: ['HTMLImageElement'],
+      loading: ['HTMLImageElement', 'HTMLIFrameElement'], currentSrc: ['HTMLImageElement', 'HTMLMediaElement'],
+      crossOrigin: ['HTMLImageElement', 'HTMLScriptElement', 'HTMLLinkElement', 'HTMLMediaElement'],
+      referrerPolicy: ['HTMLAnchorElement', 'HTMLAreaElement', 'HTMLImageElement', 'HTMLIFrameElement', 'HTMLLinkElement', 'HTMLScriptElement'],
+      fetchPriority: ['HTMLImageElement', 'HTMLLinkElement', 'HTMLScriptElement'],
+      width: ['HTMLImageElement', 'HTMLCanvasElement', 'HTMLVideoElement', 'HTMLIFrameElement', 'HTMLEmbedElement', 'HTMLObjectElement', 'HTMLInputElement', 'HTMLSourceElement', 'HTMLTableElement', 'HTMLTableCellElement', 'HTMLHRElement', 'HTMLPreElement'],
+      height: ['HTMLImageElement', 'HTMLCanvasElement', 'HTMLVideoElement', 'HTMLIFrameElement', 'HTMLEmbedElement', 'HTMLObjectElement', 'HTMLInputElement', 'HTMLSourceElement', 'HTMLTableCellElement'],
+      getContext: ['HTMLCanvasElement'], toBlob: ['HTMLCanvasElement'], toDataURL: ['HTMLCanvasElement'],
+      src: ['HTMLImageElement', 'HTMLScriptElement', 'HTMLIFrameElement', 'HTMLEmbedElement', 'HTMLInputElement', 'HTMLSourceElement', 'HTMLTrackElement', 'HTMLMediaElement', 'HTMLFrameElement'],
+      contentDocument: ['HTMLIFrameElement', 'HTMLObjectElement', 'HTMLFrameElement'], contentWindow: ['HTMLIFrameElement', 'HTMLObjectElement', 'HTMLFrameElement'],
+      async: ['HTMLScriptElement'], defer: ['HTMLScriptElement'], noModule: ['HTMLScriptElement'], charset: ['HTMLScriptElement', 'HTMLAnchorElement', 'HTMLLinkElement'],
+      integrity: ['HTMLScriptElement', 'HTMLLinkElement'],
+      type: ['HTMLInputElement', 'HTMLButtonElement', 'HTMLSelectElement', 'HTMLTextAreaElement', 'HTMLOListElement', 'HTMLUListElement', 'HTMLLIElement', 'HTMLLinkElement', 'HTMLScriptElement', 'HTMLStyleElement', 'HTMLSourceElement', 'HTMLEmbedElement', 'HTMLObjectElement', 'HTMLAnchorElement', 'HTMLOutputElement', 'HTMLFieldSetElement', 'HTMLMenuElement'],
+      media: ['HTMLLinkElement', 'HTMLStyleElement', 'HTMLSourceElement', 'HTMLMetaElement'], sheet: ['HTMLLinkElement', 'HTMLStyleElement'],
+      href: ['HTMLAnchorElement', 'HTMLAreaElement', 'HTMLLinkElement', 'HTMLBaseElement'], hreflang: ['HTMLAnchorElement', 'HTMLLinkElement'],
+      rel: ['HTMLAnchorElement', 'HTMLAreaElement', 'HTMLLinkElement', 'HTMLFormElement'], target: ['HTMLAnchorElement', 'HTMLAreaElement', 'HTMLFormElement', 'HTMLBaseElement'],
+      download: LINK, coords: LINK, shape: LINK,
+      content: ['HTMLMetaElement', 'HTMLTemplateElement'], httpEquiv: ['HTMLMetaElement'],
+      name: ['HTMLAnchorElement', 'HTMLButtonElement', 'HTMLEmbedElement', 'HTMLFieldSetElement', 'HTMLFormElement', 'HTMLIFrameElement', 'HTMLImageElement', 'HTMLInputElement', 'HTMLMapElement', 'HTMLMetaElement', 'HTMLObjectElement', 'HTMLOutputElement', 'HTMLParamElement', 'HTMLSelectElement', 'HTMLSlotElement', 'HTMLTextAreaElement', 'HTMLFrameElement'],
+      cite: ['HTMLQuoteElement', 'HTMLModElement'], open: ['HTMLDetailsElement', 'HTMLDialogElement'], close: ['HTMLDialogElement'], show: ['HTMLDialogElement'], showModal: ['HTMLDialogElement'],
+      reversed: ['HTMLOListElement'], start: ['HTMLOListElement'], default: ['HTMLTrackElement'], poster: ['HTMLVideoElement'], playsInline: ['HTMLVideoElement'],
+      autoplay: MEDIA, controls: MEDIA, loop: MEDIA, muted: MEDIA, canPlayType: MEDIA, play: MEDIA, pause: MEDIA, load: MEDIA,
+    };
+    for (const p of URLPARTS) map[p] = LINK;
+    for (const [prop, ifaces] of Object.entries(map)) {
+      const d = Object.getOwnPropertyDescriptor(HE, prop);
+      if (!d) continue;
+      for (const name of ifaces) {
+        const C = G[name];
+        if (C && C.prototype && !Object.prototype.hasOwnProperty.call(C.prototype, prop)) Object.defineProperty(C.prototype, prop, d);
+      }
+      delete HE[prop];
+    }
+    // attributes every element has
+    for (const prop of ['id', 'className', 'slot', 'role', 'ariaLabel', 'ariaHidden', 'ariaExpanded']) {
+      const d = Object.getOwnPropertyDescriptor(HE, prop);
+      if (!d) continue;
+      if (!Object.prototype.hasOwnProperty.call(EL, prop)) Object.defineProperty(EL, prop, d);
+      delete HE[prop];
+    }
+  }
   // ---- assorted platform interfaces scripts test for or construct -------------------------
   if (G.CSSStyleDeclaration) {
     const P = CSSStyleDeclaration.prototype;
@@ -425,20 +506,27 @@
     class TrustedHTML { constructor(s) { this._s = s; } toString() { return this._s; } toJSON() { return this._s; } }
     class TrustedScript extends TrustedHTML {}
     class TrustedScriptURL extends TrustedHTML {}
-    const policy = (name, rules = {}) => ({
-      name,
-      createHTML: (s, ...a) => (rules.createHTML ? rules.createHTML(s, ...a) : s),
-      createScript: (s, ...a) => (rules.createScript ? rules.createScript(s, ...a) : s),
-      createScriptURL: (s, ...a) => (rules.createScriptURL ? rules.createScriptURL(s, ...a) : s),
-    });
+    // policies return Trusted* objects; sinks (innerHTML, src, ...) stringify them
+    const make = (C, rule, s, a) => {
+      if (!rule) throw new TypeError('Policy does not implement this method');
+      return new C(String(rule(String(s), ...a)));
+    };
+    class TrustedTypePolicy {
+      constructor(name, rules) { this.name = name; this._r = rules || {}; }
+      createHTML(s, ...a) { return make(TrustedHTML, this._r.createHTML, s, a); }
+      createScript(s, ...a) { return make(TrustedScript, this._r.createScript, s, a); }
+      createScriptURL(s, ...a) { return make(TrustedScriptURL, this._r.createScriptURL, s, a); }
+    }
+    const policy = (name, rules) => new TrustedTypePolicy(name, rules);
     class TrustedTypePolicyFactory {
       createPolicy(name, rules) { return policy(name, rules); }
       isHTML(v) { return v instanceof TrustedHTML; } isScript(v) { return v instanceof TrustedScript; } isScriptURL(v) { return v instanceof TrustedScriptURL; }
       getAttributeType() { return null; } getPropertyType() { return null; }
-      get emptyHTML() { return ''; } get emptyScript() { return ''; } get defaultPolicy() { return null; }
+      get emptyHTML() { return new TrustedHTML(''); } get emptyScript() { return new TrustedScript(''); } get defaultPolicy() { return null; }
     }
     expose('TrustedHTML', TrustedHTML); expose('TrustedScript', TrustedScript); expose('TrustedScriptURL', TrustedScriptURL);
     expose('TrustedTypePolicyFactory', TrustedTypePolicyFactory);
+    expose('TrustedTypePolicy', TrustedTypePolicy);
     hide(G, 'trustedTypes', new TrustedTypePolicyFactory());
   }
   // Atomics over ordinary typed arrays (single-threaded: plain reads and writes)
@@ -1384,8 +1472,10 @@
       return f;
     };
     const isFrame = (el) => el && (el.tagName === 'IFRAME' || el.tagName === 'FRAME');
-    Object.defineProperty(G.HTMLElement.prototype, 'contentWindow', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).win : null; } });
-    Object.defineProperty(G.HTMLElement.prototype, 'contentDocument', { configurable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).doc : null; } });
+    for (const P of [G.HTMLIFrameElement, G.HTMLFrameElement, G.HTMLObjectElement].filter(Boolean).map((C) => C.prototype)) {
+      Object.defineProperty(P, 'contentWindow', { configurable: true, enumerable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).win : null; } });
+      Object.defineProperty(P, 'contentDocument', { configurable: true, enumerable: true, get() { return isFrame(this) && this.isConnected ? frameOf(this).doc : null; } });
+    }
   }
   if (G.performance && !G.performance.clearMarks) {
     const marks = [];

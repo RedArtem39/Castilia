@@ -65,6 +65,7 @@ fn reflect_get(it: &mut Interp, c: &Call) -> Res {
 fn reflect_set(it: &mut Interp, c: &Call) -> Res {
     let id = it.this_node(c)?;
     let (kind, attr, _) = parts(it, c);
+    let old = it.attr(id, &attr);
     match kind {
         'b' => {
             if c.arg(0).truthy() {
@@ -78,7 +79,7 @@ fn reflect_set(it: &mut Interp, c: &Call) -> Res {
             it.dom_set_attr(id, &attr, &s)?;
         }
     }
-    it.attribute_changed(id, &attr)?;
+    it.attribute_changed(id, &attr, old)?;
     Ok(Value::Undefined)
 }
 
