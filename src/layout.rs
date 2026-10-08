@@ -106,6 +106,42 @@ pub trait FontMetrics {
     }
 }
 
+/// Lowest painted edge, honouring clip rectangles (transformed content is ignored).
+fn content_bottom(commands: &[Command]) -> f32 {
+    let mut clips: Vec<f32> = Vec::new();
+    let mut transforms = 0usize;
+    let mut bottom = 0.0f32;
+    for c in commands {
+        let b = match c {
+            Command::FillRect { rect, .. } | Command::Border { rect, .. } | Command::Image { rect, .. } | Command::Gradient { rect, .. } => rect.y + rect.height,
+            Command::Text { y, size, .. } => y + size * 1.2,
+            Command::PushClip { rect, .. } => {
+                let limit = clips.last().copied().unwrap_or(f32::INFINITY).min(rect.y + rect.height);
+                clips.push(limit);
+                continue;
+            }
+            Command::PopClip => {
+                clips.pop();
+                continue;
+            }
+            Command::PushTransform { .. } => {
+                transforms += 1;
+                continue;
+            }
+            Command::PopTransform => {
+                transforms = transforms.saturating_sub(1);
+                continue;
+            }
+            _ => continue,
+        };
+        if transforms > 0 || !b.is_finite() {
+            continue;
+        }
+        bottom = bottom.max(b.min(clips.last().copied().unwrap_or(f32::INFINITY)));
+    }
+    bottom
+}
+
 /// Wraps host font metrics and adds intrinsic image sizes learned after fetching images.
 pub struct WithImageSizes<'a, F: ?Sized> {
     pub inner: &'a F,
@@ -754,7 +790,10 @@ impl<'a> Ctx<'a> {
             commands.extend(p.cmds);
             hits.extend(p.hits);
         }
-        DisplayList { width: vw, height: math::ceil32(out.h.max(0.0)), background, commands, hit_regions: hits, container_sizes: core::mem::take(&mut self.containers) }
+        // the scrollable height also covers content overflowing the root box
+        // (`html { height: 100% }` with a long body), except what clips cut off
+        let height = out.h.max(content_bottom(&commands));
+        DisplayList { width: vw, height: math::ceil32(height.max(0.0)), background, commands, hit_regions: hits, container_sizes: core::mem::take(&mut self.containers) }
     }
 
     /// Lay out pending absolutely positioned boxes inside the containing block `cb`
@@ -1100,14 +1139,15 @@ impl<'a> Ctx<'a> {
         }
         self.fieldset_gap = None;
         let clip = (s.overflow_x.clips() || s.overflow_y.clips()) && !is_root && !matches!(s.display, Display::Contents);
+        let clip_rect = Rect {
+            x: border.l,
+            y: border.t,
+            width: (border_w - border.h()).max(0.0),
+            height: (border_h - border.v()).max(0.0),
+        };
+        let clip_radius = (s.border_radius - border.l.max(border.t)).max(0.0);
         if clip {
-            let inner = Rect {
-                x: border.l,
-                y: border.t,
-                width: (border_w - border.h()).max(0.0),
-                height: (border_h - border.v()).max(0.0),
-            };
-            out.paint.cmds.push(Command::PushClip { rect: inner, radius: (s.border_radius - border.l.max(border.t)).max(0.0) });
+            out.paint.cmds.push(Command::PushClip { rect: clip_rect, radius: clip_radius });
         }
         if s.pointer_events {
             out.paint.hits.push(HitRegion { rect, node: bx.id });
@@ -1177,7 +1217,22 @@ impl<'a> Ctx<'a> {
             };
             let (own, rest): (Vec<_>, Vec<_>) = abs.into_iter().partition(|p| !p.fixed);
             abs = rest;
+            let mark = out.paint.cmds.len();
             self.place_pending(&mut out, own, cb, false);
+            // absolute descendants contained by a clipping box are clipped by it too
+            if clip && out.paint.cmds.len() > mark {
+                out.paint.cmds.insert(mark, Command::PushClip { rect: clip_rect, radius: clip_radius });
+                out.paint.cmds.push(Command::PopClip);
+            }
+        }
+        // stacking layers of descendants (positioned, z-index) are clipped as well
+        if clip {
+            for (_, p) in out.layers.iter_mut() {
+                if !p.cmds.is_empty() {
+                    p.cmds.insert(0, Command::PushClip { rect: clip_rect, radius: clip_radius });
+                    p.cmds.push(Command::PopClip);
+                }
+            }
         }
         out.abs.append(&mut abs);
 

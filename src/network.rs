@@ -16,8 +16,9 @@ const MAX_FONT_FACES: usize = 24;
 const MAX_FONT_BYTES: usize = 2 * 1024 * 1024;
 const MAX_FONT_TOTAL: usize = 12 * 1024 * 1024;
 const MAX_FETCH_BYTES: usize = 16 * 1024 * 1024;
-const MAX_IMAGE_PROBE_BYTES: usize = 512 * 1024;
-const MAX_IMAGE_PROBES: usize = 64;
+/// Image headers carry the size; JPEG SOF can follow large EXIF blocks.
+const MAX_IMAGE_PROBE_BYTES: usize = 96 * 1024;
+const MAX_IMAGE_PROBES: usize = 128;
 
 pub struct Response {
     pub final_url: String,
@@ -554,7 +555,13 @@ fn load_page_mode<F: Fetcher>(
             }
         }
         // Probe image sizes so layout can use intrinsic dimensions, then lay out again.
-        let sizes = probe_images(fetcher, &base, &Page::image_sources(&display));
+        let mut sources = page.document_image_sources();
+        for s in Page::image_sources(&display) {
+            if !sources.contains(&s) {
+                sources.push(s);
+            }
+        }
+        let sizes = probe_images(fetcher, &base, &sources);
         if !sizes.is_empty() {
             page.set_image_sizes(sizes);
             display = page.render(width, fonts);

@@ -241,6 +241,29 @@ impl Page {
         self.image_sizes = sizes;
     }
 
+    /// `src` of `<img>` elements in the document, in document order, whose size the markup does
+    /// not give (so layout needs the file's intrinsic size). Unknown-size images draw nothing, so
+    /// they never show up in a display list.
+    pub fn document_image_sources(&self) -> Vec<String> {
+        let mut out: Vec<String> = Vec::new();
+        let d = &self.document;
+        let mut stack = alloc::vec![d.root];
+        while let Some(id) = stack.pop() {
+            let n = &d.nodes[id];
+            if n.tag() == Some("img")
+                && !(n.attribute("width").is_some() && n.attribute("height").is_some())
+                && let Some(src) = n.attribute("src").filter(|s| !s.is_empty())
+                && !out.iter().any(|o| o == src)
+            {
+                out.push(String::from(src));
+            }
+            if n.tag() != Some("template") {
+                stack.extend(n.children.iter().rev().copied());
+            }
+        }
+        out
+    }
+
     /// `src` values of images (and CSS background images) found in a display list.
     pub fn image_sources(display: &DisplayList) -> Vec<String> {
         let mut out: Vec<String> = Vec::new();
