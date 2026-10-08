@@ -70,7 +70,7 @@
     #sp = null;
     constructor(url, base) {
       const p = __parseURL(String(url), base === undefined ? null : String(base instanceof URL ? base.href : base));
-      if (!p) throw new TypeError("Failed to construct 'URL': Invalid URL");
+      if (!p) throw new TypeError("Failed to construct 'URL': Invalid URL" + (G.__urlDebug ? ' ' + url + ' | ' + base : ''));
       this.#p = p;
     }
     static canParse(url, base) { try { new URL(url, base); return true; } catch (e) { return false; } }
@@ -621,31 +621,61 @@
 
   // ---- Intl ----------------------------------------------------------------
   const Intl = {};
+  // BCP 47 tags: canonical case, the languages ICU ships, best-fit resolution, likely subtags
+  const KNOWN_LANGS = new Set('af am ar as az be bg bn bs ca cs cy da de el en es et eu fa fi fil fr ga gl gu he hi hr hu hy id is it ja ka kk km kn ko ky lo lt lv mk ml mn mr ms my nb ne nl no or pa pl ps pt ro ru si sk sl sq sr sv sw ta te th tk tr uk ur uz vi zh zu yue haw jv su ceb ig yo ha so ti om rw mg ny sn st xh tg tt ug fo fy lb mt gd br co eo ia la sa sd ks ckb ku dz bo ii'.split(' '));
+  const LIKELY = { en: 'Latn-US', ru: 'Cyrl-RU', uk: 'Cyrl-UA', be: 'Cyrl-BY', bg: 'Cyrl-BG', sr: 'Cyrl-RS', kk: 'Cyrl-KZ', zh: 'Hans-CN', ja: 'Jpan-JP', ko: 'Kore-KR', ar: 'Arab-EG', fa: 'Arab-IR', ur: 'Arab-PK', he: 'Hebr-IL', hi: 'Deva-IN', mr: 'Deva-IN', ne: 'Deva-NP', bn: 'Beng-BD', ta: 'Taml-IN', te: 'Telu-IN', th: 'Thai-TH', el: 'Grek-GR', ka: 'Geor-GE', hy: 'Armn-AM', de: 'Latn-DE', fr: 'Latn-FR', es: 'Latn-ES', pt: 'Latn-BR', it: 'Latn-IT', nl: 'Latn-NL', pl: 'Latn-PL', tr: 'Latn-TR', vi: 'Latn-VN', id: 'Latn-ID', ms: 'Latn-MY', sv: 'Latn-SE', da: 'Latn-DK', fi: 'Latn-FI', nb: 'Latn-NO', no: 'Latn-NO', cs: 'Latn-CZ', sk: 'Latn-SK', hu: 'Latn-HU', ro: 'Latn-RO', hr: 'Latn-HR', sl: 'Latn-SI', lt: 'Latn-LT', lv: 'Latn-LV', et: 'Latn-EE', ca: 'Latn-ES', fil: 'Latn-PH', sw: 'Latn-TZ', af: 'Latn-ZA', az: 'Latn-AZ', uz: 'Latn-UZ' };
+  const canonTag = (tag) => {
+    if (tag instanceof Object && tag.baseName !== undefined) tag = String(tag);
+    if (typeof tag !== 'string' || !/^[A-Za-z]{2,8}([-_][A-Za-z0-9]{1,8})*$/.test(tag)) throw new RangeError('Incorrect locale information provided');
+    const parts = tag.split(/[-_]/);
+    const out = [parts[0].toLowerCase()];
+    for (let i = 1; i < parts.length; i++) {
+      const q = parts[i];
+      if (q.length === 1) { out.push(...parts.slice(i).map((x) => x.toLowerCase())); break; }
+      if (q.length === 4 && /^[A-Za-z]{4}$/.test(q) && i === 1) out.push(q[0].toUpperCase() + q.slice(1).toLowerCase());
+      else if ((q.length === 2 && /^[A-Za-z]{2}$/.test(q)) || /^\d{3}$/.test(q)) out.push(q.toUpperCase());
+      else out.push(q.toLowerCase());
+    }
+    return out.join('-');
+  };
+  const localeList = (l) => {
+    if (l === undefined) return [];
+    const arr = typeof l === 'string' || (l instanceof Object && l.baseName !== undefined) ? [l] : Array.from(l);
+    return [...new Set(arr.map(canonTag))];
+  };
+  const supported = (tag) => KNOWN_LANGS.has(tag.split('-')[0]);
+  const resolveLocale = (l) => localeList(l).find(supported) || (typeof navigator !== 'undefined' && navigator.language) || 'en-US';
+  const supportedLocalesOf = (l) => localeList(l).filter(supported);
   Intl.NumberFormat = class NumberFormat {
     constructor(locale, opts) { this._o = opts || {}; this._l = locale; }
     format(n) { return Number(n).toLocaleString(this._l, this._o); }
     formatToParts(n) { return [{ type: 'literal', value: this.format(n) }]; }
-    resolvedOptions() { return Object.assign({ locale: 'en-US', numberingSystem: 'latn', style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 3 }, this._o); }
-    static supportedLocalesOf(l) { return [].concat(l || []); }
+    resolvedOptions() { return Object.assign({ locale: resolveLocale(this._l), numberingSystem: 'latn', style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 3 }, this._o); }
+    static supportedLocalesOf(l) { return supportedLocalesOf(l); }
   };
   Intl.DateTimeFormat = class DateTimeFormat {
     constructor(locale, opts) { this._o = opts; this._l = locale; }
     format(d) { d = d === undefined ? new Date() : new Date(d); const o = this._o; return (o && (o.hour || o.minute) && !(o.year || o.month || o.day || o.weekday)) ? d.toLocaleTimeString(this._l, o) : (o && (o.hour || o.minute)) ? d.toLocaleString(this._l, o) : d.toLocaleDateString(this._l, o); }
     formatToParts(d) { return [{ type: 'literal', value: this.format(d) }]; }
-    resolvedOptions() { return Object.assign({ locale: 'en-US', calendar: 'gregory', numberingSystem: 'latn', timeZone: 'UTC' }, this._o); }
-    static supportedLocalesOf(l) { return [].concat(l || []); }
+    resolvedOptions() {
+      const o = this._o || {};
+      const fields = ['weekday', 'era', 'year', 'month', 'day', 'dayPeriod', 'hour', 'minute', 'second', 'fractionalSecondDigits', 'dateStyle', 'timeStyle'];
+      const defaults = fields.some((f) => o[f] !== undefined) ? {} : { year: 'numeric', month: 'numeric', day: 'numeric' };
+      return Object.assign({ locale: resolveLocale(this._l), calendar: 'gregory', numberingSystem: 'latn', timeZone: 'UTC' }, defaults, o);
+    }
+    static supportedLocalesOf(l) { return supportedLocalesOf(l); }
   };
   Intl.Collator = class Collator {
-    constructor(locale, opts) { this._o = opts || {}; const self = this; this.compare = (a, b) => String(a).localeCompare(String(b), locale, self._o); }
-    resolvedOptions() { return { locale: 'en-US', usage: 'sort', sensitivity: 'variant' }; }
+    constructor(locale, opts) { this._o = opts || {}; this._l = locale; const self = this; this.compare = (a, b) => String(a).localeCompare(String(b), locale, self._o); }
+    resolvedOptions() { return { locale: resolveLocale(this._l), usage: 'sort', sensitivity: 'variant', ignorePunctuation: false, collation: 'default', numeric: false, caseFirst: 'false' }; }
   };
   Intl.PluralRules = class PluralRules {
-    constructor(l, o) { this._ord = o && o.type === 'ordinal'; }
+    constructor(l, o) { this._ord = o && o.type === 'ordinal'; this._l = l; }
     select(n) {
       if (this._ord) { const a = n % 10, b = n % 100; return a === 1 && b !== 11 ? 'one' : a === 2 && b !== 12 ? 'two' : a === 3 && b !== 13 ? 'few' : 'other'; }
       return n === 1 ? 'one' : 'other';
     }
-    resolvedOptions() { return { locale: 'en-US' }; }
+    resolvedOptions() { return { locale: resolveLocale(this._l), type: this._ord ? 'ordinal' : 'cardinal', pluralCategories: this._ord ? ['few', 'one', 'two', 'other'] : ['one', 'other'] }; }
   };
   Intl.RelativeTimeFormat = class RelativeTimeFormat {
     constructor(l, o) { this._o = o || {}; }
@@ -675,7 +705,7 @@
     }
   };
   Intl.DisplayNames = class DisplayNames { constructor() {} of(c) { return c; } };
-  Intl.getCanonicalLocales = (l) => [].concat(l || []);
+  Intl.getCanonicalLocales = (l) => localeList(l);
   Intl.supportedValuesOf = () => [];
   // the legacy Intl constructors may be called without `new`
   for (const k of ['NumberFormat', 'DateTimeFormat', 'Collator']) {
@@ -684,25 +714,33 @@
     W.prototype = C.prototype;
     Object.defineProperty(C.prototype, 'constructor', { value: W, writable: true, configurable: true });
     for (const s of Object.getOwnPropertyNames(C)) if (!['length', 'name', 'prototype'].includes(s)) W[s] = C[s];
-    if (!W.supportedLocalesOf) W.supportedLocalesOf = (l) => [].concat(l || []);
+    if (!W.supportedLocalesOf) W.supportedLocalesOf = supportedLocalesOf;
     Intl[k] = W;
   }
   for (const k of ['PluralRules', 'RelativeTimeFormat', 'ListFormat', 'Segmenter', 'DisplayNames']) {
-    if (Intl[k] && !Intl[k].supportedLocalesOf) Intl[k].supportedLocalesOf = (l) => [].concat(l || []);
+    if (Intl[k]) Intl[k].supportedLocalesOf = supportedLocalesOf;
   }
   if (!Intl.Locale) {
     Intl.Locale = class Locale {
       constructor(tag, opts = {}) {
-        const parts = String(tag).split(/[-_]/);
+        const parts = canonTag(String(tag).split('-u-')[0]).split('-');
         this.language = opts.language || parts[0] || 'en';
-        this.script = opts.script || parts.find((p, i) => i > 0 && p.length === 4) || undefined;
-        this.region = opts.region || parts.find((p, i) => i > 0 && (p.length === 2 || /^\d{3}$/.test(p))) || undefined;
+        this.script = opts.script || parts.find((p, i) => i > 0 && /^[A-Z][a-z]{3}$/.test(p)) || undefined;
+        this.region = opts.region || parts.find((p, i) => i > 0 && (/^[A-Z]{2}$/.test(p) || /^\d{3}$/.test(p))) || undefined;
         this.baseName = [this.language, this.script, this.region].filter(Boolean).join('-');
         this.calendar = opts.calendar; this.numberingSystem = opts.numberingSystem; this.hourCycle = opts.hourCycle;
       }
       toString() { return this.baseName; }
-      maximize() { return this; }
-      minimize() { return this; }
+      maximize() {
+        const [sc, rg] = (LIKELY[this.language] || 'Latn-US').split('-');
+        return new Locale(this.language, { script: this.script || sc, region: this.region || rg });
+      }
+      minimize() {
+        const [sc, rg] = (LIKELY[this.language] || '').split('-');
+        const script = this.script && this.script !== sc ? this.script : undefined;
+        const region = this.region && this.region !== rg ? this.region : undefined;
+        return new Locale(this.language, { script, region });
+      }
       getWeekInfo() { return { firstDay: 1, weekend: [6, 7], minimalDays: 1 }; }
       getTextInfo() { return { direction: 'ltr' }; }
     };
