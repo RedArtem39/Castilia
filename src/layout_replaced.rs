@@ -473,7 +473,7 @@ impl<'a> Ctx<'a> {
             .children
             .iter()
             .copied()
-            .filter(|&c| doc.nodes[c].tag().is_some() && self.st.nodes[c].display == Display::ListItem)
+            .filter(|&c| doc.nodes[c].tag().is_some() && self.st.get(c).display == Display::ListItem)
             .collect();
         let start = p.attribute("start").and_then(|v| v.trim().parse::<i32>().ok());
         let (mut counter, step) = if reversed { (start.unwrap_or(items.len() as i32), -1) } else { (start.unwrap_or(1), 1) };

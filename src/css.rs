@@ -1601,17 +1601,31 @@ fn cascade_key(important: bool, origin: u8, layer: u16, specificity: u32, order:
     (important as u8, rank, specificity, order, index)
 }
 
-/// Computed styles for the whole document, indexed by node id.
+/// Computed styles for the whole document, indexed by node id. Only nodes in the rendered tree
+/// get a style; every other id (detached or collected nodes) reads as `display: none`.
 pub struct Styles {
-    pub nodes: Vec<Style>,
-    pub before: Vec<Option<Style>>,
-    pub after: Vec<Option<Style>>,
+    pub nodes: Vec<Option<Box<Style>>>,
+    pub before: Vec<Option<Box<Style>>>,
+    pub after: Vec<Option<Box<Style>>>,
+    none: Style,
+}
+
+impl Styles {
+    pub fn get(&self, i: usize) -> &Style {
+        self.nodes.get(i).and_then(|s| s.as_deref()).unwrap_or(&self.none)
+    }
+    pub fn before(&self, i: usize) -> Option<&Style> {
+        self.before.get(i).and_then(|s| s.as_deref())
+    }
+    pub fn after(&self, i: usize) -> Option<&Style> {
+        self.after.get(i).and_then(|s| s.as_deref())
+    }
 }
 
 impl core::ops::Index<usize> for Styles {
     type Output = Style;
     fn index(&self, i: usize) -> &Style {
-        &self.nodes[i]
+        self.get(i)
     }
 }
 
@@ -1632,7 +1646,7 @@ pub fn compute_with_rules(doc: &Document, active: &ActiveRules, vp: Viewport) ->
     compute_with_rules_ctx(doc, active, vp, &BTreeMap::new())
 }
 
-fn container_ok(chain: &Option<Rc<MediaChain>>, doc: &Document, id: NodeId, styles: &[Style], sizes: &BTreeMap<NodeId, (f32, f32)>) -> bool {
+fn container_ok(chain: &Option<Rc<MediaChain>>, doc: &Document, id: NodeId, styles: &Styles, sizes: &BTreeMap<NodeId, (f32, f32)>) -> bool {
     let mut cur = chain.as_ref();
     while let Some(c) = cur {
         if c.container {
@@ -1662,11 +1676,9 @@ fn container_ok(chain: &Option<Rc<MediaChain>>, doc: &Document, id: NodeId, styl
 
 pub fn compute_with_rules_ctx(doc: &Document, active: &ActiveRules, vp: Viewport, containers: &BTreeMap<NodeId, (f32, f32)>) -> Styles {
     let n = doc.nodes.len();
-    let mut out = Styles { nodes: vec![Style::initial(); 0], before: vec![None; n], after: vec![None; n] };
-    out.nodes = (0..n).map(|_| Style::initial()).collect();
-    for s in &mut out.nodes {
-        s.display = Display::None;
-    }
+    let mut none = Style::initial();
+    none.display = Display::None;
+    let mut out = Styles { nodes: (0..n).map(|_| None).collect(), before: (0..n).map(|_| None).collect(), after: (0..n).map(|_| None).collect(), none };
     let mut computed = vec![false; n];
     // Iterative DFS from the root so parents are always computed first.
     let mut stack = vec![doc.root];
@@ -1677,24 +1689,24 @@ pub fn compute_with_rules_ctx(doc: &Document, active: &ActiveRules, vp: Viewport
             NodeKind::Document => {
                 let mut s = Style::initial();
                 s.display = Display::Block;
-                out.nodes[id] = s;
+                out.nodes[id] = Some(Box::new(s));
             }
             NodeKind::Comment(_) | NodeKind::Fragment => {}
             NodeKind::Text(_) => {
-                let parent = node.parent.map(|p| &out.nodes[p]);
+                let parent = node.parent.map(|p| out.get(p));
                 let mut s = parent.map_or_else(Style::initial, Style::inherit_from);
                 s.display = Display::Inline;
-                out.nodes[id] = s;
+                out.nodes[id] = Some(Box::new(s));
             }
             NodeKind::Element { .. } => {
-                let parent = node.parent.map(|p| out.nodes[p].clone());
-                let (style, before, after) = compute_element(doc, id, parent.as_ref(), active, vp, root_font, &out.nodes, containers);
+                let parent = node.parent.map(|p| out.get(p).clone());
+                let (style, before, after) = compute_element(doc, id, parent.as_ref(), active, vp, root_font, &out, containers);
                 if doc.nodes[id].tag() == Some("html") {
                     root_font = style.font_size;
                 }
-                out.nodes[id] = style;
-                out.before[id] = before;
-                out.after[id] = after;
+                out.nodes[id] = Some(Box::new(style));
+                out.before[id] = before.map(Box::new);
+                out.after[id] = after.map(Box::new);
             }
         }
         computed[id] = true;
@@ -1714,7 +1726,7 @@ fn compute_element(
     active: &ActiveRules,
     vp: Viewport,
     root_font: f32,
-    ancestors: &[Style],
+    ancestors: &Styles,
     containers: &BTreeMap<NodeId, (f32, f32)>,
 ) -> (Style, Option<Style>, Option<Style>) {
     let node = &doc.nodes[id];
@@ -3572,7 +3584,7 @@ mod tests {
         );
         let p = doc.nodes[doc.body].children[0];
         assert_eq!(s[p].color, 0xff0000ff);
-        assert_eq!(s.before[p].as_ref().unwrap().content, Some(vec![ContentItem::Text(">".to_string())]));
+        assert_eq!(s.before(p).unwrap().content, Some(vec![ContentItem::Text(">".to_string())]));
     }
 
     #[test]

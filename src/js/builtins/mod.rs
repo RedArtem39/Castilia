@@ -157,6 +157,8 @@ pub fn new_interp() -> Interp {
         parsing_html_scripts: false,
         executed_scripts: Vec::new(),
         current_script: None,
+        pending_scripts: Vec::new(),
+        parsing_html_scripts_sync: false,
         custom_elements: Vec::new(),
         template_content: BTreeMap::new(),
         shadow_closed: Vec::new(),

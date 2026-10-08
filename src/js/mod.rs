@@ -179,10 +179,16 @@ impl Runtime {
                 it.executed_scripts.push(n);
             }
             let r = it.eval_script(source);
-            it.current_script = prev;
+            // microtasks run in "clean up after running script", before currentScript resets
             it.run_microtasks();
+            it.current_script = prev;
             r
         })
+    }
+
+    /// Run script-inserted external scripts that are waiting (they load while the parser goes on).
+    pub fn run_pending_scripts(&mut self, document: &mut Document) {
+        self.with(document, |it| it.run_pending_scripts());
     }
 
     /// Run an ES module entry point (dependencies are fetched through the host or preloaded).
@@ -283,6 +289,7 @@ impl Runtime {
             let d = it.wrap(root);
             Self::fire(it, d, "DOMContentLoaded", true);
             it.run_microtasks();
+            it.run_pending_scripts();
         });
     }
 
@@ -294,6 +301,7 @@ impl Runtime {
             Self::fire(it, g.clone(), "load", false);
             Self::fire(it, g, "pageshow", false);
             it.run_microtasks();
+            it.run_pending_scripts();
         });
     }
 

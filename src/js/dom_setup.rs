@@ -1475,7 +1475,11 @@ fn doc_write(it: &mut Interp, c: &Call) -> Res {
         let (l, i) = siblings(it, cs);
         l.get(i + 1).copied()
     });
-    it.dom_insert(ctx, frag, before)?;
+    // scripts written while parsing are parser-inserted: they block, i.e. run right away
+    let prev = core::mem::replace(&mut it.parsing_html_scripts_sync, it.dom.ready_state == "loading");
+    let r = it.dom_insert(ctx, frag, before);
+    it.parsing_html_scripts_sync = prev;
+    r?;
     Ok(Value::Undefined)
 }
 

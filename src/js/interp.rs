@@ -203,6 +203,10 @@ pub struct Interp {
     pub parsing_html_scripts: bool,
     pub executed_scripts: Vec<usize>,
     pub current_script: Option<usize>,
+    /// Script-inserted external scripts waiting to run (async, in insertion order).
+    pub pending_scripts: Vec<usize>,
+    /// Run script-inserted external scripts synchronously (document.write'd scripts).
+    pub parsing_html_scripts_sync: bool,
     pub custom_elements: Vec<(String, Obj)>,
     pub template_content: BTreeMap<usize, usize>,
     pub shadow_closed: Vec<usize>,

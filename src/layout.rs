@@ -587,9 +587,9 @@ impl<'a> Ctx<'a> {
     pub fn style(&self, bx: Bx) -> &'a Style {
         let st: &'a Styles = self.st;
         match bx.pseudo {
-            1 => st.before[bx.id].as_ref().unwrap_or(&st.nodes[bx.id]),
-            2 => st.after[bx.id].as_ref().unwrap_or(&st.nodes[bx.id]),
-            _ => &st.nodes[bx.id],
+            1 => st.before(bx.id).unwrap_or(st.get(bx.id)),
+            2 => st.after(bx.id).unwrap_or(st.get(bx.id)),
+            _ => st.get(bx.id),
         }
     }
 
@@ -612,7 +612,7 @@ impl<'a> Ctx<'a> {
     /// The first `<legend>` child of a `<fieldset>` (the "rendered legend").
     pub fn rendered_legend(&self, fieldset: NodeId) -> Option<NodeId> {
         let doc: &Document = self.doc;
-        doc.nodes[fieldset].children.iter().copied().find(|&c| doc.nodes[c].tag() == Some("legend") && self.st.nodes[c].display != Display::None)
+        doc.nodes[fieldset].children.iter().copied().find(|&c| doc.nodes[c].tag() == Some("legend") && self.st.get(c).display != Display::None)
     }
 
     /// Children as layout boxes, including generated content. Honors closed `<details>`.
@@ -622,7 +622,7 @@ impl<'a> Ctx<'a> {
         }
         let node = &self.doc.nodes[bx.id];
         let mut out = Vec::with_capacity(node.children.len() + 2);
-        if self.st.before[bx.id].is_some() {
+        if self.st.before(bx.id).is_some() {
             out.push(Bx { id: bx.id, pseudo: 1 });
         }
         let closed_details = node.tag() == Some("details") && node.attribute("open").is_none();
@@ -641,7 +641,7 @@ impl<'a> Ctx<'a> {
             }
             out.push(Bx::node(c));
         }
-        if self.st.after[bx.id].is_some() {
+        if self.st.after(bx.id).is_some() {
             out.push(Bx { id: bx.id, pseudo: 2 });
         }
         out
@@ -720,9 +720,9 @@ impl<'a> Ctx<'a> {
         let mut background = color::TRANSPARENT;
         let mut out = Out::default();
         if let Some(html) = html {
-            background = self.st.nodes[html].background_color;
+            background = self.st.get(html).background_color;
             if background == 0 {
-                background = self.st.nodes[doc.body].background_color;
+                background = self.st.get(doc.body).background_color;
             }
             let mut fl = Floats::default();
             let args = Args::block(vw, Some(self.vp.height));
@@ -1242,7 +1242,7 @@ impl<'a> Ctx<'a> {
             .iter()
             .copied()
             .find(|&c| doc.nodes[c].tag() == Some("html"))
-            .is_some_and(|h| self.st.nodes[h].background_color == 0)
+            .is_some_and(|h| self.st.get(h).background_color == 0)
     }
 
     pub fn paint_decorations(&mut self, paint: &mut Paint, s: &Style, rect: Rect, propagate_bg: bool, skip: [bool; 4]) {

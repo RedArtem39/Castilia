@@ -1,18 +1,70 @@
 use castilia::{Font, FontMetrics, css::{FontFace, FontFamily}};
 use fontdb::{Database, Family, Query, Style, Weight};
-use fontdue::{Font as FdFont, FontSettings};
 use std::{cell::RefCell, collections::{BTreeMap, HashMap}, rc::Rc};
+use ttf_parser::{Face, GlyphId, Tag};
+
+/// A parsed font. Only the tables needed for measuring are read (cmap, hmtx/HVAR, hhea/OS2,
+/// kern): no glyph outlines are decoded, so large CJK fonts cost little. Font data lives for the
+/// whole process (one page per host process), which lets the parsed face borrow it.
+struct Fnt {
+    face: Face<'static>,
+    data: &'static [u8],
+    upem: f32,
+    variable: bool,
+}
+
+impl Fnt {
+    fn parse(data: Vec<u8>, index: u32) -> Option<Fnt> {
+        let data: &'static [u8] = Box::leak(data.into_boxed_slice());
+        let face = Face::parse(data, index).ok()?;
+        let upem = face.units_per_em() as f32;
+        if upem <= 0.0 {
+            return None;
+        }
+        let variable = face.is_variable();
+        Some(Fnt { face, data, upem, variable })
+    }
+
+    fn has(&self, c: char) -> bool {
+        self.face.glyph_index(c).is_some_and(|g| g.0 != 0)
+    }
+
+    /// The face with the variation axes a browser would apply: `wght` from font-weight and
+    /// `opsz` from the font size (`font-optical-sizing: auto`).
+    fn instance(&self, weight: u16, size: f32) -> Face<'static> {
+        let mut f = self.face.clone();
+        for axis in self.face.variation_axes() {
+            let value = match &axis.tag.to_bytes() {
+                b"wght" => weight as f32,
+                b"opsz" => size,
+                _ => continue,
+            };
+            f.set_variation(axis.tag, value.clamp(axis.min_value, axis.max_value));
+        }
+        f
+    }
+
+    fn line(&self, size: f32) -> (f32, f32, f32) {
+        let s = size / self.upem;
+        (self.face.ascender() as f32 * s, -(self.face.descender() as f32) * s, self.face.line_gap() as f32 * s)
+    }
+}
+
+fn kern(face: &Face, left: GlyphId, right: GlyphId) -> Option<i16> {
+    let table = face.tables().kern?;
+    table.subtables.into_iter().filter(|s| s.horizontal && !s.variable).find_map(|s| s.glyphs_kerning(left, right))
+}
 
 /// A font in a fallback chain, limited to the characters its `unicode-range` covers.
 #[derive(Clone)]
 struct Entry {
-    font: Rc<FdFont>,
+    font: Rc<Fnt>,
     range: Rc<[(u32, u32)]>,
 }
 
 impl Entry {
     fn covers(&self, c: char) -> bool {
-        (self.range.is_empty() || self.range.iter().any(|&(a, b)| (a..=b).contains(&(c as u32)))) && self.font.lookup_glyph_index(c) != 0
+        (self.range.is_empty() || self.range.iter().any(|&(a, b)| (a..=b).contains(&(c as u32)))) && self.font.has(c)
     }
 }
 
@@ -21,8 +73,6 @@ struct WebFace {
     weight: (u16, u16),
     italic: bool,
     entry: Entry,
-    /// Decoded TrueType/OpenType data, for embedding into SVG output.
-    sfnt: Rc<Vec<u8>>,
     range: Vec<(u32, u32)>,
 }
 
@@ -30,20 +80,20 @@ struct WebFace {
 /// generic families (sans-serif, serif, monospace, system-ui), each regular and bold. Characters a
 /// font lacks fall through the family list like in a browser.
 pub struct SystemFont {
-    fonts: [Option<Rc<FdFont>>; 8],
+    fonts: [Option<Rc<Fnt>>; 8],
     database: Database,
     /// Lowercase family name → name as the system spells it.
     system_names: HashMap<String, String>,
-    named: RefCell<HashMap<(String, u16, bool), Option<Rc<FdFont>>>>,
+    named: RefCell<HashMap<(String, u16, bool), Option<Rc<Fnt>>>>,
     web: RefCell<BTreeMap<String, Vec<WebFace>>>,
     chains: RefCell<HashMap<(Option<Rc<str>>, u8, u16, bool), Rc<[Entry]>>>,
     images: RefCell<BTreeMap<String, (f32, f32)>>,
 }
 
-/// Fonts bigger than this (CJK collections) are not loaded by name: fontdue parses every glyph.
-const MAX_NAMED_FONT_BYTES: usize = 6 * 1024 * 1024;
+/// Font files bigger than this are not loaded by name.
+const MAX_NAMED_FONT_BYTES: usize = 40 * 1024 * 1024;
 
-fn load(database: &Database, families: &[Family], weight: u16, italic: bool) -> Option<FdFont> {
+fn load(database: &Database, families: &[Family], weight: u16, italic: bool) -> Option<Fnt> {
     let face = database.query(&Query {
         families,
         weight: Weight(weight),
@@ -55,7 +105,7 @@ fn load(database: &Database, families: &[Family], weight: u16, italic: bool) -> 
             if data.len() > MAX_NAMED_FONT_BYTES {
                 return None;
             }
-            FdFont::from_bytes(data, FontSettings { collection_index: index, ..Default::default() }).ok()
+            Fnt::parse(data.to_vec(), index)
         })
         .flatten()
 }
@@ -123,7 +173,7 @@ impl SystemFont {
         self.images.borrow_mut().insert(src.to_string(), size);
     }
 
-    fn generic(&self, family: FontFamily, weight: u16) -> Rc<FdFont> {
+    fn generic(&self, family: FontFamily, weight: u16) -> Rc<Fnt> {
         let base = match family {
             FontFamily::Serif => 0,
             FontFamily::Sans => 2,
@@ -140,7 +190,7 @@ impl SystemFont {
             .clone()
     }
 
-    fn named_font(&self, name: &str, weight: u16, italic: bool) -> Option<Rc<FdFont>> {
+    fn named_font(&self, name: &str, weight: u16, italic: bool) -> Option<Rc<Fnt>> {
         let real = self.system_names.get(name)?;
         let key = (name.to_string(), weight, italic);
         if let Some(f) = self.named.borrow().get(&key) {
@@ -198,7 +248,7 @@ impl SystemFont {
     }
 
     /// The primary font: the first one in the chain that has a space glyph (Blink's rule).
-    fn primary(&self, font: &Font) -> Rc<FdFont> {
+    fn primary(&self, font: &Font) -> Rc<Fnt> {
         let chain = self.chain(font);
         chain.iter().find(|e| e.covers(' ')).unwrap_or(&chain[chain.len() - 1]).font.clone()
     }
@@ -219,7 +269,7 @@ impl SystemFont {
                     f.weight.0,
                     f.weight.1,
                     if f.italic { "italic" } else { "normal" },
-                    base64(&f.sfnt),
+                    base64(f.entry.font.data),
                     range
                 ));
             }
@@ -244,9 +294,12 @@ fn base64(bytes: &[u8]) -> String {
     out
 }
 
-fn width_with(chain: &[Entry], text: &str, size: f32) -> f32 {
+fn width_with(chain: &[Entry], text: &str, font: &Font) -> f32 {
+    let size = font.size;
+    // variable fonts are measured at the instance the browser renders
+    let instances: Vec<Option<Face<'static>>> = chain.iter().map(|e| e.font.variable.then(|| e.font.instance(font.weight, size))).collect();
     let mut width = 0.0;
-    let mut previous: Option<(char, usize)> = None;
+    let mut previous: Option<(GlyphId, usize)> = None;
     for character in text.chars() {
         let Some(i) = chain.iter().position(|e| e.covers(character)) else {
             if !character.is_control() {
@@ -262,14 +315,17 @@ fn width_with(chain: &[Entry], text: &str, size: f32) -> f32 {
             previous = None;
             continue;
         };
-        let font = &chain[i].font;
+        let f = &chain[i].font;
+        let face = instances[i].as_ref().unwrap_or(&f.face);
+        let Some(g) = face.glyph_index(character) else { continue };
+        let scale = size / f.upem;
         if let Some((left, j)) = previous
             && j == i
         {
-            width += font.horizontal_kern(left, character, size).unwrap_or(0.0);
+            width += kern(face, left, g).unwrap_or(0) as f32 * scale;
         }
-        width += font.metrics(character, size).advance_width;
-        previous = Some((character, i));
+        width += face.glyph_hor_advance(g).unwrap_or(0) as f32 * scale;
+        previous = Some((g, i));
     }
     width
 }
@@ -284,7 +340,7 @@ impl FontMetrics for SystemFont {
     }
 
     fn text_width_font(&self, text: &str, font: &Font) -> f32 {
-        width_with(&self.chain(font), text, font.size)
+        width_with(&self.chain(font), text, font)
     }
 
     fn line_height(&self, size: f32) -> f32 {
@@ -293,26 +349,26 @@ impl FontMetrics for SystemFont {
 
     fn line_height_font(&self, font: &Font) -> f32 {
         // Blink: lround(ascent) + lround(descent) + lround(line gap) for the primary font.
-        self.primary(font).horizontal_line_metrics(font.size).map_or(font.size * 1.2, |m| m.ascent.round() + (-m.descent).round() + m.line_gap.round())
+        let (a, d, g) = self.primary(font).line(font.size);
+        a.round() + d.round() + g.round()
     }
 
     fn ascent(&self, font: &Font) -> f32 {
-        self.primary(font).horizontal_line_metrics(font.size).map_or(font.size * 0.9, |m| m.ascent.round())
+        self.primary(font).line(font.size).0.round()
     }
 
     fn descent(&self, font: &Font) -> f32 {
-        self.primary(font).horizontal_line_metrics(font.size).map_or(font.size * 0.2, |m| (-m.descent).round())
+        self.primary(font).line(font.size).1.round()
     }
 
     fn add_font_face(&self, face: &FontFace, data: &[u8]) -> bool {
         let Some(sfnt) = decode_font(data) else { return false };
-        let Ok(font) = FdFont::from_bytes(sfnt.as_slice(), FontSettings::default()) else { return false };
+        let Some(font) = Fnt::parse(sfnt, 0) else { return false };
         let range: Rc<[(u32, u32)]> = Rc::from(face.unicode_range.clone());
         self.web.borrow_mut().entry(face.family.clone()).or_default().push(WebFace {
             weight: face.weight,
             italic: face.italic,
             entry: Entry { font: Rc::new(font), range },
-            sfnt: Rc::new(sfnt),
             range: face.unicode_range.clone(),
         });
         self.chains.borrow_mut().clear();

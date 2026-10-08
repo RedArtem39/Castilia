@@ -1290,6 +1290,7 @@ impl Interp {
     /// Run all timers due up to `until` (virtual milliseconds), draining microtasks in between.
     pub fn run_timers_until(&mut self, until: f64, max_fires: usize) {
         self.run_microtasks();
+        self.run_pending_scripts();
         let mut fired = 0;
         while fired < max_fires {
             let next = self.timers.iter().map(|t| t.due).fold(f64::INFINITY, f64::min);
@@ -1299,6 +1300,7 @@ impl Interp {
             if !matches!(self.run_next_timer(), Ok(true)) {
                 break;
             }
+            self.run_pending_scripts();
             fired += 1;
         }
         if self.now < until {

@@ -191,9 +191,14 @@ impl Page {
                 modules.push((id, url, source));
                 continue;
             }
+            let external = page.document.nodes[id].attribute("src").is_some();
             match page.runtime.run_script(&source, Some(id), &mut page.document) {
                 Ok(()) => page.scripts.executed += 1,
                 Err(error) => page.scripts.errors.push(format!("script node {id}: {error}")),
+            }
+            // a parser-blocking download gives script-inserted scripts time to arrive
+            if external {
+                page.runtime.run_pending_scripts(&mut page.document);
             }
         }
         // module scripts are deferred: they run after parsing, in document order

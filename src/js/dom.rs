@@ -527,6 +527,31 @@ impl Interp {
             return Ok(());
         }
         let src = doc.nodes[id].attribute("src").map(|s| s.to_string());
+        // script-inserted external scripts are async: they run as their own task later
+        if src.is_some() && !self.parsing_html_scripts_sync {
+            self.executed_scripts.push(id);
+            self.pending_scripts.push(id);
+            return Ok(());
+        }
+        self.run_script_element(id, src)
+    }
+
+    /// Run queued script-inserted external scripts, each as a task: `currentScript` is set while
+    /// it and its microtasks run, then `load`/`error` fires.
+    pub fn run_pending_scripts(&mut self) {
+        let mut guard = 0;
+        while !self.pending_scripts.is_empty() && guard < 256 {
+            guard += 1;
+            let id = self.pending_scripts.remove(0);
+            self.begin_task();
+            let src = self.dom().ok().and_then(|d| d.nodes.get(id).and_then(|n| n.attribute("src")).map(|s| s.to_string()));
+            let _ = self.run_script_element(id, src);
+            self.run_microtasks();
+        }
+    }
+
+    fn run_script_element(&mut self, id: NodeId, src: Option<String>) -> Res<()> {
+        let doc = self.dom()?;
         let code = match &src {
             Some(u) => {
                 let url = self.url_resolve(u);
@@ -544,10 +569,16 @@ impl Interp {
         if code.trim().is_empty() && src.is_none() {
             return Ok(());
         }
-        self.executed_scripts.push(id);
+        if !self.executed_scripts.contains(&id) {
+            self.executed_scripts.push(id);
+        }
         let prev = self.current_script;
         self.current_script = Some(id);
         let r = self.eval_script(&code);
+        // a top-level task: its microtasks still see `document.currentScript`
+        if self.depth == 0 && self.vm_frames == 0 {
+            self.run_microtasks();
+        }
         self.current_script = prev;
         if let Err(e) = r {
             self.logs.push(LogEntry { level: "error", text: format!("Uncaught {e}") });

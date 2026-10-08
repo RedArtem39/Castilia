@@ -69,6 +69,7 @@ impl Interp {
         }
         roots.extend(self.current_script);
         roots.extend(self.pinned_nodes.iter().copied());
+        roots.extend(self.pending_scripts.iter().copied());
         roots.extend(self.upgrade_target);
         roots.extend(self.dom.focused);
         for o in &self.dom.observers {

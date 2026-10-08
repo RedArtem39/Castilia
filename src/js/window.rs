@@ -779,7 +779,7 @@ fn cascaded_value(it: &mut Interp, id: usize, name: &str) -> Option<String> {
     use crate::css::*;
     use crate::css_values::Dim;
     let styles = document_styles(it)?;
-    let s = styles.nodes.get(id)?;
+    let s = styles.nodes.get(id)?.as_deref()?;
     let rect = it.dom.rects.get(&id).copied();
     Some(match name {
         n if n.starts_with("--") => s.vars.get(n).cloned().unwrap_or_default(),
