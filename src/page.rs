@@ -470,6 +470,34 @@ impl Page {
         self.stylesheet_with("").font_faces.clone()
     }
 
+    /// (family, weight, italic) of every family name text in the document may be drawn with, and
+    /// the characters that text contains (for `unicode-range` subsets).
+    pub fn used_fonts(&self, viewport_width: f32) -> (alloc::collections::BTreeSet<(String, u16, bool)>, alloc::collections::BTreeSet<u32>) {
+        let sheet = self.stylesheet_with("");
+        let styles = crate::css::compute_styles(&self.document, &sheet, Viewport::new(viewport_width, 768.0));
+        let mut out = alloc::collections::BTreeSet::new();
+        let mut chars = alloc::collections::BTreeSet::new();
+        for (id, node) in self.document.nodes.iter().enumerate() {
+            let crate::dom::NodeKind::Text(t) = &node.kind else { continue };
+            if t.trim().is_empty() {
+                continue;
+            }
+            let s = styles.get(id);
+            if s.display == crate::css::Display::None {
+                continue;
+            }
+            if let Some(names) = &s.font_names {
+                for n in names.split(',') {
+                    out.insert((String::from(n), s.font_weight, s.font_italic));
+                }
+            }
+            if chars.len() < 8000 {
+                chars.extend(t.chars().filter(|c| !c.is_whitespace()).map(|c| c as u32));
+            }
+        }
+        (out, chars)
+    }
+
     /// Render with the given viewport width and a 768px tall viewport.
     pub fn render(&self, viewport_width: f32, fonts: &impl FontMetrics) -> DisplayList {
         self.render_viewport(Viewport::new(viewport_width, 768.0), fonts)

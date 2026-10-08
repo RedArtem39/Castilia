@@ -280,7 +280,55 @@ fn probe_images<F: Fetcher>(fetcher: &mut F, base: &str, sources: &[String]) -> 
 
 /// Download `@font-face` fonts and hand them to the host. Faces for Latin/Cyrillic text go first;
 /// WOFF2/WOFF/TrueType sources are preferred in that order.
-fn load_fonts<F: Fetcher>(fetcher: &mut F, base: &str, faces: &[css::FontFace], fonts: &impl FontMetrics) {
+/// Does CSS font matching pick `face` (among `family_faces`) for text of `weight`/`italic`?
+fn face_matches(face: &css::FontFace, family_faces: &[&css::FontFace], weight: u16, italic: bool) -> bool {
+    let style_ok = |f: &css::FontFace| f.italic == italic;
+    let pool: Vec<&&css::FontFace> = if family_faces.iter().any(|f| style_ok(f)) { family_faces.iter().filter(|f| style_ok(f)).collect() } else { family_faces.iter().collect() };
+    if !pool.iter().any(|f| core::ptr::eq(**f, face)) {
+        return false;
+    }
+    let distance = |f: &css::FontFace| -> i32 {
+        let (lo, hi) = f.weight;
+        if (lo..=hi).contains(&weight) {
+            return 0;
+        }
+        let d = if weight < lo { lo - weight } else { weight - hi } as i32;
+        let heavier = lo > weight;
+        if (weight >= 500) == heavier { d } else { d + 1000 }
+    };
+    let best = pool.iter().map(|f| distance(f)).min().unwrap_or(0);
+    distance(face) == best
+}
+
+/// Font files fetched for a page (one file may back several faces, e.g. a variable font served
+/// for every weight) and the faces already handed to the host.
+#[derive(Default)]
+struct FontCache {
+    files: alloc::collections::BTreeMap<String, Option<Vec<u8>>>,
+    registered: alloc::collections::BTreeSet<(String, String, (u16, u16), bool)>,
+}
+
+/// Returns whether any font was added.
+fn load_fonts<F: Fetcher>(
+    fetcher: &mut F,
+    base: &str,
+    faces: &[css::FontFace],
+    used: &(alloc::collections::BTreeSet<(String, u16, bool)>, alloc::collections::BTreeSet<u32>),
+    fonts: &impl FontMetrics,
+    cache: &mut FontCache,
+) -> bool {
+    let (used, chars) = used;
+    // only faces the page's text would actually be drawn with, and only subsets its characters need
+    let needed = |face: &css::FontFace| face.unicode_range.is_empty() || face.unicode_range.iter().any(|&(a, b)| chars.range(a..=b).next().is_some());
+    let faces: Vec<css::FontFace> = faces
+        .iter()
+        .filter(|face| {
+            let family: Vec<&css::FontFace> = faces.iter().filter(|f| f.family == face.family).collect();
+            needed(face) && used.iter().any(|(name, w, it)| *name == face.family && face_matches(face, &family, *w, *it))
+        })
+        .cloned()
+        .collect();
+    let faces = &faces[..];
     // `format("woff2 supports variations")`, `format("woff2-variations")`, `format("truetype")`, ...
     let rank = |f: &Option<String>| match f.as_deref() {
         Some(f) if f.starts_with("woff2") => 0,
@@ -291,32 +339,40 @@ fn load_fonts<F: Fetcher>(fetcher: &mut F, base: &str, faces: &[css::FontFace], 
     };
     let mut order: Vec<&css::FontFace> = faces.iter().filter(|f| f.covers_common_text()).collect();
     order.extend(faces.iter().filter(|f| !f.covers_common_text()));
-    let mut seen = alloc::collections::BTreeSet::new();
-    let (mut count, mut total) = (0, 0);
+    let mut added = false;
     for face in order {
-        if count >= MAX_FONT_FACES || total >= MAX_FONT_TOTAL {
-            break;
-        }
+        let total: usize = cache.files.values().flatten().map(|b| b.len()).sum();
         let mut sources: Vec<&(String, Option<String>)> = face.sources.iter().filter(|s| rank(&s.1) < 3).collect();
         sources.sort_by_key(|s| rank(&s.1));
         for (src, _) in sources {
-            let bytes = if src.starts_with("data:") {
-                crate::image::decode_data_url(src)
-            } else {
+            let key = if src.starts_with("data:") { src.clone() } else {
                 let Ok(url) = fetcher.resolve(base, src) else { continue };
-                if !seen.insert(url.clone()) {
+                url
+            };
+            let id = (key.clone(), face.family.clone(), face.weight, face.italic);
+            if cache.registered.contains(&id) {
+                break;
+            }
+            if !cache.files.contains_key(&key) {
+                if cache.files.len() >= MAX_FONT_FACES || total >= MAX_FONT_TOTAL {
                     break;
                 }
-                count += 1;
-                fetcher.get(&url, MAX_FONT_BYTES).ok().filter(|r| r.body.len() < MAX_FONT_BYTES).map(|r| r.body)
-            };
-            let Some(bytes) = bytes else { continue };
-            total += bytes.len();
-            if fonts.add_font_face(face, &bytes) {
+                let bytes = if key.starts_with("data:") {
+                    crate::image::decode_data_url(&key)
+                } else {
+                    fetcher.get(&key, MAX_FONT_BYTES).ok().filter(|r| r.body.len() < MAX_FONT_BYTES).map(|r| r.body)
+                };
+                cache.files.insert(key.clone(), bytes);
+            }
+            let Some(Some(bytes)) = cache.files.get(&key) else { continue };
+            if fonts.add_font_face(face, bytes) {
+                cache.registered.insert(id);
+                added = true;
                 break;
             }
         }
     }
+    added
 }
 
 fn load_page_mode<F: Fetcher>(
@@ -472,15 +528,30 @@ fn load_page_mode<F: Fetcher>(
             drop(page);
             return load_page_mode(fetcher, &next, width, fonts, reader, LoadOptions { config, code_memory, interrupt }, hops + 1);
         }
-        load_fonts(fetcher, &base, &page.font_faces(), fonts);
+        let mut font_cache = FontCache::default();
+        let faces = page.font_faces();
+        let used = if faces.is_empty() { Default::default() } else { page.used_fonts(width) };
+        load_fonts(fetcher, &base, &faces, &used, fonts, &mut font_cache);
         let mut display = page.render(width, fonts);
         // scripts that measure the page (ResizeObserver, rAF reading clientHeight) react to the
         // first layout; give them two frames
+        let mut changed = false;
         for _ in 0..2 {
             if !page.after_layout() {
                 break;
             }
+            changed = true;
             display = page.render(width, fonts);
+        }
+        // content those frames added may use more faces
+        if changed {
+            let faces = page.font_faces();
+            if !faces.is_empty() {
+                let used = page.used_fonts(width);
+                if load_fonts(fetcher, &base, &faces, &used, fonts, &mut font_cache) {
+                    display = page.render(width, fonts);
+                }
+            }
         }
         // Probe image sizes so layout can use intrinsic dimensions, then lay out again.
         let sizes = probe_images(fetcher, &base, &Page::image_sources(&display));
