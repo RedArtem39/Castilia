@@ -128,7 +128,7 @@
     #done(result) {
       setTimeout(() => {
         this.result = result; this.readyState = 2;
-        for (const t of ['load', 'loadend']) { const ev = new ProgressEvent(t); if (typeof this['on' + t] === 'function') this['on' + t](ev); this.dispatchEvent(ev); }
+        for (const t of ['load', 'loadend']) { this.dispatchEvent(new ProgressEvent(t)); }
       }, 0);
     }
     readAsText(b) { this.#done(b._text()); }
@@ -313,7 +313,6 @@
     abort() { this._aborted = true; this._rs = 0; this._fire('abort'); }
     _fire(type) {
       const ev = new ProgressEvent(type);
-      if (typeof this['on' + type] === 'function') { try { this['on' + type](ev); } catch (e) { reportError(e); } }
       this.dispatchEvent(ev);
     }
     send(body) {
@@ -608,7 +607,6 @@
       if (this.aborted) return;
       this.aborted = true; this.reason = reason === undefined ? new DOMException('This operation was aborted', 'AbortError') : reason;
       const ev = new Event('abort');
-      if (typeof this.onabort === 'function') this.onabort(ev);
       this.dispatchEvent(ev);
     }
   }
@@ -1240,14 +1238,14 @@
   });
   expose('Notification', class Notification { constructor() {} static get permission() { return 'denied'; } static requestPermission() { return Promise.resolve('denied'); } close() {} });
   expose('WebSocket', class WebSocket extends EventTarget {
-    constructor(url) { super(); this.url = url; this.readyState = 3; this.onerror = null; this.onclose = null; this.onopen = null; this.onmessage = null; setTimeout(() => { const e = new Event('error'); if (typeof this.onerror === 'function') this.onerror(e); this.dispatchEvent(e); const c = new Event('close'); if (typeof this.onclose === 'function') this.onclose(c); this.dispatchEvent(c); }, 0); }
+    constructor(url) { super(); this.url = url; this.readyState = 3; this.onerror = null; this.onclose = null; this.onopen = null; this.onmessage = null; setTimeout(() => { this.dispatchEvent(new Event('error')); this.dispatchEvent(new Event('close')); }, 0); }
     send() { throw new DOMException('WebSocket is not open', 'InvalidStateError'); }
     close() {}
   });
   expose('Worker', class Worker extends EventTarget { constructor() { super(); throw new DOMException('Workers are not supported', 'NotSupportedError'); } });
   class MessagePort extends EventTarget {
     constructor() { super(); this.onmessage = null; this._o = null; }
-    postMessage(data) { const o = this._o; setTimeout(() => { const ev = new MessageEvent('message', { data }); if (typeof o.onmessage === 'function') o.onmessage(ev); o.dispatchEvent(ev); }, 0); }
+    postMessage(data) { const o = this._o; setTimeout(() => { o.dispatchEvent(new MessageEvent('message', { data })); }, 0); }
     start() {} close() {}
   }
   expose('MessageChannel', class MessageChannel { constructor() { this.port1 = new MessagePort(); this.port2 = new MessagePort(); this.port1._o = this.port2; this.port2._o = this.port1; } });
@@ -1518,13 +1516,243 @@
     expose('DOMPoint', class DOMPoint { constructor(x = 0, y = 0, z = 0, w = 1) { Object.assign(this, { x, y, z, w }); } });
   }
   if (!G.Path2D) expose('Path2D', class Path2D { addPath() {} closePath() {} moveTo() {} lineTo() {} bezierCurveTo() {} quadraticCurveTo() {} arc() {} arcTo() {} ellipse() {} rect() {} roundRect() {} });
-  if (!G.EventSource) expose('EventSource', class EventSource extends EventTarget { constructor(url) { super(); this.url = String(url); this.readyState = 2; this.onerror = null; this.onmessage = null; this.onopen = null; setTimeout(() => { const e = new Event('error'); if (typeof this.onerror === 'function') this.onerror(e); this.dispatchEvent(e); }, 0); } close() { this.readyState = 2; } });
-  // IndexedDB is not persisted: opening fails asynchronously so pages take their fallback path
+  if (!G.EventSource) expose('EventSource', class EventSource extends EventTarget { constructor(url) { super(); this.url = String(url); this.readyState = 2; this.onerror = null; this.onmessage = null; this.onopen = null; setTimeout(() => this.dispatchEvent(new Event('error')), 0); } close() { this.readyState = 2; } });
+  // IndexedDB in memory (per page; nothing persists): databases with versions and upgrades,
+  // object stores with keyPath/autoIncrement, indexes, transactions and cursors
   if (!G.indexedDB) {
-    class IDBRequest extends EventTarget { constructor() { super(); this.result = undefined; this.error = null; this.readyState = 'pending'; this.onsuccess = null; this.onerror = null; this.onupgradeneeded = null; this.onblocked = null; } }
-    const fail = (req) => setTimeout(() => { req.readyState = 'done'; req.error = new DOMException('IndexedDB is not available', 'UnknownError'); const e = new Event('error'); if (typeof req.onerror === 'function') req.onerror(e); req.dispatchEvent(e); }, 0);
-    class IDBFactory { open() { const r = new IDBRequest(); fail(r); return r; } deleteDatabase() { const r = new IDBRequest(); fail(r); return r; } databases() { return Promise.resolve([]); } cmp(a, b) { return a < b ? -1 : a > b ? 1 : 0; } }
-    expose('IDBRequest', IDBRequest); expose('IDBOpenDBRequest', IDBRequest); expose('IDBFactory', IDBFactory);
+    const typeRank = (k) => (typeof k === 'number' ? 1 : k instanceof Date ? 2 : typeof k === 'string' ? 3 : k instanceof ArrayBuffer || ArrayBuffer.isView(k) ? 4 : Array.isArray(k) ? 5 : 0);
+    const validKey = (k) => {
+      const r = typeRank(k);
+      if (r === 0) return false;
+      if (r === 1) return !Number.isNaN(k);
+      if (r === 2) return !Number.isNaN(k.getTime());
+      if (r === 5) return k.every(validKey);
+      return true;
+    };
+    const cmp = (a, b) => {
+      const ra = typeRank(a), rb = typeRank(b);
+      if (ra !== rb) return ra < rb ? -1 : 1;
+      if (ra === 5) { for (let i = 0; i < Math.min(a.length, b.length); i++) { const c = cmp(a[i], b[i]); if (c) return c; } return a.length === b.length ? 0 : a.length < b.length ? -1 : 1; }
+      if (ra === 2) { a = a.getTime(); b = b.getTime(); }
+      if (ra === 4) { a = Array.from(new Uint8Array(a.buffer || a)).join(','); b = Array.from(new Uint8Array(b.buffer || b)).join(','); }
+      return a < b ? -1 : a > b ? 1 : 0;
+    };
+    const dataErr = (m) => new DOMException(m, 'DataError');
+    const evalPath = (v, path) => {
+      if (Array.isArray(path)) return path.map((p) => evalPath(v, p));
+      if (path === '') return v;
+      let x = v;
+      for (const part of String(path).split('.')) { if (x == null || typeof x !== 'object' || !(part in Object(x))) return undefined; x = x[part]; }
+      return x;
+    };
+    const clone = (v) => (G.structuredClone ? structuredClone(v) : JSON.parse(JSON.stringify(v)));
+    class IDBKeyRange {
+      constructor(lower, upper, lowerOpen, upperOpen) { this.lower = lower; this.upper = upper; this.lowerOpen = !!lowerOpen; this.upperOpen = !!upperOpen; }
+      includes(k) {
+        if (this.lower !== undefined) { const c = cmp(k, this.lower); if (c < 0 || (c === 0 && this.lowerOpen)) return false; }
+        if (this.upper !== undefined) { const c = cmp(k, this.upper); if (c > 0 || (c === 0 && this.upperOpen)) return false; }
+        return true;
+      }
+      static only(k) { if (!validKey(k)) throw dataErr('invalid key'); return new IDBKeyRange(k, k, false, false); }
+      static lowerBound(k, open) { return new IDBKeyRange(k, undefined, open, true); }
+      static upperBound(k, open) { return new IDBKeyRange(undefined, k, true, open); }
+      static bound(a, b, ao, bo) { if (cmp(a, b) > 0) throw dataErr('lower > upper'); return new IDBKeyRange(a, b, ao, bo); }
+    }
+    const toRange = (q) => (q === undefined || q === null ? null : q instanceof IDBKeyRange ? q : IDBKeyRange.only(q));
+    const fire = (target, type, opts) => {
+      const e = new Event(type, Object.assign({ bubbles: false, cancelable: false }, opts));
+      target.dispatchEvent(e);
+      return e;
+    };
+    class IDBRequest extends EventTarget {
+      constructor(source, tx) { super(); this.source = source || null; this.transaction = tx || null; this._r = undefined; this._e = null; this.readyState = 'pending'; this.onsuccess = null; this.onerror = null; }
+      get result() { return this._r; }
+      get error() { return this._e; }
+    }
+    class IDBOpenDBRequest extends IDBRequest { constructor() { super(); this.onupgradeneeded = null; this.onblocked = null; } }
+    const dbs = new Map(); // name -> { version, stores: Map(name -> store data) }
+    class StoreData {
+      constructor(name, keyPath, autoIncrement) { this.name = name; this.keyPath = keyPath ?? null; this.autoIncrement = !!autoIncrement; this.records = []; this.gen = 1; this.indexes = new Map(); }
+      find(k) { let lo = 0, hi = this.records.length; while (lo < hi) { const m = (lo + hi) >> 1; const c = cmp(this.records[m][0], k); if (c === 0) return [m, true]; if (c < 0) lo = m + 1; else hi = m; } return [lo, false]; }
+    }
+    class IDBTransaction extends EventTarget {
+      constructor(db, names, mode) {
+        super(); this.db = db; this.mode = mode || 'readonly'; this._names = names; this._pending = 0; this._done = false; this.error = null;
+        this.oncomplete = null; this.onerror = null; this.onabort = null;
+        this.objectStoreNames = names.slice();
+        queueMicrotask(() => this._maybeFinish());
+      }
+      objectStore(n) { if (!this._names.includes(n)) throw new DOMException('No objectStore named ' + n + ' in this transaction', 'NotFoundError'); return new IDBObjectStore(this, this.db._data.stores.get(n)); }
+      _req(source, fn) {
+        const r = new IDBRequest(source, this); this._pending++;
+        setTimeout(() => {
+          try { r._r = fn(); r.readyState = 'done'; fire(r, 'success'); }
+          catch (e) { r._e = e; r.readyState = 'done'; const ev = fire(r, 'error', { bubbles: true, cancelable: true }); this.error = e; }
+          this._pending--; this._maybeFinish();
+        }, 0);
+        return r;
+      }
+      _maybeFinish() {
+        if (this._done || this._pending > 0) return;
+        setTimeout(() => { if (this._done || this._pending > 0) return; this._done = true; fire(this, 'complete'); }, 0);
+      }
+      abort() { if (this._done) return; this._done = true; fire(this, 'abort'); }
+      commit() { this._maybeFinish(); }
+    }
+    class IDBIndex {
+      constructor(store, data) { this.objectStore = store; this._d = data; this.name = data.name; this.keyPath = data.keyPath; this.unique = data.unique; this.multiEntry = data.multiEntry; }
+      _entries(range) {
+        const out = [];
+        for (const [pk, v] of this.objectStore._s.records) {
+          let k = evalPath(v, this.keyPath);
+          const keys = this.multiEntry && Array.isArray(k) ? k : [k];
+          for (const ik of keys) if (ik !== undefined && validKey(ik) && (!range || range.includes(ik))) out.push([ik, pk, v]);
+        }
+        return out.sort((a, b) => cmp(a[0], b[0]) || cmp(a[1], b[1]));
+      }
+      get(q) { const r = toRange(q); return this.objectStore._tx._req(this, () => { const e = this._entries(r)[0]; return e ? clone(e[2]) : undefined; }); }
+      getKey(q) { const r = toRange(q); return this.objectStore._tx._req(this, () => { const e = this._entries(r)[0]; return e ? e[1] : undefined; }); }
+      getAll(q, n) { const r = toRange(q); return this.objectStore._tx._req(this, () => this._entries(r).slice(0, n || undefined).map((e) => clone(e[2]))); }
+      getAllKeys(q, n) { const r = toRange(q); return this.objectStore._tx._req(this, () => this._entries(r).slice(0, n || undefined).map((e) => e[1])); }
+      count(q) { const r = toRange(q); return this.objectStore._tx._req(this, () => this._entries(r).length); }
+      openCursor(q, dir) { return openCursor(this.objectStore._tx, this, () => this._entries(toRange(q)).map((e) => ({ key: e[0], primaryKey: e[1], value: e[2] })), dir, true); }
+      openKeyCursor(q, dir) { return openCursor(this.objectStore._tx, this, () => this._entries(toRange(q)).map((e) => ({ key: e[0], primaryKey: e[1], value: e[2] })), dir, false); }
+    }
+    class IDBCursor {
+      constructor(req, source, items, dir, withValue) { this._req = req; this.source = source; this._items = items; this._i = 0; this.direction = dir || 'next'; this._wv = withValue; this._set(); }
+      _set() { const it = this._items[this._i]; this.key = it && it.key; this.primaryKey = it && it.primaryKey; if (this._wv) this.value = it && clone(it.value); }
+      continue(k) {
+        this._i++;
+        if (k !== undefined) while (this._i < this._items.length && cmp(this._items[this._i].key, k) < 0) this._i++;
+        this._step();
+      }
+      advance(n) { this._i += n; this._step(); }
+      _step() {
+        const tx = this._req.transaction; tx._pending++;
+        setTimeout(() => { this._set(); this._req._r = this._i < this._items.length ? this : null; fire(this._req, 'success'); tx._pending--; tx._maybeFinish(); }, 0);
+      }
+      update(v) { const st = this.source instanceof IDBIndex ? this.source.objectStore : this.source; return st.put(v, st.keyPath === null ? this.primaryKey : undefined); }
+      delete() { const st = this.source instanceof IDBIndex ? this.source.objectStore : this.source; return st.delete(this.primaryKey); }
+    }
+    const openCursor = (tx, source, items, dir, withValue) => {
+      const req = new IDBRequest(source, tx); tx._pending++;
+      setTimeout(() => {
+        let list = items();
+        if (dir === 'prev' || dir === 'prevunique') list = list.reverse();
+        const c = new IDBCursor(req, source, list, dir, withValue);
+        req._r = list.length ? c : null; req.readyState = 'done'; fire(req, 'success');
+        tx._pending--; tx._maybeFinish();
+      }, 0);
+      return req;
+    };
+    class IDBObjectStore {
+      constructor(tx, data) { this._tx = tx; this._s = data; this.name = data.name; this.keyPath = data.keyPath; this.autoIncrement = data.autoIncrement; this.transaction = tx; }
+      get indexNames() { return domStringList([...this._s.indexes.keys()]); }
+      _write() { if (this._tx.mode === 'readonly') throw new DOMException('The transaction is read-only.', 'ReadOnlyError'); }
+      _store(v, key, noOverwrite) {
+        this._write();
+        const s = this._s;
+        let k = key;
+        if (s.keyPath !== null) {
+          if (key !== undefined) throw dataErr('key given for an in-line keys store');
+          k = evalPath(v, s.keyPath);
+          if (k === undefined && s.autoIncrement) { k = s.gen++; if (typeof s.keyPath === 'string' && v && typeof v === 'object') v[s.keyPath] = k; }
+        } else if (k === undefined && s.autoIncrement) k = s.gen++;
+        if (!validKey(k)) throw dataErr('Evaluating the object store key path did not yield a value.');
+        if (typeof k === 'number' && s.autoIncrement && k >= s.gen) s.gen = Math.floor(k) + 1;
+        const value = clone(v);
+        return this._tx._req(this, () => {
+          const [i, found] = s.find(k);
+          if (found && noOverwrite) throw new DOMException('Key already exists in the object store.', 'ConstraintError');
+          for (const idx of s.indexes.values()) {
+            if (!idx.unique) continue;
+            const ik = evalPath(value, idx.keyPath);
+            if (ik !== undefined && s.records.some(([pk, rv]) => cmp(pk, k) !== 0 && cmp(evalPath(rv, idx.keyPath) ?? null, ik) === 0)) throw new DOMException('Unable to add key to index: at least one key does not satisfy the uniqueness requirements.', 'ConstraintError');
+          }
+          if (found) s.records[i] = [k, value]; else s.records.splice(i, 0, [k, value]);
+          return k;
+        });
+      }
+      put(v, k) { return this._store(v, k, false); }
+      add(v, k) { return this._store(v, k, true); }
+      _range(q) { const r = toRange(q); return this._s.records.filter(([k]) => !r || r.includes(k)); }
+      get(q) { const r = toRange(q); return this._tx._req(this, () => { const e = this._s.records.find(([k]) => r.includes(k)); return e ? clone(e[1]) : undefined; }); }
+      getKey(q) { const r = toRange(q); return this._tx._req(this, () => { const e = this._s.records.find(([k]) => r.includes(k)); return e ? e[0] : undefined; }); }
+      getAll(q, n) { return this._tx._req(this, () => this._range(q).slice(0, n || undefined).map((e) => clone(e[1]))); }
+      getAllKeys(q, n) { return this._tx._req(this, () => this._range(q).slice(0, n || undefined).map((e) => e[0])); }
+      count(q) { return this._tx._req(this, () => this._range(q).length); }
+      delete(q) { this._write(); const r = toRange(q); return this._tx._req(this, () => { this._s.records = this._s.records.filter(([k]) => !r.includes(k)); return undefined; }); }
+      clear() { this._write(); return this._tx._req(this, () => { this._s.records = []; return undefined; }); }
+      openCursor(q, dir) { return openCursor(this._tx, this, () => this._range(q).map(([k, v]) => ({ key: k, primaryKey: k, value: v })), dir, true); }
+      openKeyCursor(q, dir) { return openCursor(this._tx, this, () => this._range(q).map(([k, v]) => ({ key: k, primaryKey: k, value: v })), dir, false); }
+      createIndex(name, keyPath, opts = {}) {
+        if (this._tx.mode !== 'versionchange') throw new DOMException('Not in a version change transaction', 'InvalidStateError');
+        if (this._s.indexes.has(name)) throw new DOMException('Index exists', 'ConstraintError');
+        const d = { name, keyPath, unique: !!opts.unique, multiEntry: !!opts.multiEntry };
+        this._s.indexes.set(name, d);
+        return new IDBIndex(this, d);
+      }
+      deleteIndex(name) { this._s.indexes.delete(name); }
+      index(name) { const d = this._s.indexes.get(name); if (!d) throw new DOMException('No index named ' + name, 'NotFoundError'); return new IDBIndex(this, d); }
+    }
+    const domStringList = (arr) => { const l = arr.slice().sort(); l.contains = (x) => l.includes(x); l.item = (i) => l[i] ?? null; return l; };
+    class IDBDatabase extends EventTarget {
+      constructor(name, data) { super(); this.name = name; this._data = data; this.onversionchange = null; this.onclose = null; this.onabort = null; this.onerror = null; this._closed = false; }
+      get version() { return this._data.version; }
+      get objectStoreNames() { return domStringList([...this._data.stores.keys()]); }
+      transaction(names, mode) {
+        if (this._closed) throw new DOMException('The database connection is closing.', 'InvalidStateError');
+        names = typeof names === 'string' ? [names] : Array.from(names);
+        for (const n of names) if (!this._data.stores.has(n)) throw new DOMException('One of the specified object stores was not found.', 'NotFoundError');
+        return new IDBTransaction(this, names, mode === 'readwrite' ? 'readwrite' : 'readonly');
+      }
+      createObjectStore(name, opts = {}) {
+        if (this._data.stores.has(name)) throw new DOMException('Object store ' + name + ' already exists', 'ConstraintError');
+        const d = new StoreData(name, opts.keyPath, opts.autoIncrement);
+        this._data.stores.set(name, d);
+        if (this._upgrade) this._upgrade._names.push(name);
+        return new IDBObjectStore(this._upgrade || { mode: 'versionchange', _req: () => null }, d);
+      }
+      deleteObjectStore(name) { this._data.stores.delete(name); }
+      close() { this._closed = true; }
+    }
+    class IDBFactory {
+      open(name, version) {
+        name = String(name);
+        const req = new IDBOpenDBRequest();
+        if (version !== undefined && (!(version >= 1) || !Number.isFinite(+version))) throw new TypeError("Failed to execute 'open' on 'IDBFactory': The version provided must not be 0.");
+        setTimeout(() => {
+          let data = dbs.get(name);
+          if (!data) { data = { version: 0, stores: new Map() }; dbs.set(name, data); }
+          const want = version === undefined ? Math.max(1, data.version) : Math.floor(version);
+          if (want < data.version) { req._e = new DOMException('The requested version is less than the existing version.', 'VersionError'); req.readyState = 'done'; fire(req, 'error'); return; }
+          const db = new IDBDatabase(name, data);
+          req._r = db;
+          if (want > data.version) {
+            const old = data.version; data.version = want;
+            const tx = new IDBTransaction(db, [...data.stores.keys()], 'versionchange');
+            db._upgrade = tx; req.transaction = tx;
+            tx._pending++;
+            req.readyState = 'done';
+            const e = new Event('upgradeneeded'); e.oldVersion = old; e.newVersion = want;
+            try { req.dispatchEvent(e); } catch (err) { reportError(err); }
+            tx._pending--;
+            tx.addEventListener('complete', () => { db._upgrade = null; req.transaction = null; fire(req, 'success'); });
+            tx._maybeFinish();
+          } else { req.readyState = 'done'; fire(req, 'success'); }
+        }, 0);
+        return req;
+      }
+      deleteDatabase(name) {
+        const req = new IDBOpenDBRequest();
+        setTimeout(() => { const d = dbs.get(String(name)); dbs.delete(String(name)); req._r = undefined; req.readyState = 'done'; const e = new Event('success'); e.oldVersion = d ? d.version : 0; e.newVersion = null; req.dispatchEvent(e); }, 0);
+        return req;
+      }
+      databases() { return Promise.resolve([...dbs].map(([name, d]) => ({ name, version: d.version }))); }
+      cmp(a, b) { if (!validKey(a) || !validKey(b)) throw dataErr('invalid key'); return cmp(a, b); }
+    }
+    for (const [n, c] of Object.entries({ IDBRequest, IDBOpenDBRequest, IDBFactory, IDBDatabase, IDBTransaction, IDBObjectStore, IDBIndex, IDBCursor, IDBCursorWithValue: IDBCursor, IDBKeyRange })) expose(n, c);
+    expose('IDBVersionChangeEvent', class IDBVersionChangeEvent extends Event { constructor(t, o = {}) { super(t, o); this.oldVersion = o.oldVersion || 0; this.newVersion = o.newVersion ?? null; } });
     expose('indexedDB', new IDBFactory());
   }
   if (!G.caches) expose('caches', { open: () => Promise.reject(new DOMException('CacheStorage is not available', 'SecurityError')), match: () => Promise.resolve(undefined), has: () => Promise.resolve(false), keys: () => Promise.resolve([]), delete: () => Promise.resolve(false) });

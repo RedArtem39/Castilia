@@ -1898,12 +1898,18 @@ impl Interp {
                 Ok(Value::str(v.type_of()))
             }
             UnOp::Delete => match x {
-                Expr::Dot { obj, name, .. } => {
+                Expr::Dot { obj, name, optional } => {
                     let o = self.eval(obj, env)?;
+                    if *optional && o.is_nullish() {
+                        return Err(Ctl::OptShort);
+                    }
                     self.delete_v(&o, &Key::S(name.clone()))
                 }
-                Expr::Member { obj, prop, .. } => {
+                Expr::Member { obj, prop, optional } => {
                     let o = self.eval(obj, env)?;
+                    if *optional && o.is_nullish() {
+                        return Err(Ctl::OptShort);
+                    }
                     let k = self.eval(prop, env)?;
                     let key = self.to_key(&k)?;
                     self.delete_v(&o, &key)

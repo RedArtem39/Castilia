@@ -1993,13 +1993,19 @@ impl Compiler {
                 }
             },
             UnOp::Delete => match x {
-                Expr::Dot { obj, name, .. } => {
+                Expr::Dot { obj, name, optional } => {
                     self.expr(obj)?;
+                    if *optional {
+                        self.chain_short();
+                    }
                     let k = self.str_key(name);
                     self.emit(Op::DelProp(k));
                 }
-                Expr::Member { obj, prop, .. } => {
+                Expr::Member { obj, prop, optional } => {
                     self.expr(obj)?;
+                    if *optional {
+                        self.chain_short();
+                    }
                     self.expr(prop)?;
                     self.emit(Op::DelElem);
                 }

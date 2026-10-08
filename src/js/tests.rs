@@ -526,3 +526,39 @@ fn detached_dom_is_collected_and_reused() {
     // 80 rounds of 1000 nodes would be 80k without collection
     assert!(doc.nodes.len() < 50_000, "nodes: {}", doc.nodes.len());
 }
+
+#[test]
+fn delete_through_optional_chain() {
+    check(
+        "var l; var o = {a: {b: 1}}; console.log(delete l?.[1], delete l?.x, delete o?.a.b, JSON.stringify(o), delete o.zz?.y)",
+        &["true true true {\"a\":{}} true"],
+    );
+}
+
+#[test]
+fn event_handler_attributes_fire_once() {
+    check_html(
+        "",
+        "var c = new AbortController(), a = 0; c.signal.onabort = function () { a++ }; c.abort();
+         var ch = new MessageChannel(), m = 0; ch.port1.onmessage = function () { m++ }; ch.port2.postMessage(1);
+         setTimeout(function () { console.log(a, m) }, 10);",
+        &["1 1"],
+    );
+}
+
+#[test]
+fn indexeddb_in_memory() {
+    check_html(
+        "",
+        "var log = []; var req = indexedDB.open('t', 2);
+         req.onupgradeneeded = function (e) { log.push('upg ' + e.oldVersion + '>' + e.newVersion); var st = req.result.createObjectStore('s', {keyPath: 'id', autoIncrement: true}); st.createIndex('n', 'name'); };
+         req.onsuccess = function () { var db = req.result; var tx = db.transaction('s', 'readwrite'); var st = tx.objectStore('s');
+           st.add({name: 'b'}); st.add({name: 'a'}); st.put({id: 10, name: 'c'});
+           tx.oncomplete = function () { var s2 = db.transaction('s').objectStore('s');
+             s2.getAll().onsuccess = function (e) { log.push(e.target.result.map(function (r) { return r.id + r.name }).join(',')) };
+             s2.index('n').get('a').onsuccess = function (e) { log.push('a=' + e.target.result.id); console.log(log.join(' ')) };
+           };
+         };",
+        &["upg 0>2 1b,2a,10c a=2"],
+    );
+}
