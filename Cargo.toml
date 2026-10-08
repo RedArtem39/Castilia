@@ -2,6 +2,7 @@
 name = "castilia"
 version = "0.1.0"
 edition = "2024"
+license = "GPL-2.0-only OR GPL-3.0-only"
 
 [dependencies]
 ureq = { version = "3.4", optional = true, features = ["charset", "cookies"] }

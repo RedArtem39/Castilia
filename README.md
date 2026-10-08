@@ -81,3 +81,9 @@ JavaScript, строит раскладку и отдаёт платформен
 WebAssembly, Workers, canvas-рисования, `CompressionStream`; часть SPA (страница репозитория GitHub,
 Twitch, Pinterest, Instagram) пока не дорисовывается; часть сайтов отказывает нашему HTTP-клиенту
 по отпечатку TLS (это забота хоста, не движка).
+
+## Лицензия
+
+Castilia распространяется на условиях **GNU GPL версии 2 или GNU GPL версии 3** — на выбор
+получателя (SPDX: `GPL-2.0-only OR GPL-3.0-only`). Тексты лицензий: [`LICENSE-GPL-2.0`](LICENSE-GPL-2.0),
+[`LICENSE-GPL-3.0`](LICENSE-GPL-3.0).
