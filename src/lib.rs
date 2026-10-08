@@ -68,9 +68,13 @@ pub(crate) fn embedded_css(document: &Document, link_css: &alloc::collections::B
         match node.tag() {
             Some("style") => {
                 let mut text = String::new();
-                for &child in &node.children {
-                    if let NodeKind::Text(t) = &document.nodes[child].kind {
-                        text.push_str(t);
+                if let Some(o) = document.sheet_override.get(&id) {
+                    text.push_str(o);
+                } else {
+                    for &child in &node.children {
+                        if let NodeKind::Text(t) = &document.nodes[child].kind {
+                            text.push_str(t);
+                        }
                     }
                 }
                 let disabled = node.attribute("type").is_some_and(|t| !t.is_empty() && !t.eq_ignore_ascii_case("text/css"));
@@ -79,7 +83,7 @@ pub(crate) fn embedded_css(document: &Document, link_css: &alloc::collections::B
                 }
             }
             Some("link") => {
-                if let Some(text) = link_css.get(&id) {
+                if let Some(text) = document.sheet_override.get(&id).or_else(|| link_css.get(&id)) {
                     wrap(&mut css, text, node.attribute("media"));
                 }
             }

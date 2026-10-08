@@ -1012,14 +1012,31 @@ impl Interp {
             let d = self.describe(&proto);
             return Err(self.error_ctl("TypeError", &format!("Function has non-object prototype '{d}' in instanceof check ({name}, {kind})")));
         };
-        let mut cur = o.borrow().proto.clone();
+        let mut cur = self.proto_through_proxy(o)?;
         while let Some(x) = cur {
             if x.ptr_eq(&p) {
                 return Ok(true);
             }
-            cur = x.borrow().proto.clone();
+            cur = self.proto_through_proxy(&x)?;
         }
         Ok(false)
+    }
+
+    /// [[GetPrototypeOf]] with Proxy support: the `getPrototypeOf` trap, else the target's.
+    pub fn proto_through_proxy(&mut self, o: &Obj) -> Res<Option<Obj>> {
+        let proxy = match &o.borrow().class {
+            Class::Proxy { target, handler } => Some((target.clone(), handler.clone())),
+            _ => None,
+        };
+        let Some((target, handler)) = proxy else { return Ok(o.borrow().proto.clone()) };
+        let trap = self.get_obj(&handler, &Key::str("getPrototypeOf"), &Value::Obj(handler.clone()))?;
+        if matches!(&trap, Value::Obj(f) if f.is_callable()) {
+            return Ok(match self.call(&trap, Value::Obj(handler), &[Value::Obj(target)])? {
+                Value::Obj(p) => Some(p),
+                _ => None,
+            });
+        }
+        self.proto_through_proxy(&target)
     }
 
     // -----------------------------------------------------------------------

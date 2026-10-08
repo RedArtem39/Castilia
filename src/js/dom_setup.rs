@@ -124,7 +124,7 @@ pub fn setup_all(it: &mut Interp) {
         it.make_ctor(ctor_name, 0, illegal, &p);
         it.protos.as_mut().unwrap().extra.insert(key, p);
     }
-    for extra in ["HTMLUnknownElement", "HTMLBRElement", "HTMLHRElement", "HTMLPreElement", "HTMLQuoteElement", "HTMLDetailsElement", "HTMLDialogElement", "HTMLFieldSetElement", "HTMLLegendElement", "HTMLMapElement", "HTMLMediaElement", "HTMLProgressElement", "HTMLSlotElement", "HTMLSourceElement", "HTMLTableSectionElement", "HTMLTableColElement", "HTMLTableCaptionElement", "HTMLTimeElement", "HTMLOptGroupElement", "HTMLOutputElement", "HTMLMeterElement", "HTMLDataElement", "HTMLEmbedElement", "HTMLObjectElement", "HTMLBaseElement", "SVGSVGElement", "SVGGraphicsElement", "ShadowRoot", "CharacterData", "Attr", "NamedNodeMap", "DOMTokenList", "CSSStyleDeclaration", "DOMRect", "Range", "Selection", "XMLDocument", "DocumentType", "CSSStyleSheet", "StyleSheet", "TreeWalker", "NodeIterator", "FormData_", "ValidityState", "File_", "XPathResult"] {
+    for extra in ["HTMLUnknownElement", "HTMLBRElement", "HTMLHRElement", "HTMLPreElement", "HTMLQuoteElement", "HTMLDetailsElement", "HTMLDialogElement", "HTMLFieldSetElement", "HTMLLegendElement", "HTMLMapElement", "HTMLMediaElement", "HTMLProgressElement", "HTMLSlotElement", "HTMLSourceElement", "HTMLTableSectionElement", "HTMLTableColElement", "HTMLTableCaptionElement", "HTMLTimeElement", "HTMLOptGroupElement", "HTMLOutputElement", "HTMLMeterElement", "HTMLDataElement", "HTMLEmbedElement", "HTMLObjectElement", "HTMLBaseElement", "SVGSVGElement", "SVGGraphicsElement", "ShadowRoot", "CharacterData", "Attr", "NamedNodeMap", "DOMTokenList", "CSSStyleDeclaration", "Range", "Selection", "XMLDocument", "DocumentType", "CSSStyleSheet", "StyleSheet", "TreeWalker", "NodeIterator", "FormData_", "ValidityState", "File_", "XPathResult"] {
         let p = it.new_object();
         it.make_ctor(extra, 0, illegal, &p);
     }
@@ -1370,23 +1370,7 @@ fn setup_document(it: &mut Interp, p: &Obj, fragment: &Obj) {
         r.retain(|&n| it.attr(n, "name").is_some());
         Ok(it.node_list(&r))
     });
-    it.def_getter(p, "styleSheets", |it, _| Ok(it.new_array(Vec::new())));
-    it.def_getter(p, "fonts", |it, _| {
-        let o = it.new_object();
-        let pr = it.promise_resolved(Value::Undefined)?;
-        it.define_data(&o, Key::str("ready"), Value::Obj(pr), ALL);
-        it.define_data(&o, Key::str("status"), Value::str("loaded"), ALL);
-        it.def_method(&o, "load", 1, |it, _| {
-            let a = it.new_array(Vec::new());
-            Ok(Value::Obj(it.promise_resolved(a)?))
-        });
-        it.def_method(&o, "check", 1, |_, _| Ok(Value::Bool(true)));
-        for n in ["add", "delete", "clear", "forEach"] {
-            it.def_method(&o, n, 0, |_, _| Ok(Value::Undefined));
-        }
-        it.def_method(&o, "addEventListener", 2, |_, _| Ok(Value::Undefined));
-        Ok(Value::Obj(o))
-    });
+
     it.def_accessor(p, "designMode", |_, _| Ok(Value::str("off")), |_, _| Ok(Value::Undefined));
     it.def_getter(p, "implementation", |it, _| {
         let o = it.new_object();

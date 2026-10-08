@@ -71,7 +71,7 @@ pub fn compose(doc: &Document) -> Option<Composed> {
             if matches!(doc.nodes[id].kind, NodeKind::Element { .. }) {
                 d.set_attribute(id, "data-cs-scope", &n.to_string());
                 if doc.nodes[id].tag() == Some("style") {
-                    let text = doc.text_content(id).unwrap_or_default();
+                    let text = doc.sheet_override.get(&id).cloned().unwrap_or_else(|| doc.text_content(id).unwrap_or_default());
                     css.push_str(&scope_css(&text, n));
                     css.push('\n');
                 }

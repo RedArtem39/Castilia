@@ -37,6 +37,18 @@ pub struct Lexer {
     prev_regex_ok: bool,
     /// The previous token was `.`/`?.`: a following identifier is a property name.
     prev_dot: bool,
+    /// The previous token was `if`/`for`/`while`/`with`.
+    prev_ctl: bool,
+    /// Open parentheses as a bit stack: 1 = the `(` of an `if`/`for`/`while`/`with` header, after
+    /// whose `)` a slash starts a regular expression (`for(...)/re/.test(x)`).
+    paren_bits: u128,
+    paren_depth: u32,
+    /// Open braces as a bit stack: 1 = a block (`try{}`, `if(x){}`, `{` at statement start), after
+    /// whose `}` a slash starts a regular expression; 0 = object literal / class body.
+    brace_bits: u128,
+    brace_depth: u32,
+    /// The previous token makes a following `{` a block.
+    prev_block_ctx: bool,
 }
 
 const PUNCTS: &[&str] = &[
@@ -46,7 +58,8 @@ const PUNCTS: &[&str] = &[
 ];
 
 fn is_id_start(c: char) -> bool {
-    c == '$' || c == '_' || c.is_alphabetic() || (!c.is_ascii() && c.is_alphanumeric())
+    // Other_ID_Start (℘ ℮ ゛ ゜ and two Mongolian letters) are identifier starts too
+    c == '$' || c == '_' || c.is_alphabetic() || (!c.is_ascii() && c.is_alphanumeric()) || matches!(c, '\u{1885}' | '\u{1886}' | '\u{2118}' | '\u{212e}' | '\u{309b}' | '\u{309c}')
 }
 
 fn is_id_part(c: char) -> bool {
@@ -62,7 +75,7 @@ const REGEX_KEYWORDS: &[&str] = &["return", "typeof", "case", "do", "else", "in"
 
 impl Lexer {
     pub fn new(src: Rc<str>) -> Lexer {
-        let mut l = Lexer { src, pos: 0, prev_regex_ok: true, prev_dot: false };
+        let mut l = Lexer { src, pos: 0, prev_regex_ok: true, prev_dot: false, prev_ctl: false, paren_bits: 0, paren_depth: 0, brace_bits: 0, brace_depth: 0, prev_block_ctx: true };
         if l.src.starts_with("#!") {
             l.pos = l.src.find('\n').unwrap_or(l.src.len());
         }
@@ -74,8 +87,18 @@ impl Lexer {
     }
 
     fn err<T>(&self, msg: &str) -> Result<T, String> {
-        let line = self.src[..self.pos.min(self.src.len())].matches('\n').count() + 1;
-        Err(format!("SyntaxError: {msg} (line {line})"))
+        let pos = self.pos.min(self.src.len());
+        let line = self.src[..pos].matches('\n').count() + 1;
+        // a little source context: minified bundles put everything on a few lines
+        let mut a = pos.saturating_sub(60);
+        while !self.src.is_char_boundary(a) {
+            a -= 1;
+        }
+        let mut b = (pos + 20).min(self.src.len());
+        while !self.src.is_char_boundary(b) {
+            b -= 1;
+        }
+        Err(format!("SyntaxError: {msg} (line {line}, near `{}`)", &self.src[a..b]))
     }
 
     pub fn line_of(&self, pos: usize) -> usize {
@@ -156,10 +179,42 @@ impl Lexer {
         self.prev_regex_ok = match &tok {
             Tok::Num(_) | Tok::BigInt(_) | Tok::Str(_) | Tok::Template(..) | Tok::Regex(..) | Tok::Private(_) => false,
             Tok::Ident(s) => !self.prev_dot && REGEX_KEYWORDS.contains(&&**s),
-            // after `)`, `]`, `}` and postfix `++`/`--` a slash divides
-            Tok::Punct(p) => !matches!(*p, ")" | "]" | "}" | "++" | "--"),
+            // after `)`, `]`, `}` and postfix `++`/`--` a slash divides, except after the `)` of a
+            // control statement header
+            Tok::Punct(")") => {
+                let ctl = self.paren_depth > 0 && self.paren_depth <= 128 && (self.paren_bits >> (self.paren_depth - 1)) & 1 == 1;
+                self.paren_depth = self.paren_depth.saturating_sub(1);
+                ctl
+            }
+            Tok::Punct("}") => {
+                let block = self.brace_depth > 0 && self.brace_depth <= 128 && (self.brace_bits >> (self.brace_depth - 1)) & 1 == 1;
+                self.brace_depth = self.brace_depth.saturating_sub(1);
+                block
+            }
+            Tok::Punct(p) => !matches!(*p, "]" | "++" | "--"),
             Tok::Eof => true,
         };
+        if matches!(tok, Tok::Punct("{")) {
+            if self.brace_depth < 128 {
+                let bit = 1u128 << self.brace_depth;
+                if self.prev_block_ctx { self.brace_bits |= bit } else { self.brace_bits &= !bit }
+            }
+            self.brace_depth += 1;
+        }
+        // a `{` after these tokens opens a block; after `=`, `(`, `,`, `:`, `return`, ... an object
+        self.prev_block_ctx = match &tok {
+            Tok::Punct(p) => matches!(*p, ")" | ";" | "{" | "}" | "=>"),
+            Tok::Ident(s) => !self.prev_dot && matches!(&**s, "else" | "try" | "finally" | "do"),
+            _ => false,
+        };
+        if matches!(tok, Tok::Punct("(")) {
+            if self.paren_depth < 128 {
+                let bit = 1u128 << self.paren_depth;
+                if self.prev_ctl { self.paren_bits |= bit } else { self.paren_bits &= !bit }
+            }
+            self.paren_depth += 1;
+        }
+        self.prev_ctl = matches!(&tok, Tok::Ident(s) if !self.prev_dot && matches!(&**s, "if" | "for" | "while" | "with"));
         self.prev_dot = matches!(tok, Tok::Punct(".") | Tok::Punct("?."));
         Ok(Token { tok, nl, start, end: self.pos })
     }

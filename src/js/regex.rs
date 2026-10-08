@@ -281,6 +281,22 @@ impl Parser<'_> {
         Some(v)
     }
 
+    /// `\NNN` after the first digit `c` was consumed: up to three octal digits, at most 0o377.
+    fn legacy_octal(&mut self, c: char) -> char {
+        let mut v = c.to_digit(8).unwrap_or(0);
+        let max_digits = if c <= '3' { 3 } else { 2 };
+        for _ in 1..max_digits {
+            match self.peek().and_then(|d| d.to_digit(8)) {
+                Some(d) => {
+                    v = v * 8 + d;
+                    self.pos += 1;
+                }
+                None => break,
+            }
+        }
+        char::from_u32(v).unwrap_or('\0')
+    }
+
     fn escape(&mut self, in_class: bool) -> PR<Esc> {
         let c = self.peek().ok_or("\\ at end of pattern")?;
         self.pos += 1;
@@ -300,6 +316,8 @@ impl Parser<'_> {
             'v' => Esc::Char('\u{b}'),
             'f' => Esc::Char('\u{c}'),
             '0' if !self.peek().is_some_and(|d| d.is_ascii_digit()) => Esc::Char('\0'),
+            // Annex B legacy octal escapes (`[\001-\037]`), also in classes and for non-references
+            '0'..='7' if !self.unicode && (in_class || c == '0') => Esc::Char(self.legacy_octal(c)),
             'c' => match self.peek() {
                 Some(l) if l.is_ascii_alphabetic() => {
                     self.pos += 1;
@@ -381,7 +399,7 @@ impl Parser<'_> {
                     Esc::Node(Node::BackRef(n))
                 } else {
                     self.pos = save;
-                    Esc::Char(c)
+                    if !self.unicode && c <= '7' { Esc::Char(self.legacy_octal(c)) } else { Esc::Char(c) }
                 }
             }
             other => Esc::Char(other),

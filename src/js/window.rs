@@ -9,7 +9,7 @@ use alloc::{
     vec::Vec,
 };
 
-const PRELUDE: &str = include_str!("prelude.js");
+pub(crate) const PRELUDE: &str = include_str!("prelude.js");
 
 pub fn setup(it: &mut Interp) {
     let g = it.global.clone();
@@ -528,9 +528,50 @@ fn default_display(tag: &str) -> &'static str {
     }
 }
 
+/// Longhands a computed style enumerates (`length`, `cs[i]`), in Chromium's alphabetical order.
+const COMPUTED_PROPS: &[&str] = &[
+    "accent-color", "align-content", "align-items", "align-self", "animation-delay", "animation-direction", "animation-duration", "animation-fill-mode",
+    "animation-iteration-count", "animation-name", "animation-play-state", "animation-timing-function", "appearance", "aspect-ratio", "backdrop-filter",
+    "backface-visibility", "background-attachment", "background-blend-mode", "background-clip", "background-color", "background-image", "background-origin",
+    "background-position", "background-repeat", "background-size", "block-size", "border-block-end-color", "border-block-end-style", "border-block-end-width",
+    "border-block-start-color", "border-block-start-style", "border-block-start-width", "border-bottom-color", "border-bottom-left-radius",
+    "border-bottom-right-radius", "border-bottom-style", "border-bottom-width", "border-collapse", "border-image-outset", "border-image-repeat",
+    "border-image-slice", "border-image-source", "border-image-width", "border-inline-end-color", "border-inline-end-style", "border-inline-end-width",
+    "border-inline-start-color", "border-inline-start-style", "border-inline-start-width", "border-left-color", "border-left-style", "border-left-width",
+    "border-right-color", "border-right-style", "border-right-width", "border-spacing", "border-top-color", "border-top-left-radius", "border-top-right-radius",
+    "border-top-style", "border-top-width", "bottom", "box-shadow", "box-sizing", "break-after", "break-before", "break-inside", "caption-side", "caret-color",
+    "clear", "clip", "clip-path", "color", "column-count", "column-gap", "column-rule-color", "column-rule-style", "column-rule-width", "column-span",
+    "column-width", "contain", "container-name", "container-type", "content", "counter-increment", "counter-reset", "cursor", "direction", "display",
+    "empty-cells", "filter", "flex-basis", "flex-direction", "flex-grow", "flex-shrink", "flex-wrap", "float", "font-family", "font-feature-settings",
+    "font-kerning", "font-optical-sizing", "font-size", "font-stretch", "font-style", "font-variant", "font-variation-settings", "font-weight", "gap",
+    "grid-auto-columns", "grid-auto-flow", "grid-auto-rows", "grid-column-end", "grid-column-start", "grid-row-end", "grid-row-start",
+    "grid-template-areas", "grid-template-columns", "grid-template-rows", "height", "hyphens", "image-rendering", "inline-size", "inset-block-end",
+    "inset-block-start", "inset-inline-end", "inset-inline-start", "isolation", "justify-content", "justify-items", "justify-self", "left",
+    "letter-spacing", "line-break", "line-height", "list-style-image", "list-style-position", "list-style-type", "margin-block-end", "margin-block-start",
+    "margin-bottom", "margin-inline-end", "margin-inline-start", "margin-left", "margin-right", "margin-top", "mask-image", "max-block-size", "max-height",
+    "max-inline-size", "max-width", "min-block-size", "min-height", "min-inline-size", "min-width", "mix-blend-mode", "object-fit", "object-position",
+    "opacity", "order", "orphans", "outline-color", "outline-offset", "outline-style", "outline-width", "overflow-anchor", "overflow-wrap", "overflow-x",
+    "overflow-y", "overscroll-behavior-block", "overscroll-behavior-inline", "padding-block-end", "padding-block-start", "padding-bottom",
+    "padding-inline-end", "padding-inline-start", "padding-left", "padding-right", "padding-top", "perspective", "perspective-origin", "pointer-events",
+    "position", "quotes", "resize", "right", "rotate", "row-gap", "scale", "scroll-behavior", "scroll-margin-block-end", "scroll-padding-block-end",
+    "scroll-snap-align", "scroll-snap-type", "scrollbar-gutter", "tab-size", "table-layout", "text-align", "text-align-last", "text-decoration-color",
+    "text-decoration-line", "text-decoration-style", "text-indent", "text-overflow", "text-rendering", "text-shadow", "text-transform",
+    "text-underline-offset", "text-wrap", "top", "touch-action", "transform", "transform-origin", "transform-style", "transition-delay",
+    "transition-duration", "transition-property", "transition-timing-function", "translate", "unicode-bidi", "user-select", "vertical-align",
+    "visibility", "white-space", "widows", "width", "will-change", "word-break", "word-spacing", "writing-mode", "z-index", "zoom",
+];
+
 fn get_computed_style(it: &mut Interp, c: &Call) -> Res {
     let id = it.node_id(&c.arg(0))?;
-    let t = it.new_object();
+    // the target carries CSSStyleDeclaration.prototype so instanceof / toStringTag look right
+    let proto = match it.get_str(&Value::Obj(it.global.clone()), "CSSStyleDeclaration")? {
+        Value::Obj(ctor) => match it.get_str(&Value::Obj(ctor), "prototype")? {
+            Value::Obj(p) => Some(p),
+            _ => None,
+        },
+        _ => None,
+    };
+    let t = it.alloc(Object::new(proto, Class::Plain));
     it.define_data(&t, Key::str("__id"), Value::Num(id as f64), 0);
     let h = it.protos().extra.get("computed_handler").cloned();
     let h = match h {
@@ -543,7 +584,15 @@ fn get_computed_style(it: &mut Interp, c: &Call) -> Res {
                     Value::Num(n) => n as usize,
                     _ => 0,
                 };
-                let Value::Str(k) = c.arg(1) else { return Ok(Value::Undefined) };
+                let Value::Str(k) = c.arg(1) else {
+                    // symbols (toStringTag, iterator) come from the prototype
+                    let key = c.arg(1);
+                    let key = it.to_key(&key)?;
+                    return it.get_v(&target, &key);
+                };
+                if let Some(i) = str_index(&k) {
+                    return Ok(COMPUTED_PROPS.get(i as usize).map_or(Value::Undefined, |p| Value::str(p)));
+                }
                 match &*k {
                     "getPropertyValue" => {
                         let f = it.new_native_data("getPropertyValue", 1, |it, c| {
@@ -558,7 +607,14 @@ fn get_computed_style(it: &mut Interp, c: &Call) -> Res {
                         let f = it.new_native("getPropertyPriority", 1, |_, _| Ok(Value::str("")));
                         return Ok(Value::Obj(f));
                     }
-                    "length" => return Ok(Value::Num(it.dom.computed.get(&id).map_or(0, |v| v.len()) as f64)),
+                    "length" => return Ok(Value::Num(COMPUTED_PROPS.len() as f64)),
+                    "item" => {
+                        let f = it.new_native("item", 1, |it, c| {
+                            let i = it.arg_num(c, 0)?;
+                            Ok(COMPUTED_PROPS.get(i as usize).map_or(Value::str(""), |p| Value::str(p)))
+                        });
+                        return Ok(Value::Obj(f));
+                    }
                     "cssText" => return Ok(Value::str("")),
                     "toString" => {
                         let f = it.new_native("toString", 0, |_, _| Ok(Value::str("[object CSSStyleDeclaration]")));
@@ -575,6 +631,29 @@ fn get_computed_style(it: &mut Interp, c: &Call) -> Res {
                 Ok(Value::string(computed_value(it, id, &name)))
             });
             it.def_method(&h, "set", 4, |_, _| Ok(Value::Bool(true)));
+            it.def_method(&h, "has", 2, |_, c| {
+                let Value::Str(k) = c.arg(1) else { return Ok(Value::Bool(false)) };
+                if let Some(i) = str_index(&k) {
+                    return Ok(Value::Bool((i as usize) < COMPUTED_PROPS.len()));
+                }
+                let name = if k.starts_with("--") { k.to_string() } else { kebab(&k) };
+                Ok(Value::Bool(COMPUTED_PROPS.contains(&name.as_str()) || matches!(&*k, "length" | "cssText" | "getPropertyValue" | "getPropertyPriority" | "item" | "setProperty" | "removeProperty" | "parentRule" | "cssFloat")))
+            });
+            it.def_method(&h, "ownKeys", 1, |it, _| {
+                let keys: Vec<Value> = (0..COMPUTED_PROPS.len()).map(|i| Value::string(i.to_string())).collect();
+                Ok(it.new_array(keys))
+            });
+            it.def_method(&h, "getOwnPropertyDescriptor", 2, |it, c| {
+                let Value::Str(k) = c.arg(1) else { return Ok(Value::Undefined) };
+                let Some(i) = str_index(&k) else { return Ok(Value::Undefined) };
+                let Some(p) = COMPUTED_PROPS.get(i as usize) else { return Ok(Value::Undefined) };
+                let o = it.new_object();
+                it.define_data(&o, Key::str("value"), Value::str(p), ALL);
+                it.define_data(&o, Key::str("writable"), Value::Bool(false), ALL);
+                it.define_data(&o, Key::str("enumerable"), Value::Bool(true), ALL);
+                it.define_data(&o, Key::str("configurable"), Value::Bool(true), ALL);
+                Ok(Value::Obj(o))
+            });
             it.protos.as_mut().unwrap().extra.insert("computed_handler", h.clone());
             h
         }
@@ -814,7 +893,14 @@ fn match_media(it: &mut Interp, c: &Call) -> Res {
     let q = it.arg_str(c, 0)?;
     let (w, h) = it.dom.viewport;
     let matches = crate::css::media_matches(&q, crate::css::Viewport::new(w, h));
-    let o = it.new_object();
+    let proto = match it.get_str(&Value::Obj(it.global.clone()), "__MediaQueryListProto")? {
+        Value::Obj(o) => Some(o),
+        _ => None,
+    };
+    let o = match proto {
+        Some(p) => it.alloc(Object::new(Some(p), Class::Plain)),
+        None => it.new_object(),
+    };
     it.define_data(&o, Key::str("matches"), Value::Bool(matches), ALL);
     it.define_data(&o, Key::str("media"), Value::Str(q), ALL);
     it.define_data(&o, Key::str("onchange"), Value::Null, ALL);

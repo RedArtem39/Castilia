@@ -273,19 +273,44 @@
     });
   });
 
-  class XMLHttpRequest extends EventTarget {
+  // XHR as in browsers: event handler attributes live on XMLHttpRequestEventTarget.prototype and
+  // the state on XMLHttpRequest.prototype getters (scripts wrap these descriptors)
+  const handlerSlots = new WeakMap();
+  const defineHandlers = (proto, names) => {
+    for (const n of names) {
+      Object.defineProperty(proto, 'on' + n, {
+        configurable: true, enumerable: true,
+        get() { const m = handlerSlots.get(this); return (m && m[n]) || null; },
+        set(f) { let m = handlerSlots.get(this); if (!m) { m = {}; handlerSlots.set(this, m); } m[n] = typeof f === 'function' ? f : null; },
+      });
+    }
+  };
+  class XMLHttpRequestEventTarget extends EventTarget {}
+  defineHandlers(XMLHttpRequestEventTarget.prototype, ['loadstart', 'progress', 'abort', 'error', 'load', 'timeout', 'loadend']);
+  class XMLHttpRequestUpload extends XMLHttpRequestEventTarget {}
+  expose('XMLHttpRequestEventTarget', XMLHttpRequestEventTarget);
+  expose('XMLHttpRequestUpload', XMLHttpRequestUpload);
+  class XMLHttpRequest extends XMLHttpRequestEventTarget {
     constructor() {
       super();
-      this.readyState = 0; this.status = 0; this.statusText = ''; this.responseText = ''; this.response = ''; this.responseType = ''; this.responseURL = ''; this.timeout = 0; this.withCredentials = false;
-      this.onreadystatechange = null; this.onload = null; this.onerror = null; this.onloadend = null; this.onabort = null; this.ontimeout = null; this.onprogress = null; this.onloadstart = null;
-      this._h = []; this._rh = []; this._async = true; this.upload = new EventTarget();
+      this._rs = 0; this._status = 0; this._statusText = ''; this._text = ''; this._response = ''; this._url2 = '';
+      this.responseType = ''; this.timeout = 0; this.withCredentials = false;
+      this._h = []; this._rh = []; this._async = true; this._upload = new XMLHttpRequestUpload();
     }
-    open(method, url, async = true) { this._method = String(method).toUpperCase(); this._url = String(url); this._async = async !== false; this.readyState = 1; this._fire('readystatechange'); }
+    get readyState() { return this._rs; }
+    get status() { return this._status; }
+    get statusText() { return this._statusText; }
+    get responseText() { return this._text; }
+    get response() { return this._response; }
+    get responseURL() { return this._url2; }
+    get responseXML() { return null; }
+    get upload() { return this._upload; }
+    open(method, url, async = true) { this._method = String(method).toUpperCase(); this._url = String(url); this._async = async !== false; this._rs = 1; this._fire('readystatechange'); }
     setRequestHeader(k, v) { this._h.push([String(k), String(v)]); }
     overrideMimeType() {}
     getResponseHeader(k) { const h = this._rh.find((p) => p[0].toLowerCase() === String(k).toLowerCase()); return h ? h[1] : null; }
     getAllResponseHeaders() { return this._rh.map((p) => p[0] + ': ' + p[1]).join('\r\n') + (this._rh.length ? '\r\n' : ''); }
-    abort() { this._aborted = true; this.readyState = 0; this._fire('abort'); }
+    abort() { this._aborted = true; this._rs = 0; this._fire('abort'); }
     _fire(type) {
       const ev = new ProgressEvent(type);
       if (typeof this['on' + type] === 'function') { try { this['on' + type](ev); } catch (e) { reportError(e); } }
@@ -295,23 +320,144 @@
       const run = () => {
         if (this._aborted) return;
         const r = __hostFetch(this._method, this._url, this._h, body === undefined || body === null ? null : bodyToText(body));
-        if (!r) { this.readyState = 4; this._fire('readystatechange'); this._fire('error'); this._fire('loadend'); return; }
-        this.status = r.status; this.statusText = r.statusText; this.responseURL = r.url; this._rh = r.headers; this.responseText = r.body;
-        if (this.responseType === 'json') { try { this.response = JSON.parse(r.body); } catch (e) { this.response = null; } }
-        else if (this.responseType === 'arraybuffer') this.response = new TextEncoder().encode(r.body);
-        else if (this.responseType === 'blob') this.response = new Blob([r.body]);
-        else this.response = r.body;
-        this.readyState = 2; this._fire('readystatechange');
-        this.readyState = 3; this._fire('readystatechange');
-        this.readyState = 4; this._fire('readystatechange');
+        if (!r) { this._rs = 4; this._fire('readystatechange'); this._fire('error'); this._fire('loadend'); return; }
+        this._status = r.status; this._statusText = r.statusText; this._url2 = r.url; this._rh = r.headers; this._text = r.body;
+        if (this.responseType === 'json') { try { this._response = JSON.parse(r.body); } catch (e) { this._response = null; } }
+        else if (this.responseType === 'arraybuffer') this._response = new TextEncoder().encode(r.body).buffer;
+        else if (this.responseType === 'blob') this._response = new Blob([r.body]);
+        else this._response = r.body;
+        this._rs = 2; this._fire('readystatechange');
+        this._rs = 3; this._fire('readystatechange');
+        this._rs = 4; this._fire('readystatechange');
         this._fire('load'); this._fire('loadend');
       };
       this._fire('loadstart');
       if (this._async) setTimeout(run, 0); else run();
     }
   }
-  XMLHttpRequest.UNSENT = 0; XMLHttpRequest.OPENED = 1; XMLHttpRequest.HEADERS_RECEIVED = 2; XMLHttpRequest.LOADING = 3; XMLHttpRequest.DONE = 4;
+  defineHandlers(XMLHttpRequest.prototype, ['readystatechange']);
+  for (const [k, v] of [['UNSENT', 0], ['OPENED', 1], ['HEADERS_RECEIVED', 2], ['LOADING', 3], ['DONE', 4]]) { XMLHttpRequest[k] = v; XMLHttpRequest.prototype[k] = v; }
   expose('XMLHttpRequest', XMLHttpRequest);
+
+  // ---- assorted platform interfaces scripts test for or construct -------------------------
+  if (G.CSSStyleDeclaration) {
+    const P = CSSStyleDeclaration.prototype;
+    Object.defineProperty(P, Symbol.toStringTag, { value: 'CSSStyleDeclaration', configurable: true });
+    for (const m of ['getPropertyValue', 'getPropertyPriority', 'setProperty', 'removeProperty', 'item']) {
+      if (!P[m]) hide(P, m, { [m](...a) { const f = this[m]; return f && f !== P[m] ? f.apply(this, a) : ''; } }[m]);
+    }
+  }
+  if (G.HTMLScriptElement && !HTMLScriptElement.supports) HTMLScriptElement.supports = (t) => ['classic', 'module', 'importmap'].includes(String(t));
+  class DOMRectReadOnly {
+    constructor(x = 0, y = 0, width = 0, height = 0) { this._x = +x; this._y = +y; this._w = +width; this._h = +height; }
+    get x() { return this._x; } get y() { return this._y; } get width() { return this._w; } get height() { return this._h; }
+    get top() { return Math.min(this._y, this._y + this._h); } get bottom() { return Math.max(this._y, this._y + this._h); }
+    get left() { return Math.min(this._x, this._x + this._w); } get right() { return Math.max(this._x, this._x + this._w); }
+    toJSON() { const { x, y, width, height, top, right, bottom, left } = this; return { x, y, width, height, top, right, bottom, left }; }
+    static fromRect(r = {}) { return new this(r.x, r.y, r.width, r.height); }
+  }
+  class DOMRect extends DOMRectReadOnly {
+    set x(v) { this._x = +v; } set y(v) { this._y = +v; } set width(v) { this._w = +v; } set height(v) { this._h = +v; }
+    get x() { return this._x; } get y() { return this._y; } get width() { return this._w; } get height() { return this._h; }
+  }
+  expose('DOMRectReadOnly', DOMRectReadOnly);
+  expose('DOMRect', DOMRect);
+  class DOMPointReadOnly { constructor(x = 0, y = 0, z = 0, w = 1) { this.x = +x; this.y = +y; this.z = +z; this.w = +w; } static fromPoint(p = {}) { return new this(p.x, p.y, p.z, p.w); } toJSON() { return { x: this.x, y: this.y, z: this.z, w: this.w }; } }
+  if (!G.DOMPoint) expose('DOMPoint', class DOMPoint extends DOMPointReadOnly {});
+  expose('DOMPointReadOnly', DOMPointReadOnly);
+  class DOMStringMap {}
+  expose('DOMStringMap', DOMStringMap);
+  hide(G, '__DOMStringMapProto', DOMStringMap.prototype);
+  expose('FileList', class FileList { constructor() { this.length = 0; } item() { return null; } });
+  class MediaQueryList extends EventTarget {}
+  expose('MediaQueryList', MediaQueryList);
+  hide(G, '__MediaQueryListProto', MediaQueryList.prototype);
+  class PerformanceEntry { toJSON() { return { name: this.name, entryType: this.entryType, startTime: this.startTime, duration: this.duration }; } }
+  expose('PerformanceEntry', PerformanceEntry);
+  expose('PerformanceMark', class PerformanceMark extends PerformanceEntry { constructor(name, opts = {}) { super(); this.name = String(name); this.entryType = 'mark'; this.startTime = opts.startTime ?? performance.now(); this.duration = 0; this.detail = opts.detail ?? null; } });
+  expose('PerformanceMeasure', class PerformanceMeasure extends PerformanceEntry {});
+  expose('PerformanceResourceTiming', class PerformanceResourceTiming extends PerformanceEntry {});
+  expose('PerformanceNavigationTiming', class PerformanceNavigationTiming extends PerformanceEntry {});
+  class VisualViewport extends EventTarget {
+    get width() { return innerWidth; } get height() { return innerHeight; } get scale() { return 1; }
+    get offsetLeft() { return 0; } get offsetTop() { return 0; } get pageLeft() { return scrollX; } get pageTop() { return scrollY; }
+  }
+  expose('VisualViewport', VisualViewport);
+  if (!G.visualViewport) hide(G, 'visualViewport', new VisualViewport());
+  class ImageData {
+    constructor(a, b, c) {
+      if (typeof a === 'number') { this.width = a; this.height = b; this.data = new Uint8ClampedArray(a * b * 4); }
+      else { this.data = a; this.width = b; this.height = c ?? (a.length / 4 / b); }
+      this.colorSpace = 'srgb';
+    }
+  }
+  expose('ImageData', ImageData);
+  for (const n of ['CanvasRenderingContext2D', 'OffscreenCanvasRenderingContext2D', 'WebGLRenderingContext', 'WebGL2RenderingContext', 'ImageBitmap', 'CanvasGradient', 'CanvasPattern', 'TextMetrics']) {
+    if (!G[n]) expose(n, { [n]: class { constructor() { throw new TypeError('Illegal constructor'); } } }[n]);
+  }
+  if (!G.Path2D) expose('Path2D', class Path2D { addPath() {} closePath() {} moveTo() {} lineTo() {} bezierCurveTo() {} quadraticCurveTo() {} arc() {} arcTo() {} ellipse() {} rect() {} roundRect() {} });
+  if (!G.createImageBitmap) hide(G, 'createImageBitmap', () => Promise.reject(new DOMException('Not supported', 'InvalidStateError')));
+  // Font loading API: faces added from scripts are remembered; loading resolves immediately
+  class FontFace {
+    constructor(family, source, desc = {}) {
+      this.family = String(family); this.style = desc.style || 'normal'; this.weight = String(desc.weight || 'normal');
+      this.stretch = desc.stretch || 'normal'; this.unicodeRange = desc.unicodeRange || 'U+0-10FFFF'; this.display = desc.display || 'auto';
+      this.status = 'unloaded'; this._src = source; this.loaded = Promise.resolve(this);
+    }
+    load() { this.status = 'loaded'; return Promise.resolve(this); }
+  }
+  expose('FontFace', FontFace);
+  class FontFaceSet extends EventTarget {
+    constructor() { super(); this._s = new Set(); this.status = 'loaded'; this.ready = Promise.resolve(this); this.onloading = null; this.onloadingdone = null; this.onloadingerror = null; }
+    get size() { return this._s.size; }
+    add(f) { this._s.add(f); return this; } delete(f) { return this._s.delete(f); } clear() { this._s.clear(); } has(f) { return this._s.has(f); }
+    forEach(cb, t) { this._s.forEach((v) => cb.call(t, v, v, this)); }
+    values() { return this._s.values(); } keys() { return this._s.values(); } entries() { return Array.from(this._s, (v) => [v, v]).values(); } [Symbol.iterator]() { return this._s.values(); }
+    load() { return Promise.resolve(Array.from(this._s)); } check() { return true; }
+  }
+  expose('FontFaceSet', FontFaceSet);
+  {
+    const fonts = new FontFaceSet();
+    Object.defineProperty(Document.prototype, 'fonts', { configurable: true, get() { return fonts; } });
+  }
+  // Trusted Types: policies pass strings through (sinks accept plain strings here)
+  if (!G.trustedTypes) {
+    class TrustedHTML { constructor(s) { this._s = s; } toString() { return this._s; } toJSON() { return this._s; } }
+    class TrustedScript extends TrustedHTML {}
+    class TrustedScriptURL extends TrustedHTML {}
+    const policy = (name, rules = {}) => ({
+      name,
+      createHTML: (s, ...a) => (rules.createHTML ? rules.createHTML(s, ...a) : s),
+      createScript: (s, ...a) => (rules.createScript ? rules.createScript(s, ...a) : s),
+      createScriptURL: (s, ...a) => (rules.createScriptURL ? rules.createScriptURL(s, ...a) : s),
+    });
+    class TrustedTypePolicyFactory {
+      createPolicy(name, rules) { return policy(name, rules); }
+      isHTML(v) { return v instanceof TrustedHTML; } isScript(v) { return v instanceof TrustedScript; } isScriptURL(v) { return v instanceof TrustedScriptURL; }
+      getAttributeType() { return null; } getPropertyType() { return null; }
+      get emptyHTML() { return ''; } get emptyScript() { return ''; } get defaultPolicy() { return null; }
+    }
+    expose('TrustedHTML', TrustedHTML); expose('TrustedScript', TrustedScript); expose('TrustedScriptURL', TrustedScriptURL);
+    expose('TrustedTypePolicyFactory', TrustedTypePolicyFactory);
+    hide(G, 'trustedTypes', new TrustedTypePolicyFactory());
+  }
+  // Atomics over ordinary typed arrays (single-threaded: plain reads and writes)
+  if (!G.Atomics) {
+    const A = {
+      load: (a, i) => a[i], store: (a, i, v) => (a[i] = v), add: (a, i, v) => { const o = a[i]; a[i] = o + v; return o; },
+      sub: (a, i, v) => { const o = a[i]; a[i] = o - v; return o; }, and: (a, i, v) => { const o = a[i]; a[i] = o & v; return o; },
+      or: (a, i, v) => { const o = a[i]; a[i] = o | v; return o; }, xor: (a, i, v) => { const o = a[i]; a[i] = o ^ v; return o; },
+      exchange: (a, i, v) => { const o = a[i]; a[i] = v; return o; }, compareExchange: (a, i, e, v) => { const o = a[i]; if (o === e) a[i] = v; return o; },
+      isLockFree: (n) => [1, 2, 4, 8].includes(n), wait: () => 'not-equal', waitAsync: () => ({ async: false, value: 'not-equal' }), notify: () => 0,
+    };
+    Object.defineProperty(A, Symbol.toStringTag, { value: 'Atomics' });
+    hide(G, 'Atomics', A);
+  }
+  if (!G.CustomElementRegistry && G.customElements) { const R = function CustomElementRegistry() { throw new TypeError('Illegal constructor'); }; R.prototype = Object.getPrototypeOf(customElements); expose('CustomElementRegistry', R); }
+  for (const n of ['NodeFilter', 'XPathResult']) {
+    const o = G[n];
+    if (o && typeof o !== 'function') { const F = { [n]: function () { throw new TypeError('Illegal constructor'); } }[n]; Object.assign(F, o); expose(n, F); }
+  }
 
   // ---- Abort ---------------------------------------------------------------
   class AbortSignal extends EventTarget {
@@ -402,6 +548,9 @@
     for (const s of Object.getOwnPropertyNames(C)) if (!['length', 'name', 'prototype'].includes(s)) W[s] = C[s];
     if (!W.supportedLocalesOf) W.supportedLocalesOf = (l) => [].concat(l || []);
     Intl[k] = W;
+  }
+  for (const k of ['PluralRules', 'RelativeTimeFormat', 'ListFormat', 'Segmenter', 'DisplayNames']) {
+    if (Intl[k] && !Intl[k].supportedLocalesOf) Intl[k].supportedLocalesOf = (l) => [].concat(l || []);
   }
   if (!Intl.Locale) {
     Intl.Locale = class Locale {
@@ -575,16 +724,209 @@
     try { __setAdoptedCss(root, text); } catch (e) {}
   };
   const resyncSheet = (sh) => { const roots = sheetRoots.get(sh); if (roots) for (const r of roots) syncRoot(r); };
+  // ---- CSSOM: rule lists parsed from sheet text; edits are written back to the engine ----------
+  const stripComments = (t) => {
+    let out = '', i = 0;
+    const n = t.length;
+    while (i < n) {
+      const ch = t[i];
+      if (ch === '/' && t[i + 1] === '*') { const e = t.indexOf('*/', i + 2); i = e < 0 ? n : e + 2; out += ' '; continue; }
+      if (ch === '"' || ch === "'") {
+        let j = i + 1;
+        while (j < n && t[j] !== ch) { if (t[j] === '\\') j++; j++; }
+        out += t.slice(i, j + 1); i = j + 1; continue;
+      }
+      out += ch; i++;
+    }
+    return out;
+  };
+  // top-level rules of a sheet or block (strings respected, comments removed)
+  const splitRules = (text) => {
+    const t = text.indexOf('/*') >= 0 ? stripComments(text) : text;
+    const out = [];
+    let depth = 0, start = 0;
+    for (let i = 0, n = t.length; i < n; i++) {
+      const ch = t[i];
+      if (ch === '"' || ch === "'") { let j = i + 1; while (j < n && t[j] !== ch) { if (t[j] === '\\') j++; j++; } i = j; continue; }
+      if (ch === '{') depth++;
+      else if (ch === '}') {
+        depth--;
+        if (depth <= 0) { const r = t.slice(start, i + 1).trim(); if (r) out.push(r); start = i + 1; depth = 0; }
+      } else if (ch === ';' && depth === 0) { const r = t.slice(start, i + 1).trim(); if (r && r[0] === '@') out.push(r); start = i + 1; }
+    }
+    return out;
+  };
+  const kebabProp = (k) => k.startsWith('--') ? k : k.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase()).replace(/^(webkit|moz|ms)-/, '-$1-');
+  const parseDecls = (body) => {
+    const list = [];
+    let depth = 0, start = 0, q = null;
+    const push = (s) => {
+      const c = s.indexOf(':');
+      if (c <= 0) return;
+      let v = s.slice(c + 1).trim(), imp = '';
+      const m = /\s*!\s*important\s*$/i.exec(v);
+      if (m) { v = v.slice(0, m.index); imp = 'important'; }
+      list.push([s.slice(0, c).trim().toLowerCase(), v, imp]);
+    };
+    for (let i = 0; i < body.length; i++) {
+      const ch = body[i];
+      if (q) { if (ch === '\\') i++; else if (ch === q) q = null; continue; }
+      if (ch === '"' || ch === "'") q = ch;
+      else if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      else if (ch === ';' && depth <= 0) { push(body.slice(start, i)); start = i + 1; }
+    }
+    push(body.slice(start));
+    return list;
+  };
+  class CSSStyleDeclarationImpl {
+    constructor(rule, body) { this._rule = rule; this._d = parseDecls(body || ''); }
+    get cssText() { return this._d.map(([k, v, p]) => k + ': ' + v + (p ? ' !important' : '') + ';').join(' '); }
+    set cssText(t) { this._d = parseDecls(String(t)); this._changed(); }
+    get length() { return this._d.length; }
+    item(i) { return this._d[i] ? this._d[i][0] : ''; }
+    getPropertyValue(k) { k = kebabProp(String(k)); const e = this._d.find((d) => d[0] === k); return e ? e[1] : ''; }
+    getPropertyPriority(k) { k = kebabProp(String(k)); const e = this._d.find((d) => d[0] === k); return e ? e[2] : ''; }
+    setProperty(k, v, p) {
+      k = kebabProp(String(k));
+      const i = this._d.findIndex((d) => d[0] === k);
+      if (v === null || v === undefined || v === '') { if (i >= 0) this._d.splice(i, 1); }
+      else if (i >= 0) this._d[i] = [k, String(v), p || ''];
+      else this._d.push([k, String(v), p || '']);
+      this._changed();
+    }
+    removeProperty(k) { const old = this.getPropertyValue(k); this.setProperty(k, ''); return old; }
+    _changed() { const sh = this._rule && this._rule.parentStyleSheet; if (sh) sh._touch(); }
+  }
+  const styleProxy = (decl) => new Proxy(decl, {
+    get(t, k) {
+      if (typeof k !== 'string' || k in t) { const v = t[k]; return typeof v === 'function' ? v.bind(t) : v; }
+      return /^\d+$/.test(k) ? t.item(+k) : t.getPropertyValue(k);
+    },
+    set(t, k, v) { if (typeof k !== 'string' || k in t || k[0] === '_') t[k] = v; else t.setProperty(k, v); return true; },
+  });
+  class CSSRuleImpl {
+    constructor(sheet, parent, type) { this.parentStyleSheet = sheet; this.parentRule = parent; this.type = type; }
+  }
+  for (const [k, v] of Object.entries({ STYLE_RULE: 1, CHARSET_RULE: 2, IMPORT_RULE: 3, MEDIA_RULE: 4, FONT_FACE_RULE: 5, PAGE_RULE: 6, KEYFRAMES_RULE: 7, KEYFRAME_RULE: 8, NAMESPACE_RULE: 10, SUPPORTS_RULE: 12 })) { CSSRuleImpl[k] = v; CSSRuleImpl.prototype[k] = v; }
+  class CSSStyleRuleImpl extends CSSRuleImpl {
+    constructor(sheet, parent, sel, body) { super(sheet, parent, 1); this.selectorText = sel; this._body = body; this._style = null; }
+    get style() { if (!this._style) this._style = styleProxy(new CSSStyleDeclarationImpl(this, this._body)); return this._style; }
+    get cssText() { return this.selectorText + ' { ' + (this._style ? this._style.cssText : this._body.trim()) + ' }'; }
+  }
+  class CSSGroupingRuleImpl extends CSSRuleImpl {
+    constructor(sheet, parent, type, name, prelude, body) {
+      super(sheet, parent, type); this._name = name; this.conditionText = prelude;
+      this.cssRules = ruleList(splitRules(body).map((r) => makeRule(r, sheet, this)));
+    }
+    get media() { return mediaList(this.conditionText); }
+    get name() { return this.conditionText; }
+    get cssText() { return '@' + this._name + ' ' + this.conditionText + ' {\n' + Array.from(this.cssRules, (r) => '  ' + r.cssText).join('\n') + '\n}'; }
+    insertRule(r, i = 0) { const p = splitRules(String(r)); if (p.length !== 1) throw new DOMException('Failed to parse the rule', 'SyntaxError'); this.cssRules.splice(i, 0, makeRule(p[0], this.parentStyleSheet, this)); if (this.parentStyleSheet) this.parentStyleSheet._touch(); return i; }
+    deleteRule(i) { this.cssRules.splice(i, 1); if (this.parentStyleSheet) this.parentStyleSheet._touch(); }
+  }
+  class CSSMediaRuleImpl extends CSSGroupingRuleImpl {}
+  class CSSSupportsRuleImpl extends CSSGroupingRuleImpl {}
+  class CSSKeyframesRuleImpl extends CSSGroupingRuleImpl {}
+  class CSSOtherRuleImpl extends CSSRuleImpl {
+    constructor(sheet, parent, type, text) { super(sheet, parent, type); this._text = text; }
+    get cssText() { return this._text; }
+    get style() { const b = this._text.indexOf('{'); return styleProxy(new CSSStyleDeclarationImpl(this, b >= 0 ? this._text.slice(b + 1, this._text.lastIndexOf('}')) : '')); }
+    get href() { const m = /url\(\s*['"]?([^'")]+)|['"]([^'"]+)/.exec(this._text); return m ? (m[1] || m[2]) : ''; }
+  }
+  const mediaList = (text) => { const items = text ? text.split(',').map((s) => s.trim()).filter(Boolean) : []; const l = items.slice(); l.mediaText = text || ''; l.item = (i) => items[i] ?? null; l.appendMedium = () => {}; l.deleteMedium = () => {}; l.toString = () => l.mediaText; return l; };
+  const ruleList = (rules) => { rules.item = function (i) { return this[i] ?? null; }; return rules; };
+  const makeRule = (text, sheet, parent) => {
+    const brace = text.indexOf('{');
+    if (text[0] === '@') {
+      const m = /^@([-\w]+)\s*/.exec(text);
+      const name = m ? m[1].toLowerCase() : '';
+      const prelude = (brace >= 0 ? text.slice(m ? m[0].length : 1, brace) : text.slice(m ? m[0].length : 1).replace(/;\s*$/, '')).trim();
+      const body = brace >= 0 ? text.slice(brace + 1, text.lastIndexOf('}')) : '';
+      if (name === 'media') return new CSSMediaRuleImpl(sheet, parent, 4, name, prelude, body);
+      if (name === 'supports') return new CSSSupportsRuleImpl(sheet, parent, 12, name, prelude, body);
+      if (/keyframes$/.test(name)) return new CSSKeyframesRuleImpl(sheet, parent, 7, name, prelude, body);
+      if (['layer', 'container', 'document', '-moz-document', 'scope', 'starting-style'].includes(name) && brace >= 0) return new CSSGroupingRuleImpl(sheet, parent, 0, name, prelude, body);
+      return new CSSOtherRuleImpl(sheet, parent, name === 'font-face' ? 5 : name === 'import' ? 3 : name === 'page' ? 6 : name === 'charset' ? 2 : name === 'namespace' ? 10 : 0, text);
+    }
+    if (brace < 0) return new CSSOtherRuleImpl(sheet, parent, 0, text);
+    return new CSSStyleRuleImpl(sheet, parent, text.slice(0, brace).trim(), text.slice(brace + 1, text.lastIndexOf('}')));
+  };
+  // sheets of <style>/<link> elements write their text back in one batch per microtask checkpoint
+  const pendingSheets = new Set();
+  const flushSheets = () => {
+    for (const sh of pendingSheets) { pendingSheets.delete(sh); if (sh._own) { try { __setSheetText(sh._own, sh._text()); sh._stamp = __sheetStamp(sh._own); } catch (e) {} } }
+  };
+  hide(G, '__flushSheets', flushSheets);
   class CSSStyleSheetImpl {
-    constructor(opts = {}) { this.cssRules = []; this.rules = this.cssRules; this.disabled = !!opts.disabled; this.media = { mediaText: opts.media || '' }; this._t = ''; }
-    _text() { return this._t + (this.cssRules.length ? '\n' + this.cssRules.map((r) => r.cssText).join('\n') : ''); }
-    replaceSync(t) { this._t = String(t); this.cssRules.length = 0; resyncSheet(this); }
+    constructor(opts = {}, own) {
+      this._own = own || null; this._rules = ruleList([]); this._stamp = undefined;
+      this.disabled = !!opts.disabled; this._media = opts.media || ''; this.title = null;
+      this.parentStyleSheet = null; this.ownerRule = null; this.type = 'text/css';
+    }
+    get ownerNode() { return this._own; }
+    get href() { return this._own && this._own.localName === 'link' ? this._own.href : null; }
+    get media() { return mediaList(this._own ? (this._own.getAttribute('media') || '') : this._media); }
+    _sync() {
+      if (!this._own || pendingSheets.has(this)) return;
+      const st = __sheetStamp(this._own);
+      if (st === this._stamp) return;
+      this._stamp = st;
+      this._rules = ruleList(splitRules(__sheetText(this._own)).map((r) => makeRule(r, this, null)));
+    }
+    get cssRules() { this._sync(); return this._rules; }
+    get rules() { return this.cssRules; }
+    _text() { return Array.from(this._rules, (r) => r.cssText).join('\n'); }
+    _touch() {
+      if (this._own) { if (!pendingSheets.size) queueMicrotask(flushSheets); pendingSheets.add(this); }
+      else resyncSheet(this);
+    }
+    insertRule(rule, index = 0) {
+      this._sync();
+      index = index >>> 0;
+      if (index > this._rules.length) throw new DOMException('Index ' + index + ' is out of range', 'IndexSizeError');
+      const p = splitRules(String(rule));
+      if (p.length !== 1) throw new DOMException("Failed to parse the rule '" + rule + "'", 'SyntaxError');
+      this._rules.splice(index, 0, makeRule(p[0], this, null));
+      this._touch();
+      return index;
+    }
+    deleteRule(index) { this._sync(); if (index >= this._rules.length) throw new DOMException('Index out of range', 'IndexSizeError'); this._rules.splice(index, 1); this._touch(); }
+    addRule(sel, decl, i) { return this.insertRule(sel + '{' + decl + '}', i === undefined ? this.cssRules.length : i), -1; }
+    removeRule(i) { this.deleteRule(i || 0); }
+    replaceSync(t) { this._rules = ruleList(splitRules(String(t)).map((r) => makeRule(r, this, null))); this._touch(); }
     replace(t) { this.replaceSync(t); return Promise.resolve(this); }
-    insertRule(r, i = 0) { this.cssRules.splice(i, 0, { cssText: String(r) }); resyncSheet(this); return i; }
-    deleteRule(i) { this.cssRules.splice(i, 1); resyncSheet(this); }
-    addRule(sel, decl, i) { return this.insertRule(sel + '{' + decl + '}', i === undefined ? this.cssRules.length : i); }
   }
   expose('CSSStyleSheet', CSSStyleSheetImpl);
+  expose('StyleSheet', CSSStyleSheetImpl);
+  expose('CSSRule', CSSRuleImpl);
+  expose('CSSStyleRule', CSSStyleRuleImpl);
+  expose('CSSGroupingRule', CSSGroupingRuleImpl);
+  expose('CSSConditionRule', CSSGroupingRuleImpl);
+  expose('CSSMediaRule', CSSMediaRuleImpl);
+  expose('CSSSupportsRule', CSSSupportsRuleImpl);
+  expose('CSSKeyframesRule', CSSKeyframesRuleImpl);
+  expose('CSSFontFaceRule', CSSOtherRuleImpl);
+  expose('CSSImportRule', CSSOtherRuleImpl);
+  expose('CSSRuleList', Array);
+  expose('StyleSheetList', Array);
+  expose('MediaList', Array);
+  const ownedSheets = new WeakMap();
+  const isSheetNode = (n) => n && n.nodeType === 1 && (n.localName === 'style' || (n.localName === 'link' && /(^|\s)stylesheet(\s|$)/i.test(n.getAttribute('rel') || '')));
+  hide(G, '__sheetFor', (n) => {
+    if (!isSheetNode(n) || !n.isConnected) return null;
+    let sh = ownedSheets.get(n);
+    if (!sh) { sh = new CSSStyleSheetImpl({}, n); ownedSheets.set(n, sh); }
+    return sh;
+  });
+  Object.defineProperty(Document.prototype, 'styleSheets', {
+    configurable: true,
+    get() {
+      const list = Array.from(this.querySelectorAll('style, link[rel~="stylesheet" i]'), (n) => __sheetFor(n)).filter(Boolean);
+      list.item = (i) => list[i] ?? null;
+      return list;
+    },
+  });
   {
     // per-document / per-shadow-root lists
     const desc = {

@@ -307,7 +307,7 @@ fn define_props(it: &mut Interp, o: &Obj, props: &Value) -> Res<()> {
 
 fn object_get_proto(it: &mut Interp, c: &Call) -> Res {
     let o = it.to_object(&c.arg(0))?;
-    let p = o.borrow().proto.clone();
+    let p = it.proto_through_proxy(&o)?;
     Ok(p.map_or(Value::Null, Value::Obj))
 }
 
@@ -612,11 +612,20 @@ fn function_bind(it: &mut Interp, c: &Call) -> Res {
 
 fn function_to_string(it: &mut Interp, c: &Call) -> Res {
     let Value::Obj(o) = &c.this else { return it.type_error("Function.prototype.toString requires that 'this' be a Function") };
+    // platform functions written in the prelude print like built-ins, as in browsers
+    let from_prelude = |src: &str| src.len() == crate::js::window::PRELUDE.len() && src.as_bytes()[..src.len().min(256)] == crate::js::window::PRELUDE.as_bytes()[..src.len().min(256)];
     let src = match &o.borrow().class {
+        Class::Function(Func::Closure(cl)) if from_prelude(&cl.def.source) => None,
         Class::Function(Func::Closure(cl)) => Some(cl.def.source[cl.def.span.0.min(cl.def.source.len())..cl.def.span.1.min(cl.def.source.len())].to_string()),
         Class::Function(_) => None,
         _ => return Err(Ctl::Throw(Value::Undefined)),
     };
+    let native = matches!(&o.borrow().class, Class::Function(Func::Closure(cl)) if from_prelude(&cl.def.source));
+    if native {
+        let name = it.get_obj(o, &it.names.name.clone(), &c.this)?;
+        let n = it.to_string_lossy(&name);
+        return Ok(Value::string(format!("function {n}() {{ [native code] }}")));
+    }
     if let Some(Value::Str(s)) = o.borrow().props.get(&Key::str("__class_src")).map(|p| match &p.slot {
         Slot::Data(v) => v.clone(),
         _ => Value::Undefined,

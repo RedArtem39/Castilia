@@ -827,7 +827,12 @@ fn setup_dataset_and_style(it: &mut Interp, p: &Obj) {
     it.protos.as_mut().unwrap().extra.insert("dataset_handler", dh);
     it.def_getter(p, "dataset", |it, c| {
         let id = it.this_node(c)?;
-        let t = it.new_object();
+        // dataset objects are DOMStringMaps (`el.dataset instanceof DOMStringMap`)
+        let proto = match it.get_str(&Value::Obj(it.global.clone()), "__DOMStringMapProto")? {
+            Value::Obj(o) => Some(o),
+            _ => None,
+        };
+        let t = it.alloc(Object::new(proto, Class::Plain));
         it.define_data(&t, Key::str("__id"), Value::Num(id as f64), 0);
         let h = it.protos().extra.get("dataset_handler").cloned().unwrap();
         Ok(Value::Obj(it.alloc(Object::new(None, Class::Proxy { target: t, handler: h }))))
@@ -1304,7 +1309,11 @@ fn setup_controls(it: &mut Interp, p: &Obj) {
         }
         Ok(Value::string(it.attr(id, "content").unwrap_or_default()))
     });
-    it.def_getter(p, "sheet", |_, _| Ok(Value::Null));
+    it.def_getter(p, "sheet", |it, c| {
+        let this = c.this.clone();
+        let f = it.get_str(&Value::Obj(it.global.clone()), "__sheetFor")?;
+        it.call(&f, Value::Undefined, &[this])
+    });
     it.def_getter(p, "contentWindow", |_, _| Ok(Value::Null));
     it.def_getter(p, "contentDocument", |_, _| Ok(Value::Null));
     it.def_method(p, "getContext", 1, |it, c| {
@@ -2007,6 +2016,50 @@ fn setup_custom_elements(it: &mut Interp) {
         }
         Ok(Value::Undefined)
     });
+    // CSSOM bridges: current sheet text of a <style>/<link>, and replacing it after rule edits
+    let g = it.global.clone();
+    let f = it.new_native("__sheetStamp", 1, |it, c| {
+        // cheap change detector: text length (without copying) and whether an override exists
+        let id = it.node_id(&c.arg(0))?;
+        let d = it.dom()?;
+        if let Some(t) = d.sheet_override.get(&id) {
+            return Ok(Value::Num(1e12 + t.len() as f64));
+        }
+        if d.nodes[id].tag() == Some("link") {
+            let n = it.dom.style_sources.as_ref().and_then(|s| s.0.get(&id).map(|t| t.len())).unwrap_or(0);
+            return Ok(Value::Num(2e12 + n as f64));
+        }
+        let n: usize = d.nodes[id].children.iter().map(|&k| match &d.nodes[k].kind {
+            crate::dom::NodeKind::Text(t) => t.len(),
+            _ => 0,
+        }).sum();
+        Ok(Value::Num(n as f64 + d.nodes[id].children.len() as f64 * 1e9))
+    });
+    it.define_data(&g, Key::str("__sheetStamp"), Value::Obj(f), HIDDEN);
+    let f = it.new_native("__sheetText", 1, |it, c| {
+        let id = it.node_id(&c.arg(0))?;
+        let d = it.dom()?;
+        if let Some(t) = d.sheet_override.get(&id) {
+            return Ok(Value::string(t.clone()));
+        }
+        if d.nodes[id].tag() == Some("link") {
+            let t = it.dom.style_sources.as_ref().and_then(|s| s.0.get(&id).cloned()).unwrap_or_default();
+            return Ok(Value::string(t));
+        }
+        Ok(Value::string(d.text_content(id).unwrap_or_default()))
+    });
+    it.define_data(&g, Key::str("__sheetText"), Value::Obj(f), HIDDEN);
+    let f = it.new_native("__setSheetText", 2, |it, c| {
+        let id = it.node_id(&c.arg(0))?;
+        let text = it.arg_str(c, 1)?;
+        it.dom()?.sheet_override.insert(id, text.to_string());
+        it.dom.dirty = true;
+        it.dom.version += 1;
+        Ok(Value::Undefined)
+    });
+    it.define_data(&g, Key::str("__setSheetText"), Value::Obj(f), HIDDEN);
+    let f = it.new_native("__domVersion", 0, |it, _| Ok(Value::Num(it.dom.version as f64)));
+    it.define_data(&g, Key::str("__domVersion"), Value::Obj(f), HIDDEN);
     // bridge for `adoptedStyleSheets`: (document | shadow root, css text)
     let g = it.global.clone();
     let f = it.new_native("__setAdoptedCss", 2, |it, c| {

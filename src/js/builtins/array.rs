@@ -234,6 +234,43 @@ fn require_array(it: &mut Interp, c: &Call) -> Res<Obj> {
     }
 }
 
+fn is_array(v: &Value) -> bool {
+    matches!(v, Value::Obj(o) if matches!(o.borrow().class, Class::Array(_)))
+}
+
+/// Run an Array-only mutator on an array-like receiver (`Array.prototype.splice.call(arguments)`,
+/// NodeList, plain objects with `length`): operate on a copy, then write elements and `length` back.
+fn generic_mutator(it: &mut Interp, c: &Call, f: fn(&mut Interp, &Call) -> Res) -> Res {
+    if c.this.is_nullish() {
+        return it.type_error("Array.prototype method called on null or undefined");
+    }
+    let items = it.array_like_to_vec(&c.this)?;
+    let old_len = items.len();
+    let tmp = it.new_array(items);
+    let r = f(it, &Call { this: tmp.clone(), args: c.args, callee: c.callee, new_target: None })?;
+    let new_items = match &tmp {
+        Value::Obj(o) => match &o.borrow().class {
+            Class::Array(a) => a.clone(),
+            _ => Vec::new(),
+        },
+        _ => Vec::new(),
+    };
+    let new_len = new_items.len();
+    for (i, v) in new_items.into_iter().enumerate() {
+        if is_hole(&v) {
+            it.delete_v(&c.this, &Key::S(Rc::from(num_to_string(i as f64))))?;
+        } else {
+            it.set_v(&c.this, Key::S(Rc::from(num_to_string(i as f64))), v)?;
+        }
+    }
+    for i in new_len..old_len {
+        it.delete_v(&c.this, &Key::S(Rc::from(num_to_string(i as f64))))?;
+    }
+    it.set_v(&c.this, Key::str("length"), Value::Num(new_len as f64))?;
+    let same = matches!((&r, &tmp), (Value::Obj(a), Value::Obj(b)) if a.ptr_eq(b));
+    Ok(if same { c.this.clone() } else { r })
+}
+
 // ---- mutators ----
 
 fn push(it: &mut Interp, c: &Call) -> Res {
@@ -260,6 +297,9 @@ fn push(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn pop(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, pop);
+    }
     let o = require_array(it, c)?;
     if let Class::Array(a) = &mut o.borrow_mut().class {
         return Ok(a.pop().unwrap_or(Value::Undefined));
@@ -268,6 +308,9 @@ fn pop(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn shift(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, shift);
+    }
     let o = require_array(it, c)?;
     if let Class::Array(a) = &mut o.borrow_mut().class {
         if a.is_empty() {
@@ -279,6 +322,9 @@ fn shift(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn unshift(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, unshift);
+    }
     let o = require_array(it, c)?;
     if let Class::Array(a) = &mut o.borrow_mut().class {
         for (i, v) in c.args.iter().enumerate() {
@@ -290,6 +336,9 @@ fn unshift(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn splice(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, splice);
+    }
     let o = require_array(it, c)?;
     let len = arr_len(c).unwrap_or(0);
     let start = rel_arg(it, c, 0, len, 0)?;
@@ -311,6 +360,9 @@ fn splice(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn reverse(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, reverse);
+    }
     let o = require_array(it, c)?;
     if let Class::Array(a) = &mut o.borrow_mut().class {
         a.reverse();
@@ -319,6 +371,9 @@ fn reverse(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn fill(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, fill);
+    }
     let o = require_array(it, c)?;
     let len = arr_len(c).unwrap_or(0);
     let s = rel_arg(it, c, 1, len, 0)?;
@@ -332,6 +387,9 @@ fn fill(it: &mut Interp, c: &Call) -> Res {
 }
 
 fn copy_within(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, copy_within);
+    }
     let o = require_array(it, c)?;
     let len = arr_len(c).unwrap_or(0);
     let target = rel_arg(it, c, 0, len, 0)?;
@@ -668,6 +726,9 @@ fn merge_sort(it: &mut Interp, mut v: Vec<(Option<JsStr>, Value)>, cmp: &Value) 
 }
 
 fn sort(it: &mut Interp, c: &Call) -> Res {
+    if !is_array(&c.this) {
+        return generic_mutator(it, c, sort);
+    }
     let cmp = c.arg(0);
     if !cmp.is_undefined() {
         check_fn(it, &cmp)?;

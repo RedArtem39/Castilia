@@ -56,6 +56,9 @@ pub struct Document {
     pub shadow_roots: alloc::collections::BTreeMap<NodeId, NodeId>,
     /// CSS text of `adoptedStyleSheets`, keyed by the document root or a shadow root.
     pub adopted_css: alloc::collections::BTreeMap<NodeId, alloc::string::String>,
+    /// Sheet text of `<style>`/`<link>` elements whose rules scripts changed through the CSSOM
+    /// (`insertRule`/`deleteRule`); replaces the element's own text when styles are collected.
+    pub sheet_override: alloc::collections::BTreeMap<NodeId, alloc::string::String>,
 }
 
 impl Document {
@@ -230,6 +233,7 @@ impl Document {
             quirks: true,
             shadow_roots: alloc::collections::BTreeMap::new(),
             adopted_css: alloc::collections::BTreeMap::new(),
+            sheet_override: alloc::collections::BTreeMap::new(),
         };
         document.root = document.push(NodeKind::Document, None);
         let html = document.push(
